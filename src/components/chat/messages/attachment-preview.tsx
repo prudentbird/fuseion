@@ -1,0 +1,47 @@
+import { Loader2 } from 'lucide-react';
+import type { UIMessage } from '@ai-sdk/react';
+
+type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
+
+export const PreviewAttachment = ({
+  attachment,
+  isUploading = false,
+}: {
+  attachment: FileUIPart;
+  isUploading?: boolean;
+}) => {
+  const { filename, url, mediaType } = attachment;
+
+  return (
+    <div data-testid="input-attachment-preview" className="flex flex-col gap-2">
+      <div className="w-20 h-16 aspect-video bg-muted rounded-md relative flex flex-col items-center justify-center">
+        {mediaType ? (
+          mediaType.startsWith('image') ? (
+            // NOTE: it is recommended to use next/image for images
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={url}
+              src={url}
+              alt={filename ?? 'An image attachment'}
+              className="rounded-md size-full object-cover"
+            />
+          ) : (
+            <div className="" />
+          )
+        ) : (
+          <div className="" />
+        )}
+
+        {isUploading && (
+          <div
+            data-testid="input-attachment-loader"
+            className="animate-spin absolute text-zinc-500"
+          >
+            <Loader2 />
+          </div>
+        )}
+      </div>
+      <div className="text-xs text-zinc-500 max-w-16 truncate">{filename}</div>
+    </div>
+  );
+};
