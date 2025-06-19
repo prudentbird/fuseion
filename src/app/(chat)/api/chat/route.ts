@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
     const streamId = generateUUID();
 
     const convexUrl = `${env.CONVEX_SITE_URL}/api/chat/stream`;
-    console.log('Convex URL => ', convexUrl);
     const convexRes = await fetch(convexUrl, {
       method: 'POST',
       headers: apiHeaders,
@@ -42,8 +41,6 @@ export async function POST(req: NextRequest) {
       }),
       signal: req.signal,
     });
-
-    console.log('Convex Response => ', convexRes);
 
     return new Response(convexRes.body, {
       status: convexRes.status,

@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const json = await req.json();
-    console.dir({ Request: json }, { depth: null });
     requestBody = postRequestBodySchema.parse(json);
   } catch (err) {
     console.log('bad_request:api', err);

@@ -3,8 +3,29 @@
 import ChatInput from './input';
 import { Messages } from './messages';
 import { useAppChat } from './context';
+import { UIMessage } from '@ai-sdk/react';
+import { api } from '~/convex/_generated/api';
+import { MessageMetadata } from '~/types/message';
+import { Preloaded, usePreloadedQuery } from 'convex/react';
 
-const Chat = ({ id }: { id?: string }) => {
+const Chat = ({
+  id,
+  preloadedInitialMessages,
+}: {
+  id?: string;
+  preloadedInitialMessages?: Preloaded<typeof api.messages.listMessages>;
+}) => {
+  let initialMessages: UIMessage<MessageMetadata>[] = [];
+  if (preloadedInitialMessages) {
+    initialMessages = usePreloadedQuery(preloadedInitialMessages).map(
+      (message) => ({
+        id: message.id ?? '',
+        role: message.role as 'system' | 'user' | 'assistant',
+        parts: message.parts ? JSON.parse(message.parts) : [],
+        metadata: message.metadata ? JSON.parse(message.metadata) : undefined,
+      }),
+    );
+  }
   const {
     messages,
     status,
@@ -14,7 +35,8 @@ const Chat = ({ id }: { id?: string }) => {
     selectedModel,
     setSelectedModel,
     sendMessage,
-  } = useAppChat();
+    models,
+  } = useAppChat(initialMessages);
 
   return (
     <div>
@@ -38,6 +60,7 @@ const Chat = ({ id }: { id?: string }) => {
         sendMessage={sendMessage}
         selectedModel={selectedModel}
         setSelectedModel={setSelectedModel}
+        models={models}
       />
     </div>
   );

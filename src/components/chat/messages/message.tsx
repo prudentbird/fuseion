@@ -10,6 +10,7 @@ import equal from 'fast-deep-equal';
 import { Markdown } from './markdown';
 import { Pencil } from 'lucide-react';
 import { memo, useState } from 'react';
+import { ErrorMessage } from './error';
 import { MessageEditor } from './editor';
 import { MessageActions } from './actions';
 import { cn, sanitizeText } from '~/lib/utils';
@@ -17,9 +18,9 @@ import { MessageReasoning } from './reasoning';
 import { Button } from '~/components/ui/button';
 import { MessageMetadata } from '~/types/message';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PreviewAttachment } from './attachment-preview';
+// import { PreviewAttachment } from './attachment-preview';
 import type { UseChatHelpers, UIMessage } from '@ai-sdk/react';
-type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
+// type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
   chatId,
@@ -36,12 +37,7 @@ const PurePreviewMessage = ({
   regenerate: UseChatHelpers<UIMessage<MessageMetadata>>['regenerate'];
   requiresScrollPadding: boolean;
 }) => {
-  console.log('Chat ID', chatId);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-
-  const fileParts =
-    message.parts?.filter((part): part is FileUIPart => part.type === 'file') ||
-    [];
 
   return (
     <AnimatePresence>
@@ -66,16 +62,16 @@ const PurePreviewMessage = ({
               'min-h-96': message.role === 'assistant' && requiresScrollPadding,
             })}
           >
-            {fileParts.length > 0 && (
+            {/* {message.parts?.filter((part): part is FileUIPart => part.type === 'file').length > 0 && (
               <div
                 data-testid={`message-attachments`}
                 className="flex flex-row justify-end gap-2"
               >
-                {fileParts.map((filePart) => (
+                {message.parts?.filter((part): part is FileUIPart => part.type === 'file').map((filePart) => (
                   <PreviewAttachment key={filePart.url} attachment={filePart} />
                 ))}
               </div>
-            )}
+            )} */}
 
             {message.parts?.map((part, index) => {
               const { type } = part;
@@ -113,7 +109,9 @@ const PurePreviewMessage = ({
                         </Tooltip>
                       )}
 
-                      {part.text && (
+                      {part.text &&
+                      part.text.length > 0 &&
+                      part.text.trim() !== '' ? (
                         <div
                           data-testid="message-content"
                           className={cn(
@@ -125,6 +123,8 @@ const PurePreviewMessage = ({
                         >
                           <Markdown>{sanitizeText(part.text)}</Markdown>
                         </div>
+                      ) : (
+                        <ErrorMessage error="Response is empty." />
                       )}
                     </div>
                   );

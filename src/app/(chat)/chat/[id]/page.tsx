@@ -1,4 +1,6 @@
 import Chat from '~/components/chat';
+import { preloadQuery } from 'convex/nextjs';
+import { api } from '~/convex/_generated/api';
 
 export default async function Page({
   params,
@@ -7,5 +9,9 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  return <Chat id={id} />;
+  const initialMessages = await preloadQuery(api.messages.listMessages, {
+    threadId: id,
+  });
+
+  return <Chat id={id} preloadedInitialMessages={initialMessages} />;
 }

@@ -13,6 +13,7 @@ interface ChatInputProps {
   stop: UseChatHelpers<UIMessage<MessageMetadata>>['stop'];
   status: UseChatHelpers<UIMessage<MessageMetadata>>['status'];
   sendMessage: UseChatHelpers<UIMessage<MessageMetadata>>['sendMessage'];
+  models: Model[];
   selectedModel: Model;
   setSelectedModel: (model: Model) => void;
 }
@@ -20,9 +21,10 @@ interface ChatInputProps {
 const ChatInput = ({
   stop,
   status,
+  models,
+  sendMessage,
   selectedModel,
   setSelectedModel,
-  sendMessage,
 }: ChatInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -73,15 +75,10 @@ const ChatInput = ({
             <div className="flex items-end justify-between h-full -mb-px mt-2">
               <div className="flex items-center gap-1 ml-[-7px] mb-[-4px]">
                 <ModelPicker
-                  selectedModel={{
-                    name: selectedModel.name,
-                    value: selectedModel.id,
-                  }}
-                  models={[
-                    { name: selectedModel.name, value: selectedModel.id },
-                  ]}
+                  selectedModel={selectedModel}
+                  models={models}
                   onModelChange={(model) => {
-                    setSelectedModel({ ...selectedModel, id: model.value });
+                    setSelectedModel(model);
                   }}
                 />
 

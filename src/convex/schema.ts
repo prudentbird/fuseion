@@ -28,7 +28,7 @@ export default defineSchema(
       .index('by_thread', ['threadId'])
       .index('by_external_id', ['id']),
     users: defineTable({
-      id: v.string(),
+      userId: v.string(),
       tier: v.union(v.literal('free'), v.literal('pro')),
       name: v.string(),
       email: v.string(),
@@ -45,7 +45,7 @@ export default defineSchema(
       ),
     })
       .index('by_email', ['email'])
-      .index('by_external_id', ['id']),
+      .index('by_external_id', ['userId']),
   },
   {
     schemaValidation: true,

@@ -1,6 +1,9 @@
 export interface UserInterface {
-  id: string;
+  userId: string;
   email: string;
+  name: string;
+  picture: string;
+  tier: 'free' | 'pro';
   preferences: {
     name?: string;
     occupation?: string;

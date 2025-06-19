@@ -1,5 +1,5 @@
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { mutation, query, internalMutation } from './_generated/server';
 
 export const createThread = mutation({
   args: {
@@ -31,5 +31,57 @@ export const listThreads = query({
       .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .order('desc')
       .collect();
+  },
+});
+
+export const internalUpdateThreadWithExternalId = internalMutation({
+  args: {
+    id: v.string(),
+    title: v.optional(v.string()),
+    model: v.optional(v.string()),
+    status: v.optional(v.string()),
+    pinned: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db
+      .query('threads')
+      .withIndex('by_external_id', (q) => q.eq('id', args.id))
+      .unique();
+    if (!thread) {
+      return null;
+    }
+    return await ctx.db.patch(thread._id, {
+      ...(args.title && { title: args.title }),
+      ...(args.model && { model: args.model }),
+      ...(args.status && { status: args.status }),
+      ...(args.pinned && { pinned: args.pinned }),
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const updateThreadWithExternalId = mutation({
+  args: {
+    id: v.string(),
+    title: v.optional(v.string()),
+    model: v.optional(v.string()),
+    status: v.optional(v.string()),
+    pinned: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db
+      .query('threads')
+      .withIndex('by_external_id', (q) => q.eq('id', args.id))
+      .unique();
+    if (!thread) {
+      return null;
+    }
+    return await ctx.db.patch(thread._id, {
+      ...(args.title && { title: args.title }),
+      ...(args.model && { model: args.model }),
+      ...(args.status && { status: args.status }),
+      ...(args.pinned && { pinned: args.pinned }),
+      updatedAt: Date.now(),
+    });
   },
 });

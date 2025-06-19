@@ -4,7 +4,7 @@ import { UserInterface } from '~/types/user';
 import { api } from '~/convex/_generated/api';
 import { fetchMutation } from 'convex/nextjs';
 import type { DefaultJWT } from 'next-auth/jwt';
-import Google from 'next-auth/providers/google';
+import Google, { GoogleProfile } from 'next-auth/providers/google';
 import NextAuth, { type DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {
@@ -31,25 +31,39 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
-  providers: [Google],
+  providers: [
+    Google({
+      profile(profile: GoogleProfile) {
+        return {
+          tier: 'free',
+          name: profile.name,
+          email: profile.email,
+          picture: profile.picture,
+          userId: 'google:' + profile.sub,
+          preferences: { name: profile.name },
+        } as UserInterface;
+      },
+    }),
+  ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === 'google') {
-        const newUser = {
-          tier: 'free' as const,
-          email: profile?.email || '',
-          id: 'google:' + profile?.sub,
-          picture: profile?.picture as string,
-          name:
-            profile?.name || profile?.given_name + ' ' + profile?.family_name,
-          preferences: {
-            name:
-              profile?.name || profile?.given_name + ' ' + profile?.family_name,
-          },
-        };
+        const dbUser = await fetchMutation(api.users.upSertUser, {
+          tier: user.tier,
+          name: user.name,
+          email: user.email,
+          userId: user.userId,
+          picture: user.picture,
+          preferences: user.preferences,
+        } as UserInterface);
+        if (!dbUser) {
+          return false;
+        }
 
-        user = newUser;
-        await fetchMutation(api.users.createUser, newUser);
+        user = {
+          ...user,
+          ...dbUser,
+        } as UserInterface;
       }
 
       return !!user;
@@ -64,6 +78,7 @@ export const {
     async session({ session, token }) {
       if (token.user) {
         session.user = token.user as UserInterface & {
+          id: string;
           emailVerified: Date | null;
         };
       }

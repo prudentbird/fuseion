@@ -8,11 +8,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 import { Button } from '~/components/ui/button';
 import { ChevronDown } from 'lucide-react';
-
-interface Model {
-  name: string;
-  value: string;
-}
+import { Model } from '~/data/models';
 
 interface ModelPickerProps {
   selectedModel: Model;
@@ -43,7 +39,7 @@ const ModelPicker = ({
       >
         {models.map((model) => (
           <DropdownMenuItem
-            key={model.value}
+            key={model.id}
             onClick={() => onModelChange(model)}
             className="text-[#a0a0a0] hover:bg-[#404040] hover:text-white focus:bg-[#404040] focus:text-white"
           >

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import equal from 'fast-deep-equal';
 import { Greeting } from './greeting';
 import { motion } from 'framer-motion';
@@ -29,10 +29,18 @@ function PureMessages({
     onViewportEnter,
     onViewportLeave,
     hasSentMessage,
+    scrollToBottom,
+    isAtBottom,
   } = useMessages({
     chatId,
     status,
   });
+
+  useEffect(() => {
+    if ((isAtBottom || hasSentMessage) && messages.length > 0) {
+      scrollToBottom('instant');
+    }
+  }, [messages, isAtBottom, hasSentMessage, scrollToBottom]);
 
   return (
     <div
@@ -43,7 +51,7 @@ function PureMessages({
 
       {messages.map((message, index) => (
         <PreviewMessage
-          key={message.id}
+          key={`${message.id}-${index}`}
           chatId={chatId}
           message={message}
           isLoading={status === 'streaming' && messages.length - 1 === index}
@@ -71,7 +79,6 @@ function PureMessages({
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
   if (prevProps.status !== nextProps.status) return false;
-  if (prevProps.status && nextProps.status) return false;
   if (prevProps.messages.length !== nextProps.messages.length) return false;
   if (!equal(prevProps.messages, nextProps.messages)) return false;
 

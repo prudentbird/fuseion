@@ -4,13 +4,20 @@ import {
   query,
   httpAction,
   internalMutation,
+  internalAction,
 } from './_generated/server';
+import { z } from 'zod/v4';
 import type { ProviderOptions } from 'ai';
 import { internal } from './_generated/api';
 import { createOpenAI } from '@ai-sdk/openai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGoogleGenerativeAI, google } from '@ai-sdk/google';
 import { PostRequestBody } from '~/app/(chat)/api/chat/schema';
-import { streamText, smoothStream, convertToModelMessages } from 'ai';
+import {
+  streamText,
+  smoothStream,
+  convertToModelMessages,
+  generateObject,
+} from 'ai';
 export const addMessage = mutation({
   args: {
     threadId: v.string(),
@@ -20,8 +27,6 @@ export const addMessage = mutation({
       role: v.string(),
       parts: v.string(),
       metadata: v.optional(v.string()),
-      createdAt: v.number(),
-      updatedAt: v.number(),
     }),
     threadInfo: v.optional(
       v.object({
@@ -33,14 +38,15 @@ export const addMessage = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const now = Date.now();
     const thread = await ctx.db
       .query('threads')
       .withIndex('by_external_id', (q) => q.eq('id', args.threadId))
       .unique();
     if (!thread) {
-      if (!args.threadInfo)
+      if (!args.threadInfo) {
         throw new Error('Missing thread info for first message');
-      const now = Date.now();
+      }
       await ctx.db.insert('threads', {
         id: args.threadId,
         userId: args.userId,
@@ -51,6 +57,11 @@ export const addMessage = mutation({
         createdAt: now,
         updatedAt: now,
       });
+
+      await ctx.scheduler.runAfter(0, internal.messages.generateTitle, {
+        threadId: args.threadId,
+        prompt: args.message.parts,
+      });
     }
     return await ctx.db.insert('messages', {
       id: args.message.id,
@@ -58,8 +69,8 @@ export const addMessage = mutation({
       threadId: args.threadId,
       parts: args.message.parts,
       metadata: args.message.metadata,
-      createdAt: args.message.createdAt,
-      updatedAt: args.message.updatedAt,
+      createdAt: now,
+      updatedAt: now,
     });
   },
 });
@@ -85,18 +96,17 @@ export const addAssistantMessage = internalMutation({
       streamId: v.string(),
       parts: v.optional(v.string()),
       metadata: v.optional(v.string()),
-      createdAt: v.number(),
-      updatedAt: v.number(),
     }),
   },
   handler: async (ctx, args) => {
+    const now = Date.now();
     return await ctx.db.insert('messages', {
       role: args.message.role,
       threadId: args.threadId,
       parts: args.message.parts,
       metadata: args.message.metadata,
-      createdAt: args.message.createdAt,
-      updatedAt: args.message.updatedAt,
+      createdAt: now,
+      updatedAt: now,
     });
   },
 });
@@ -105,16 +115,17 @@ export const updateMessage = internalMutation({
   args: {
     messageId: v.id('messages'),
     message: v.object({
+      id: v.optional(v.string()),
       parts: v.optional(v.string()),
       metadata: v.optional(v.string()),
-      updatedAt: v.number(),
     }),
   },
   handler: async (ctx, { messageId, message }) => {
     await ctx.db.patch(messageId, {
+      id: message.id,
       parts: message.parts,
       metadata: message.metadata,
-      updatedAt: message.updatedAt,
+      updatedAt: Date.now(),
     });
   },
 });
@@ -123,6 +134,13 @@ export const streamChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as PostRequestBody & {
     streamId: string;
   };
+
+  if (body.messages[0].metadata?.threadId) {
+    await ctx.runMutation(internal.threads.internalUpdateThreadWithExternalId, {
+      id: body.messages[0].metadata.threadId,
+      status: 'streaming',
+    });
+  }
 
   const { streamId, messages } = body;
   const lastMessage = messages[messages.length - 1];
@@ -227,8 +245,6 @@ export const streamChat = httpAction(async (ctx, request) => {
       message: {
         streamId,
         role: 'assistant',
-        createdAt: now,
-        updatedAt: now,
         metadata: JSON.stringify({
           streamId,
           status: 'streaming',
@@ -236,46 +252,85 @@ export const streamChat = httpAction(async (ctx, request) => {
       },
     },
   );
+
+  const partsArray: unknown[] = [];
   const streamResult = streamText({
     model: aiModel,
     messages: modelMessages,
     experimental_transform,
     ...(providerOptions ? { providerOptions } : {}),
-    onChunk: (chunk) => {
+    onChunk: async (chunk) => {
       const now = Date.now();
-      ctx.runMutation(internal.messages.updateMessage, {
+      function upsertPart(type: 'text' | 'reasoning', newText: string) {
+        const idx = partsArray.findIndex(
+          (item) =>
+            typeof item === 'object' &&
+            item !== null &&
+            'type' in item &&
+            (item as { type: unknown }).type === type,
+        );
+        if (idx !== -1) {
+          const existing = partsArray[idx];
+          if (
+            typeof existing === 'object' &&
+            existing !== null &&
+            'text' in existing &&
+            typeof (existing as { text: unknown }).text === 'string'
+          ) {
+            const updated = {
+              type,
+              text: (existing as { text: string }).text + newText,
+            };
+            partsArray[idx] = updated;
+          }
+        } else {
+          partsArray.push({ type, text: newText });
+        }
+      }
+      switch (chunk.chunk.type) {
+        case 'text':
+          upsertPart('text', chunk.chunk.text);
+          break;
+        case 'reasoning':
+          upsertPart('reasoning', chunk.chunk.text);
+          break;
+        default:
+          break;
+      }
+      await ctx.runMutation(internal.messages.updateMessage, {
         messageId,
         message: {
-          parts: JSON.stringify(chunk),
-          updatedAt: now,
+          parts: JSON.stringify(partsArray),
           metadata: JSON.stringify({
+            streamId,
             status: 'streaming',
           }),
         },
       });
     },
-    onError: (error) => {
+    onError: async (error) => {
       const now = Date.now();
-      console.error('[Streaming Error]:', error);
-      ctx.runMutation(internal.messages.updateMessage, {
+      await ctx.runMutation(internal.messages.updateMessage, {
         messageId,
         message: {
           metadata: JSON.stringify({
+            streamId,
             status: 'error',
           }),
-          updatedAt: now,
         },
       });
     },
-    onFinish: () => {
+    onFinish: async (message) => {
       const now = Date.now();
-      ctx.runMutation(internal.messages.updateMessage, {
+      await ctx.runMutation(internal.messages.updateMessage, {
         messageId,
         message: {
+          id: message.response.id,
+          parts: JSON.stringify(message.content),
           metadata: JSON.stringify({
+            streamId,
             status: 'ready',
           }),
-          updatedAt: now,
         },
       });
     },
@@ -285,16 +340,14 @@ export const streamChat = httpAction(async (ctx, request) => {
     const response = streamResult.toUIMessageStreamResponse({
       sendReasoning: true,
       onError: (error) => {
-        console.error('[ERROR]: ', error);
         return 'Unable to complete request. Please try again.';
       },
-      onFinish: () => {
+      onFinish: async () => {
         const now = Date.now();
-        ctx.runMutation(internal.messages.updateMessage, {
+        await ctx.runMutation(internal.messages.updateMessage, {
           messageId,
           message: {
-            metadata: JSON.stringify({ status: 'ready' }),
-            updatedAt: now,
+            metadata: JSON.stringify({ streamId, status: 'ready' }),
           },
         });
       },
@@ -303,7 +356,6 @@ export const streamChat = httpAction(async (ctx, request) => {
     response.headers.set('Vary', 'Origin');
     return response;
   } catch (error) {
-    console.error('[Stream Creation Error]:', error);
     return new Response(JSON.stringify({ error: 'Failed to create stream' }), {
       status: 500,
       headers: {
@@ -313,4 +365,44 @@ export const streamChat = httpAction(async (ctx, request) => {
       },
     });
   }
+});
+
+export const generateTitle = internalAction({
+  args: {
+    prompt: v.string(),
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const {
+      object: { title },
+    } = await generateObject({
+      model: google('gemini-2.0-flash-lite'),
+      schema: z.object({
+        title: z.string(),
+      }),
+      system: `\n
+      - You will generate a short title based on the first message a user begins a conversation with
+      - Ensure it is not more than 4 words
+      - The title should be descriptive of the user's message in reference to the topic of the conversation
+      - Do not use quotes or colons or any other punctuation
+      - Do not use the word "chat" in the title
+      - Do not use the word "conversation" in the title
+      - Do not use the word "thread" in the title
+      - Do not use the word "message" in the title
+      - Do not use the word "new" in the title
+      - Do not use plurals in the title
+      - Do not use descriptors like initial, first, etc.
+      - Do not return the user's message in the title
+      - Return in Title Case`,
+      temperature: 0.8,
+      prompt: args.prompt,
+    });
+
+    await ctx.runMutation(internal.threads.internalUpdateThreadWithExternalId, {
+      id: args.threadId,
+      title: title ?? 'New Chat',
+    });
+
+    return title;
+  },
 });

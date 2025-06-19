@@ -2,8 +2,8 @@ import Link from 'next/link';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code';
 import React, { memo } from 'react';
-import rehypeStarryNight from 'rehype-starry-night';
-import { MarkdownHooks, type Components } from 'react-markdown';
+import { rehypeInlineCodeProperty } from 'react-shiki';
+import ReactMarkdown, { type Components } from 'react-markdown';
 
 const components: Partial<Components> = {
   code: CodeBlock,
@@ -94,17 +94,17 @@ const components: Partial<Components> = {
 };
 
 const remarkPlugins = [remarkGfm];
-const rehypePlugins = [rehypeStarryNight];
+const rehypePlugins = [rehypeInlineCodeProperty];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <MarkdownHooks
+    <ReactMarkdown
       remarkPlugins={remarkPlugins}
       rehypePlugins={rehypePlugins}
       components={components}
     >
       {children}
-    </MarkdownHooks>
+    </ReactMarkdown>
   );
 };
 

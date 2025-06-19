@@ -5,6 +5,7 @@ export type Role = 'user' | 'system' | 'assistant';
 export interface MessageInterface {
   id: string;
   role: Role;
+  streamId?: string;
   parts: string;
   metadata?: string;
   createdAt: number;

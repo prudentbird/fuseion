@@ -1,14 +1,15 @@
 'use client';
-import { type ReactNode, useState } from 'react';
-import { Button } from '~/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
 } from '~/components/ui/tooltip';
-import { WrapText, Download, Copy, Check, AlignLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '~/components/ui/button';
+import { type ReactNode, useState } from 'react';
+import ShikiHighlighter, { Element } from 'react-shiki';
+import { WrapText, Download, Copy, Check, AlignLeft } from 'lucide-react';
 
 export function CodeBlock({
   node,
@@ -17,13 +18,18 @@ export function CodeBlock({
   children,
   ...props
 }: {
-  node?: unknown;
+  node?: Element | undefined;
   inline?: boolean;
   className?: string;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }) {
   const [copied, setCopied] = useState(false);
   const [isWrapped, setIsWrapped] = useState(false);
+
+  const code =
+    typeof children === 'string' ? children.trim() : String(children).trim();
+  const match = className?.match(/language-(\w+)/);
+  const ext = match ? match[1] : 'txt';
 
   const copyToClipboard = async () => {
     const codeText = typeof children === 'string' ? children : String(children);
@@ -32,32 +38,29 @@ export function CodeBlock({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       toast.success('Copied to clipboard');
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      toast.error('Failed to copy');
     }
   };
 
   const downloadCode = () => {
     const codeText = typeof children === 'string' ? children : String(children);
-    const language = className?.replace('language-', '') || 'txt';
     const blob = new Blob([codeText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `code.${language}`;
+    a.download = `code.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  if (!inline && className?.includes('language-')) {
-    const language = className.replace('language-', '');
-
+  if (!inline) {
     return (
       <div className="relative mt-2 w-full" {...props}>
         <div className="flex items-center justify-between gap-5 rounded-t-lg bg-secondary px-4 py-2 text-sm text-secondary-foreground border border-b-0">
-          <span className="font-mono">{language}</span>
+          <span className="font-mono">{ext}</span>
           <TooltipProvider delayDuration={0}>
             <div className="flex gap-1">
               <Tooltip>
@@ -118,22 +121,25 @@ export function CodeBlock({
           </TooltipProvider>
         </div>
 
-        <div className="relative border border-t-0 rounded-b-lg bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
-          <pre
-            className={`
-              m-0 p-4 text-sm text-zinc-900 dark:text-zinc-50 bg-transparent
-              ${isWrapped ? 'whitespace-pre-wrap' : 'whitespace-pre overflow-auto'}
-            `}
+        <div className="relative border border-t-0 rounded-b-lg overflow-hidden">
+          <ShikiHighlighter
+            delay={150}
+            tabindex={2}
+            language={ext}
+            theme="dark-plus"
+            showLanguage={false}
+            showLineNumbers={false}
+            className={`${isWrapped ? 'shiki-wrap' : ''}`}
           >
-            <code>{children}</code>
-          </pre>
+            {code}
+          </ShikiHighlighter>
         </div>
       </div>
     );
   } else {
     return (
       <code
-        className={`mx-0.5 text-sm py-1 px-[7px] rounded-md bg-muted text-muted-foreground ${className || ''}`}
+        className={`mx-0.5 text-sm py-0.5 px-[6px] rounded-md bg-muted text-muted-foreground ${className || ''}`}
         {...props}
       >
         {children}

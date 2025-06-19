@@ -21,11 +21,11 @@ export function useMessages({
   const [hasSentMessage, setHasSentMessage] = useState(false);
 
   useEffect(() => {
-    if (chatId) {
+    if (chatId && status === 'submitted') {
       scrollToBottom('instant');
       setHasSentMessage(false);
     }
-  }, [chatId, scrollToBottom]);
+  }, [chatId, scrollToBottom, status]);
 
   useEffect(() => {
     if (status === 'submitted') {

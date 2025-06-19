@@ -21,6 +21,7 @@ interface ChatContextProps {
   stop: UseChatHelpers<UIMessage<MessageMetadata>>['stop'];
   setMessages: UseChatHelpers<UIMessage<MessageMetadata>>['setMessages'];
   threadId: string | undefined;
+  models: Model[];
 }
 
 const ChatContext = createContext<ChatContextProps | undefined>(undefined);
@@ -34,10 +35,9 @@ export function ChatProvider({
 }) {
   const router = useRouter();
   const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const userId = session?.user?.userId;
   const [selectedModel, setSelectedModel] = useState<Model>(availableModels[0]);
 
-  console.log('Thread ID', threadId);
   const addMessage = useMutation(api.messages.addMessage);
 
   const {
@@ -66,7 +66,7 @@ export function ChatProvider({
       const messageId = generateUUID();
 
       const currentThreadId = threadId ?? generateUUID();
-      const result = await baseSendMessage(
+      baseSendMessage(
         {
           ...message,
           metadata: {
@@ -77,15 +77,15 @@ export function ChatProvider({
         },
         options,
       );
-      console.log('Result =>', result);
 
-      const convexMessage: Omit<MessageInterface, 'threadId'> = {
+      const convexMessage: Omit<
+        MessageInterface,
+        'threadId' | 'createdAt' | 'updatedAt' | 'streamId'
+      > = {
         id: messageId,
         role: 'user',
         metadata: JSON.stringify(message.metadata),
         parts: JSON.stringify(message.parts),
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
       };
 
       await addMessage({
@@ -137,19 +137,21 @@ export function ChatProvider({
     stop,
     setMessages,
     threadId,
+    models: availableModels,
   };
-
-  if (!userId) {
-    return <div>Loading...</div>;
-  }
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 }
 
-export function useAppChat() {
+export function useAppChat(initialMessages?: UIMessage<MessageMetadata>[]) {
   const context = useContext(ChatContext);
   if (!context) {
     throw new Error('useAppChat must be used within a ChatProvider');
   }
+
+  if (initialMessages) {
+    context.messages = initialMessages;
+  }
+
   return context;
 }

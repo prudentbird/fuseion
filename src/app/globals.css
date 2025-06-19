@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import '../../node_modules/@wooorm/starry-night/style/both.css';
+@import 'react-shiki/css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,7 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: Outfit, sans-serif;
-  --font-mono: monospace;
+  --font-mono: Inconsolata, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -105,7 +105,7 @@
   --destructive-foreground: oklch(0.9934 0.0032 17.2118);
   --font-sans: Outfit, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-mono: monospace;
+  --font-mono: Inconsolata, monospace;
   --shadow-color: #000000;
   --shadow-opacity: 0.2;
   --shadow-blur: 3px;
@@ -166,7 +166,7 @@
   --radius: 0.5rem;
   --font-sans: Outfit, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-mono: monospace;
+  --font-mono: Inconsolata, monospace;
   --shadow-color: #000000;
   --shadow-opacity: 0.2;
   --shadow-blur: 3px;
@@ -300,7 +300,6 @@
   }
 }
 
-
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -312,4 +311,16 @@
   background-clip: content-box;
   border: 1px solid transparent;
   -webkit-background-clip: content-box;
+}
+
+.shiki-wrap pre,
+.shiki-wrap code {
+  white-space: pre-wrap !important;
+  word-break: break-word;
+}
+
+[data-testid='shiki-container'] pre {
+  border: none !important;
+  padding: 1rem !important;
+  border-radius: 0 !important;
 }

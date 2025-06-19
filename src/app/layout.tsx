@@ -1,15 +1,17 @@
+import { ReactScan } from './scan';
 import './globals.css';
+import { env } from '~/env';
 import Providers from './providers';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Outfit, Inconsolata } from 'next/font/google';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const inconsolata = Inconsolata({
+  variable: '--font-inconsolata',
   subsets: ['latin'],
 });
 
@@ -25,8 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {env.NODE_ENV === 'development' && <ReactScan />}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${outfit.variable} ${inconsolata.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
