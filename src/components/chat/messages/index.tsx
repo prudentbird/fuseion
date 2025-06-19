@@ -3,9 +3,9 @@ import { Greeting } from './greeting';
 import { motion } from 'framer-motion';
 import { memo, useEffect } from 'react';
 import type { UIMessage } from '@ai-sdk/react';
-import { MessageMetadata } from '~/types/message';
 import { useMessages } from '~/hooks/use-messages';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import type { MessageMetadata } from '~/types/message';
 import { PreviewMessage, ThinkingMessage } from './message';
 
 interface MessagesProps {

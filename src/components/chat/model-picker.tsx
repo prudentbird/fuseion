@@ -27,7 +27,7 @@ const ModelPicker = ({
         <Button
           variant="ghost"
           size="sm"
-          className="px-2 py-1.25 flex items-center justify-center gap-1 h-fit text-[#a0a0a0] hover:bg-[#404040] hover:text-white border-0 bg-transparent text-xs"
+          className="px-2 py-1.25 flex items-center justify-center gap-1 h-fit text-[#a0a0a0] hover:bg-[#404040] hover:text-white border-0 bg-transparent text-xs focus:outline-none"
         >
           {selectedModel.name}
           <ChevronDown className="ml-2 h-3 w-3" />
@@ -41,7 +41,7 @@ const ModelPicker = ({
           <DropdownMenuItem
             key={model.id}
             onClick={() => onModelChange(model)}
-            className="text-[#a0a0a0] hover:bg-[#404040] hover:text-white focus:bg-[#404040] focus:text-white"
+            className="text-[#a0a0a0] hover:bg-[#404040] hover:text-white focus:bg-[#404040] focus:text-white focus:outline-none"
           >
             {model.name}
           </DropdownMenuItem>

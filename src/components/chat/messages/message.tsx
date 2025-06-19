@@ -16,7 +16,7 @@ import { MessageActions } from './actions';
 import { cn, sanitizeText } from '~/lib/utils';
 import { MessageReasoning } from './reasoning';
 import { Button } from '~/components/ui/button';
-import { MessageMetadata } from '~/types/message';
+import type { MessageMetadata } from '~/types/message';
 import { AnimatePresence, motion } from 'framer-motion';
 // import { PreviewAttachment } from './attachment-preview';
 import type { UseChatHelpers, UIMessage } from '@ai-sdk/react';
@@ -31,7 +31,7 @@ const PurePreviewMessage = ({
   requiresScrollPadding,
 }: {
   chatId: string;
-  message: UIMessage;
+  message: UIMessage<MessageMetadata>;
   isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage<MessageMetadata>>['setMessages'];
   regenerate: UseChatHelpers<UIMessage<MessageMetadata>>['regenerate'];
@@ -58,7 +58,7 @@ const PurePreviewMessage = ({
           )}
         >
           <div
-            className={cn('flex flex-col gap-4 w-full', {
+            className={cn('flex flex-col gap-2 w-full', {
               'min-h-96': message.role === 'assistant' && requiresScrollPadding,
             })}
           >
@@ -91,7 +91,7 @@ const PurePreviewMessage = ({
                 if (mode === 'view') {
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
-                      {message.role === 'user' && (
+                      {/* {message.role === 'user' && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -107,7 +107,7 @@ const PurePreviewMessage = ({
                           </TooltipTrigger>
                           <TooltipContent>Edit message</TooltipContent>
                         </Tooltip>
-                      )}
+                      )} */}
 
                       {part.text &&
                       part.text.length > 0 &&

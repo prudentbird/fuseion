@@ -246,6 +246,7 @@ export const streamChat = httpAction(async (ctx, request) => {
         streamId,
         role: 'assistant',
         metadata: JSON.stringify({
+          model,
           streamId,
           status: 'streaming',
         }),
@@ -302,6 +303,7 @@ export const streamChat = httpAction(async (ctx, request) => {
         message: {
           parts: JSON.stringify(partsArray),
           metadata: JSON.stringify({
+            model,
             streamId,
             status: 'streaming',
           }),
@@ -314,6 +316,7 @@ export const streamChat = httpAction(async (ctx, request) => {
         messageId,
         message: {
           metadata: JSON.stringify({
+            model,
             streamId,
             status: 'error',
           }),
@@ -328,6 +331,7 @@ export const streamChat = httpAction(async (ctx, request) => {
           id: message.response.id,
           parts: JSON.stringify(message.content),
           metadata: JSON.stringify({
+            model,
             streamId,
             status: 'ready',
           }),
@@ -347,7 +351,11 @@ export const streamChat = httpAction(async (ctx, request) => {
         await ctx.runMutation(internal.messages.updateMessage, {
           messageId,
           message: {
-            metadata: JSON.stringify({ streamId, status: 'ready' }),
+            metadata: JSON.stringify({
+              model,
+              streamId,
+              status: 'ready',
+            }),
           },
         });
       },

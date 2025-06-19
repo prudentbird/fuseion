@@ -49,7 +49,7 @@ const Nav = () => {
               <span className="sr-only">Toggle Sidebar</span>
             </SidebarTrigger>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent align="start">
             <span className="flex items-center gap-1">
               Toggle Sidebar
               <Command className="h-3 w-3" />

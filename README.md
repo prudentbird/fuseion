@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FuseIon 🚀
 
-## Getting Started
+> A hyper-customizable AI chat app built by nerds, for nerds.
 
-First, run the development server:
+[![T3 ChatCloneathon Entry](https://img.shields.io/badge/T3%20ChatCloneathon-Entry-blue)](https://cloneathon.t3.chat)
+[![AI SDK v5 Alpha](https://img.shields.io/badge/AI%20SDK-v5%20Alpha-orange)](https://sdk.vercel.ai/)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+## 🌟 Features
+
+### Core Features
+
+- 🤖 Multi-LLM Support
+  - OpenAI GPT-4 & GPT-3.5
+  - Anthropic Claude 3
+  - Mistral AI
+  - Custom model integration support
+- 🔐 Secure Authentication
+  - OAuth 2.0 with multiple providers
+  - Passwordless login
+- 💾 Real-time Sync
+  - Convex backend for real-time data sync
+  - Never lose your conversations
+- 🎨 Customizable UI
+  - Multiple themes (Light, Dark, Matrix, Synthwave)
+  - Custom CSS injection
+  - Configurable layouts
+
+### Power User Features
+
+- ⚡ Command Palette
+  - Vim-style keyboard shortcuts
+  - Quick actions and commands
+- 🔧 Advanced Settings
+  - Model parameter fine-tuning
+  - Custom system prompts
+  - Response streaming controls
+- 📊 Usage Analytics
+  - Token usage tracking
+  - Cost estimation
+  - Performance metrics
+
+### Developer Features
+
+- 🧩 Plugin System
+  - Write custom plugins in TypeScript
+  - Extend functionality with hooks
+  - Share plugins with the community
+- 🔌 API Integration
+  - RESTful API
+  - WebSocket support
+  - Custom endpoint configuration
+- 🛠️ Developer Tools
+  - Debug console
+  - Network inspector
+  - State management tools
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm 8+
+- A modern web browser
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/fuseion.git
+cd fuseion
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up environment variables:
 
-## Learn More
+```bash
+cp .env.example .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Visit `http://localhost:3000` to see FuseIon in action!
 
-## Deploy on Vercel
+## 🏗️ Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework**: Next.js 14 with App Router
+- **Database**: Convex
+- **Authentication**: Clerk
+- **UI**:
+  - Tailwind CSS
+  - Radix UI
+  - Framer Motion
+- **State Management**: Jotai
+- **AI**: Vercel AI SDK v5 Alpha
+- **Testing**: Vitest + Playwright
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎯 Roadmap
+
+- [ ] Voice input/output
+- [ ] Multi-modal chat support
+- [ ] Code execution environment
+- [ ] Collaborative chat rooms
+- [ ] Mobile app (React Native)
+- [ ] Self-hosting options
+- [ ] Browser extension
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [T3 ChatCloneathon](https://cloneathon.t3.chat) for the inspiration
+- [Vercel](https://vercel.com) for the amazing AI SDK
+- The amazing open-source community
+
+---
+
+Built with ❤️ by nerds, for nerds. Happy hacking! 🚀

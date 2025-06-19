@@ -82,7 +82,7 @@ const ChatInput = ({
                   }}
                 />
 
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   size="sm"
@@ -100,7 +100,7 @@ const ChatInput = ({
                 >
                   <FileText className="!h-3 !w-3" />
                   <span className="max-sm:hidden sm:ml-0.5">Import</span>
-                </Button>
+                </Button> */}
               </div>
               {status !== 'ready' ? (
                 <Button
