@@ -1,7 +1,7 @@
-import { memo, useEffect } from 'react';
 import equal from 'fast-deep-equal';
 import { Greeting } from './greeting';
 import { motion } from 'framer-motion';
+import { memo, useEffect } from 'react';
 import type { UIMessage } from '@ai-sdk/react';
 import { MessageMetadata } from '~/types/message';
 import { useMessages } from '~/hooks/use-messages';
