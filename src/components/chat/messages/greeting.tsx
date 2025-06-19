@@ -16,8 +16,10 @@ export const Greeting = () => {
         transition={{ delay: 0.5 }}
         className="text-2xl font-semibold"
       >
-        How can I h elp you
-        {session && session.user ? `, ${session.user.name}` : ' ?'}
+        How can I help you
+        {session && session.user
+          ? `, ${session.user.name.split(' ')[0]}?`
+          : ' ?'}
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
