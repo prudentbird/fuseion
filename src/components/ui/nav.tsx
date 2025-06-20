@@ -36,7 +36,7 @@ const Nav = () => {
     <div
       className={`pointer-events-auto fixed left-2 z-50 flex flex-row gap-0.5 p-1 top-3 rounded-md transition-all duration-75 ${showButtons ? "bg-card" : ""}`}
     >
-      <div className="duration-250 pointer-events-none absolute inset-0 right-auto -z-10 w-10 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0 max-sm:delay-125 max-sm:duration-125 max-sm:w-[6.75rem] max-sm:bg-sidebar/50 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:w-[6.75rem] md:peer-data-[variant=inset]:peer-data-[state=collapsed]:bg-sidebar/50"></div>
+      <div className="duration-250 pointer-events-none absolute inset-0 right-auto -z-10 w-10 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0 max-sm:delay-125 max-sm:duration-125"></div>
       {showButtons ? (
         <Tooltip>
           <TooltipTrigger asChild>
