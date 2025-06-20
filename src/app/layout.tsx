@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {env.NODE_ENV === "development" && <ReactScan />}
+      {["local", "development"].includes(env.NODE_ENV) && <ReactScan />}
       <body
         className={`${outfit.variable} ${inconsolata.variable} antialiased`}
       >

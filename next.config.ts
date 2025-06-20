@@ -3,6 +3,7 @@
  * for Docker builds.
  */
 import "./src/env";
+const buildId = crypto.randomUUID();
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -14,6 +15,13 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     ppr: true,
+  },
+  generateBuildId: () => {
+    return buildId;
+  },
+  env: {
+    BUILD_ID: buildId,
+    NEXT_PUBLIC_BUILD_ID: buildId,
   },
 };
 

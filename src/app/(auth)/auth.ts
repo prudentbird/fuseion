@@ -4,8 +4,8 @@ import { UserInterface } from "~/types/user";
 import { api } from "~/convex/_generated/api";
 import { fetchMutation } from "convex/nextjs";
 import type { DefaultJWT } from "next-auth/jwt";
-import Google, { GoogleProfile } from "next-auth/providers/google";
 import NextAuth, { type DefaultSession } from "next-auth";
+import Google, { GoogleProfile } from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {

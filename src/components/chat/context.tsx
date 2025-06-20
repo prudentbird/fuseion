@@ -6,9 +6,9 @@ import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "~/convex/_generated/api";
-import { MessageInterface, MessageMetadata } from "~/types/message";
 import { Model, models as availableModels } from "~/data/models";
 import { UIMessage, useChat, UseChatHelpers } from "@ai-sdk/react";
+import { MessageInterface, MessageMetadata } from "~/types/message";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface ChatContextProps {
@@ -113,19 +113,6 @@ export function ChatProvider({
       throw err;
     }
   };
-
-  // if (convexMessages.length !== 0) {
-  //   const convexToUIMessage: UIMessage<MessageMetadata>[] = convexMessages.map((convexMessage) => ({
-  //     id: convexMessage.id,
-  //     role: ["system", "user", "assistant"].includes(convexMessage.role)
-  //       ? (convexMessage.role as "system" | "user" | "assistant")
-  //       : "user",
-  //     parts: convexMessage.parts ? JSON.parse(convexMessage.parts) : [],
-  //     metadata: convexMessage.metadata ? JSON.parse(convexMessage.metadata) : undefined,
-  //   }));
-
-  //   setMessages(convexToUIMessage);
-  // }
 
   const value: ChatContextProps = {
     messages: baseMessages,
