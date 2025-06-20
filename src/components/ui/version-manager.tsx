@@ -36,9 +36,6 @@ export const VersionManager = () => {
         const { buildId: serverBuildId }: { buildId: string | null } =
           await fetch("/api/build").then((res) => res.json());
 
-        console.log("Server Build ID", serverBuildId);
-        console.log("Client Build ID", clientBuildId);
-
         if (serverBuildId && clientBuildId && serverBuildId !== clientBuildId) {
           toast("Update Available", {
             description: "Kindly refresh to get the latest version",
