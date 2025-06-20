@@ -1,6 +1,6 @@
-import Chat from '~/components/chat';
-import { preloadQuery } from 'convex/nextjs';
-import { api } from '~/convex/_generated/api';
+import Chat from "~/components/chat";
+import { preloadQuery } from "convex/nextjs";
+import { api } from "~/convex/_generated/api";
 
 export default async function Page({
   params,

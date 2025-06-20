@@ -1,5 +1,5 @@
-import { v } from 'convex/values';
-import { defineSchema, defineTable } from 'convex/server';
+import { v } from "convex/values";
+import { defineSchema, defineTable } from "convex/server";
 
 export default defineSchema(
   {
@@ -13,8 +13,8 @@ export default defineSchema(
       updatedAt: v.number(),
       userId: v.string(),
     })
-      .index('by_user', ['userId'])
-      .index('by_external_id', ['id']),
+      .index("by_user", ["userId"])
+      .index("by_external_id", ["id"]),
     messages: defineTable({
       id: v.optional(v.string()),
       role: v.string(),
@@ -25,11 +25,11 @@ export default defineSchema(
       updatedAt: v.number(),
       threadId: v.string(),
     })
-      .index('by_thread', ['threadId'])
-      .index('by_external_id', ['id']),
+      .index("by_thread", ["threadId"])
+      .index("by_external_id", ["id"]),
     users: defineTable({
       userId: v.string(),
-      tier: v.union(v.literal('free'), v.literal('pro')),
+      tier: v.union(v.literal("free"), v.literal("pro")),
       name: v.string(),
       email: v.string(),
       createdAt: v.number(),
@@ -44,8 +44,8 @@ export default defineSchema(
         }),
       ),
     })
-      .index('by_email', ['email'])
-      .index('by_external_id', ['userId']),
+      .index("by_email", ["email"])
+      .index("by_external_id", ["userId"]),
   },
   {
     schemaValidation: true,

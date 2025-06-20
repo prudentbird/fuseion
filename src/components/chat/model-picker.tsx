@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Button } from '~/components/ui/button';
-import { ChevronDown } from 'lucide-react';
-import { Model } from '~/data/models';
+} from "~/components/ui/dropdown-menu";
+import { Button } from "~/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { Model } from "~/data/models";
 
 interface ModelPickerProps {
   selectedModel: Model;

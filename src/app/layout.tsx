@@ -1,23 +1,23 @@
-import { ReactScan } from './scan';
-import './globals.css';
-import { env } from '~/env';
-import Providers from './providers';
-import type { Metadata } from 'next';
-import { Outfit, Inconsolata } from 'next/font/google';
+import { ReactScan } from "./scan";
+import "./globals.css";
+import { env } from "~/env";
+import Providers from "./providers";
+import type { Metadata } from "next";
+import { Outfit, Inconsolata } from "next/font/google";
 
 const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
+  variable: "--font-outfit",
+  subsets: ["latin"],
 });
 
 const inconsolata = Inconsolata({
-  variable: '--font-inconsolata',
-  subsets: ['latin'],
+  variable: "--font-inconsolata",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: 'FuseIon',
-  description: 'AI chat for nerds by nerds',
+  title: "FuseIon",
+  description: "AI chat for nerds by nerds",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {env.NODE_ENV === 'development' && <ReactScan />}
+      {env.NODE_ENV === "development" && <ReactScan />}
       <body
         className={`${outfit.variable} ${inconsolata.variable} antialiased`}
       >

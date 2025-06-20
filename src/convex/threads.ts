@@ -1,5 +1,5 @@
-import { v } from 'convex/values';
-import { mutation, query, internalMutation } from './_generated/server';
+import { v } from "convex/values";
+import { mutation, query, internalMutation } from "./_generated/server";
 
 export const createThread = mutation({
   args: {
@@ -12,7 +12,7 @@ export const createThread = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    const threadId = await ctx.db.insert('threads', {
+    const threadId = await ctx.db.insert("threads", {
       ...args,
       createdAt: now,
       updatedAt: now,
@@ -27,9 +27,9 @@ export const listThreads = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query('threads')
-      .withIndex('by_user', (q) => q.eq('userId', args.userId))
-      .order('desc')
+      .query("threads")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
       .collect();
   },
 });
@@ -44,8 +44,8 @@ export const internalUpdateThreadWithExternalId = internalMutation({
   },
   handler: async (ctx, args) => {
     const thread = await ctx.db
-      .query('threads')
-      .withIndex('by_external_id', (q) => q.eq('id', args.id))
+      .query("threads")
+      .withIndex("by_external_id", (q) => q.eq("id", args.id))
       .unique();
     if (!thread) {
       return null;
@@ -70,8 +70,8 @@ export const updateThreadWithExternalId = mutation({
   },
   handler: async (ctx, args) => {
     const thread = await ctx.db
-      .query('threads')
-      .withIndex('by_external_id', (q) => q.eq('id', args.id))
+      .query("threads")
+      .withIndex("by_external_id", (q) => q.eq("id", args.id))
       .unique();
     if (!thread) {
       return null;

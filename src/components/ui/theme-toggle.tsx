@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 // import {
 //   DropdownMenu,
@@ -6,11 +6,11 @@
 //   DropdownMenuItem,
 //   DropdownMenuTrigger,
 // } from '~/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { toast } from "sonner";
 // import { useTheme } from 'next-themes';
-import { SunMoon } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { Button } from '~/components/ui/button';
+import { SunMoon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Button } from "~/components/ui/button";
 // import { Moon, Sun, Monitor, SunMoon } from 'lucide-react';
 
 export function ThemeToggle() {
@@ -31,7 +31,7 @@ export function ThemeToggle() {
       size="icon"
       className="size-8"
       onClick={() => {
-        toast.error('Stick to Dark Mode!');
+        toast.error("Stick to Dark Mode!");
       }}
     >
       <SunMoon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" />

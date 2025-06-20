@@ -1,5 +1,5 @@
-import { v } from 'convex/values';
-import { mutation } from './_generated/server';
+import { v } from "convex/values";
+import { mutation } from "./_generated/server";
 
 export const createUser = mutation({
   args: {
@@ -7,7 +7,7 @@ export const createUser = mutation({
     name: v.string(),
     email: v.string(),
     picture: v.optional(v.string()),
-    tier: v.union(v.literal('free'), v.literal('pro')),
+    tier: v.union(v.literal("free"), v.literal("pro")),
     preferences: v.optional(
       v.object({
         name: v.optional(v.string()),
@@ -19,8 +19,8 @@ export const createUser = mutation({
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
-      .query('users')
-      .withIndex('by_external_id', (q) => q.eq('userId', args.userId))
+      .query("users")
+      .withIndex("by_external_id", (q) => q.eq("userId", args.userId))
       .unique();
 
     if (existing) {
@@ -28,7 +28,7 @@ export const createUser = mutation({
     }
 
     const now = Date.now();
-    const user = await ctx.db.insert('users', {
+    const user = await ctx.db.insert("users", {
       ...args,
       createdAt: now,
       updatedAt: now,
@@ -44,7 +44,7 @@ export const upSertUser = mutation({
     name: v.string(),
     email: v.string(),
     picture: v.optional(v.string()),
-    tier: v.union(v.literal('free'), v.literal('pro')),
+    tier: v.union(v.literal("free"), v.literal("pro")),
     preferences: v.optional(
       v.object({
         name: v.optional(v.string()),
@@ -56,8 +56,8 @@ export const upSertUser = mutation({
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
-      .query('users')
-      .withIndex('by_external_id', (q) => q.eq('userId', args.userId))
+      .query("users")
+      .withIndex("by_external_id", (q) => q.eq("userId", args.userId))
       .unique();
 
     if (existing) {
@@ -69,7 +69,7 @@ export const upSertUser = mutation({
     }
 
     const now = Date.now();
-    const user = await ctx.db.insert('users', {
+    const user = await ctx.db.insert("users", {
       ...args,
       createdAt: now,
       updatedAt: now,

@@ -1,8 +1,8 @@
-import { env } from '~/env';
-import { headers } from 'next/headers';
-import { generateUUID } from '~/lib/utils';
-import { NextRequest, NextResponse } from 'next/server';
-import { postRequestBodySchema, PostRequestBody } from './schema';
+import { env } from "~/env";
+import { headers } from "next/headers";
+import { generateUUID } from "~/lib/utils";
+import { NextRequest, NextResponse } from "next/server";
+import { postRequestBodySchema, PostRequestBody } from "./schema";
 
 export const maxDuration = 60;
 
@@ -14,26 +14,26 @@ export async function POST(req: NextRequest) {
     requestBody = postRequestBodySchema.parse(json);
   } catch (err) {
     return NextResponse.json(
-      { error: 'bad_request:api' },
-      { status: 400, headers: { 'Content-Type': 'application/json' } },
+      { error: "bad_request:api" },
+      { status: 400, headers: { "Content-Type": "application/json" } },
     );
   }
 
   try {
     const headersList = await headers();
     const apiHeaders = {
-      'Content-Type': 'application/json',
-      'openai-api-key': headersList.get('openai-api-key') || '',
-      'openrouter-api-key': headersList.get('openrouter-api-key') || '',
-      'google-generative-ai-api-key':
-        headersList.get('google-generative-ai-api-key') || '',
+      "Content-Type": "application/json",
+      "openai-api-key": headersList.get("openai-api-key") || "",
+      "openrouter-api-key": headersList.get("openrouter-api-key") || "",
+      "google-generative-ai-api-key":
+        headersList.get("google-generative-ai-api-key") || "",
     };
 
     const streamId = generateUUID();
 
     const convexUrl = `${env.CONVEX_SITE_URL}/api/chat/stream`;
     const convexRes = await fetch(convexUrl, {
-      method: 'POST',
+      method: "POST",
       headers: apiHeaders,
       body: JSON.stringify({
         streamId,
@@ -45,16 +45,16 @@ export async function POST(req: NextRequest) {
     return new Response(convexRes.body, {
       status: convexRes.status,
       headers: {
-        'Content-Type': convexRes.headers.get('Content-Type') || 'text/plain',
+        "Content-Type": convexRes.headers.get("Content-Type") || "text/plain",
       },
     });
   } catch (error) {
-    console.error('[Chat Route Error]:', error);
+    console.error("[Chat Route Error]:", error);
     return new NextResponse(
-      JSON.stringify({ error: 'Internal Server Error' }),
+      JSON.stringify({ error: "Internal Server Error" }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       },
     );
   }

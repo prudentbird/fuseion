@@ -1,10 +1,10 @@
-import Link from 'next/link';
-import { cache } from 'react';
-import { auth } from '../auth';
-import { loginAction } from '../actions';
-import { ArrowLeft } from 'lucide-react';
-import { redirect } from 'next/navigation';
-import { Button } from '~/components/ui/button';
+import Link from "next/link";
+import { cache } from "react";
+import { auth } from "../auth";
+import { loginAction } from "../actions";
+import { ArrowLeft } from "lucide-react";
+import { redirect } from "next/navigation";
+import { Button } from "~/components/ui/button";
 
 const getSession = cache(() => auth());
 
@@ -12,7 +12,7 @@ export default async function LoginPage() {
   const session = await getSession();
 
   if (session?.user) {
-    redirect('/chat');
+    redirect("/chat");
   }
 
   return (
@@ -69,15 +69,15 @@ export default async function LoginPage() {
           </div>
 
           <div className="text-center text-sm text-gray-400">
-            By continuing you agree to our{' '}
+            By continuing you agree to our{" "}
             <Button
               variant="link"
               asChild
               className="p-0 h-auto text-sm text-gray-300 hover:text-white underline"
             >
               <Link href="/terms">Terms of Service</Link>
-            </Button>{' '}
-            and{' '}
+            </Button>{" "}
+            and{" "}
             <Button
               variant="link"
               asChild

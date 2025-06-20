@@ -1,11 +1,11 @@
-import { z } from 'zod/v4';
+import { z } from "zod/v4";
 
 const stepStartPartSchema = z.object({
-  type: z.literal('step-start'),
+  type: z.literal("step-start"),
 });
 
 const textPartSchema = z.object({
-  type: z.enum(['text', 'reasoning']),
+  type: z.enum(["text", "reasoning"]),
   text: z.string(),
 });
 
@@ -17,11 +17,11 @@ const modelMetadataSchema = z.object({
   provider: z.string(),
   developer: z.string(),
   type: z.string().optional(),
-  apiKeySupport: z.enum(['optional', 'required', 'none']).optional(),
+  apiKeySupport: z.enum(["optional", "required", "none"]).optional(),
   disabled: z.boolean(),
   experimental: z.boolean(),
   features: z.array(z.string()),
-  streamChunking: z.enum(['word', 'line']).optional(),
+  streamChunking: z.enum(["word", "line"]).optional(),
   limits: z.object({
     maxInputTokens: z.number(),
     maxOutputTokens: z.number(),
@@ -37,14 +37,14 @@ const modelSchema = z.object({
 
 const uiMessageSchema = z.object({
   id: z.string(),
-  role: z.enum(['user', 'assistant']),
+  role: z.enum(["user", "assistant"]),
   parts: z.array(partSchema),
   metadata: z
     .object({
       model: modelSchema.optional(),
       threadId: z.string().optional(),
       streamId: z.string().optional(),
-      status: z.enum(['submitted', 'streaming', 'ready', 'error']).optional(),
+      status: z.enum(["submitted", "streaming", "ready", "error"]).optional(),
     })
     .optional(),
 });

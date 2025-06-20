@@ -1,15 +1,15 @@
-'use client';
+"use client";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from '~/components/ui/tooltip';
-import { toast } from 'sonner';
-import { Button } from '~/components/ui/button';
-import { type ReactNode, useState } from 'react';
-import ShikiHighlighter, { Element } from 'react-shiki';
-import { WrapText, Download, Copy, Check, AlignLeft } from 'lucide-react';
+} from "~/components/ui/tooltip";
+import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { type ReactNode, useState } from "react";
+import ShikiHighlighter, { Element } from "react-shiki";
+import { WrapText, Download, Copy, Check, AlignLeft } from "lucide-react";
 
 export function CodeBlock({
   node,
@@ -27,27 +27,27 @@ export function CodeBlock({
   const [isWrapped, setIsWrapped] = useState(false);
 
   const code =
-    typeof children === 'string' ? children.trim() : String(children).trim();
+    typeof children === "string" ? children.trim() : String(children).trim();
   const match = className?.match(/language-(\w+)/);
-  const ext = match ? match[1] : 'txt';
+  const ext = match ? match[1] : "txt";
 
   const copyToClipboard = async () => {
-    const codeText = typeof children === 'string' ? children : String(children);
+    const codeText = typeof children === "string" ? children : String(children);
     try {
       await navigator.clipboard.writeText(codeText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast.success('Copied to clipboard');
+      toast.success("Copied to clipboard");
     } catch {
-      toast.error('Failed to copy');
+      toast.error("Failed to copy");
     }
   };
 
   const downloadCode = () => {
-    const codeText = typeof children === 'string' ? children : String(children);
-    const blob = new Blob([codeText], { type: 'text/plain' });
+    const codeText = typeof children === "string" ? children : String(children);
+    const blob = new Blob([codeText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `code.${ext}`;
     document.body.appendChild(a);
@@ -94,7 +94,7 @@ export function CodeBlock({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {copied ? 'Copied!' : 'Copy to clipboard'}
+                  {copied ? "Copied!" : "Copy to clipboard"}
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
@@ -114,7 +114,7 @@ export function CodeBlock({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {isWrapped ? 'Disable text wrapping' : 'Enable text wrapping'}
+                  {isWrapped ? "Disable text wrapping" : "Enable text wrapping"}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -129,7 +129,7 @@ export function CodeBlock({
             theme="dark-plus"
             showLanguage={false}
             showLineNumbers={false}
-            className={`${isWrapped ? 'shiki-wrap' : ''}`}
+            className={`${isWrapped ? "shiki-wrap" : ""}`}
           >
             {code}
           </ShikiHighlighter>
@@ -139,7 +139,7 @@ export function CodeBlock({
   } else {
     return (
       <code
-        className={`mx-0.5 text-sm py-0.5 px-[6px] rounded-md bg-muted text-muted-foreground ${className || ''}`}
+        className={`mx-0.5 text-sm py-0.5 px-[6px] rounded-md bg-muted text-muted-foreground ${className || ""}`}
         {...props}
       >
         {children}

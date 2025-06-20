@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '../ui/button';
-import { useActionState } from 'react';
-import { logoutAction } from '~/app/(auth)/actions';
-import { ArrowLeft, Loader2, UserLock } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { useActionState } from "react";
+import { logoutAction } from "~/app/(auth)/actions";
+import { ArrowLeft, Loader2, UserLock } from "lucide-react";
 
 export const SettingsHeader = () => {
   const [_, action, isPending] = useActionState(logoutAction, null);

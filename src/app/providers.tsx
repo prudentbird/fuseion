@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { env } from '~/env';
-import { ReactNode } from 'react';
-import { ThemeProvider } from './theme';
-import { Toaster } from '~/components/ui/sonner';
-import { SessionProvider } from 'next-auth/react';
-import { SidebarProvider } from '~/components/ui/sidebar';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { env } from "~/env";
+import { ReactNode } from "react";
+import { ThemeProvider } from "./theme";
+import { Toaster } from "~/components/ui/sonner";
+import { SessionProvider } from "next-auth/react";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 const Providers = ({ children }: { children: ReactNode }) => {

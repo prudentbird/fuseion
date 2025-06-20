@@ -3,15 +3,15 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from '~/components/ui/tooltip';
-import { memo } from 'react';
-import { toast } from 'sonner';
-import type { UIMessage } from 'ai';
+} from "~/components/ui/tooltip";
+import { memo } from "react";
+import { toast } from "sonner";
+import type { UIMessage } from "ai";
 // import { useAppChat } from '../context';
-import { Copy, RefreshCcw } from 'lucide-react';
-import { Button } from '~/components/ui/button';
-import { useCopyToClipboard } from 'usehooks-ts';
-import type { MessageMetadata } from '~/types/message';
+import { Copy, RefreshCcw } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { useCopyToClipboard } from "usehooks-ts";
+import type { MessageMetadata } from "~/types/message";
 
 export function PureMessageActions({
   message,
@@ -24,7 +24,7 @@ export function PureMessageActions({
   // const { regenerate } = useAppChat();
   const [_, copyToClipboard] = useCopyToClipboard();
 
-  if (message.role === 'user')
+  if (message.role === "user")
     return (
       <TooltipProvider delayDuration={0}>
         <div className="flex flex-row gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-150 justify-end">
@@ -36,9 +36,9 @@ export function PureMessageActions({
                 size="icon"
                 onClick={async () => {
                   const textFromParts = message.parts
-                    ?.filter((part) => part.type === 'text')
+                    ?.filter((part) => part.type === "text")
                     .map((part) => part.text)
-                    .join('\n')
+                    .join("\n")
                     .trim();
 
                   if (!textFromParts) {
@@ -47,7 +47,7 @@ export function PureMessageActions({
                   }
 
                   await copyToClipboard(textFromParts);
-                  toast.success('Copied to clipboard!');
+                  toast.success("Copied to clipboard!");
                 }}
               >
                 <Copy />
@@ -73,9 +73,9 @@ export function PureMessageActions({
                 size="icon"
                 onClick={async () => {
                   const textFromParts = message.parts
-                    ?.filter((part) => part.type === 'text')
+                    ?.filter((part) => part.type === "text")
                     .map((part) => part.text)
-                    .join('\n')
+                    .join("\n")
                     .trim();
 
                   if (!textFromParts) {
@@ -84,7 +84,7 @@ export function PureMessageActions({
                   }
 
                   await copyToClipboard(textFromParts);
-                  toast.success('Copied to clipboard!');
+                  toast.success("Copied to clipboard!");
                 }}
               >
                 <Copy />
@@ -111,7 +111,7 @@ export function PureMessageActions({
           </Tooltip> */}
         </div>
       </TooltipProvider>
-      {message.role === 'assistant' && message.metadata?.model && (
+      {message.role === "assistant" && message.metadata?.model && (
         <span className="text-xs text-muted-foreground">
           {message.metadata.model.name}
         </span>

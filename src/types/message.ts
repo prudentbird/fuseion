@@ -1,6 +1,6 @@
-import { Model } from '~/data/models';
+import { Model } from "~/data/models";
 
-export type Role = 'user' | 'system' | 'assistant';
+export type Role = "user" | "system" | "assistant";
 
 export interface MessageInterface {
   id: string;
@@ -12,7 +12,7 @@ export interface MessageInterface {
   updatedAt: number;
   threadId: string;
 }
-export type MessageStatus = 'submitted' | 'streaming' | 'ready' | 'error';
+export type MessageStatus = "submitted" | "streaming" | "ready" | "error";
 
 export interface MessageMetadata {
   model?: Model;

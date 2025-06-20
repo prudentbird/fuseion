@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { Button } from '~/components/ui/button';
-import { useIsMobile } from '~/hooks/use-mobile';
-import { PanelLeft, Command, Plus } from 'lucide-react';
-import { SidebarTrigger } from '~/components/ui/sidebar';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Button } from "~/components/ui/button";
+import { useIsMobile } from "~/hooks/use-mobile";
+import { PanelLeft, Command, Plus } from "lucide-react";
+import { SidebarTrigger } from "~/components/ui/sidebar";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '~/components/ui/tooltip';
+} from "~/components/ui/tooltip";
 
 const Nav = () => {
   const isMobile = useIsMobile();
@@ -34,7 +34,7 @@ const Nav = () => {
 
   return (
     <div
-      className={`pointer-events-auto fixed left-2 z-50 flex flex-row gap-0.5 p-1 top-3 rounded-md transition-all duration-75 ${showButtons ? 'bg-card' : ''}`}
+      className={`pointer-events-auto fixed left-2 z-50 flex flex-row gap-0.5 p-1 top-3 rounded-md transition-all duration-75 ${showButtons ? "bg-card" : ""}`}
     >
       <div className="duration-250 pointer-events-none absolute inset-0 right-auto -z-10 w-10 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0 max-sm:delay-125 max-sm:duration-125 max-sm:w-[6.75rem] max-sm:bg-sidebar/50 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:w-[6.75rem] md:peer-data-[variant=inset]:peer-data-[state=collapsed]:bg-sidebar/50"></div>
       {showButtons ? (
@@ -87,8 +87,8 @@ const Nav = () => {
         asChild
         className={`size-8 text-muted-foreground transition-[transform,opacity] duration-150 ${
           showButtons
-            ? 'translate-x-0 opacity-100 delay-150'
-            : 'pointer-events-none -translate-x-[2.125rem] opacity-0 delay-0 duration-150 sm:pointer-events-none sm:-translate-x-[2.125rem] sm:opacity-0 sm:delay-0 sm:duration-150 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:pointer-events-auto md:peer-data-[variant=inset]:peer-data-[state=collapsed]:translate-x-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:opacity-100'
+            ? "translate-x-0 opacity-100 delay-150"
+            : "pointer-events-none -translate-x-[2.125rem] opacity-0 delay-0 duration-150 sm:pointer-events-none sm:-translate-x-[2.125rem] sm:opacity-0 sm:delay-0 sm:duration-150 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:pointer-events-auto md:peer-data-[variant=inset]:peer-data-[state=collapsed]:translate-x-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:opacity-100"
         }`}
         aria-label="New Thread"
       >

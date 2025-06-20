@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { ChatProvider } from '~/components/chat/context';
+import { ReactNode } from "react";
+import { ChatProvider } from "~/components/chat/context";
 
 export default async function ChatIdLayout({
   children,

@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import remarkGfm from 'remark-gfm';
-import { CodeBlock } from './code';
-import React, { memo } from 'react';
-import { rehypeInlineCodeProperty } from 'react-shiki';
-import ReactMarkdown, { type Components } from 'react-markdown';
+import Link from "next/link";
+import remarkGfm from "remark-gfm";
+import { CodeBlock } from "./code";
+import React, { memo } from "react";
+import { rehypeInlineCodeProperty } from "react-shiki";
+import ReactMarkdown, { type Components } from "react-markdown";
 
 const components: Partial<Components> = {
   code: CodeBlock,

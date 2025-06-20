@@ -1,23 +1,23 @@
-import { v } from 'convex/values';
+import { v } from "convex/values";
 import {
   mutation,
   query,
   httpAction,
   internalMutation,
   internalAction,
-} from './_generated/server';
-import { z } from 'zod/v4';
-import type { ProviderOptions } from 'ai';
-import { internal } from './_generated/api';
-import { createOpenAI } from '@ai-sdk/openai';
-import { createGoogleGenerativeAI, google } from '@ai-sdk/google';
-import { PostRequestBody } from '~/app/(chat)/api/chat/schema';
+} from "./_generated/server";
+import { z } from "zod/v4";
+import type { ProviderOptions } from "ai";
+import { internal } from "./_generated/api";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI, google } from "@ai-sdk/google";
+import { PostRequestBody } from "~/app/(chat)/api/chat/schema";
 import {
   streamText,
   smoothStream,
   convertToModelMessages,
   generateObject,
-} from 'ai';
+} from "ai";
 export const addMessage = mutation({
   args: {
     threadId: v.string(),
@@ -40,14 +40,14 @@ export const addMessage = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
     const thread = await ctx.db
-      .query('threads')
-      .withIndex('by_external_id', (q) => q.eq('id', args.threadId))
+      .query("threads")
+      .withIndex("by_external_id", (q) => q.eq("id", args.threadId))
       .unique();
     if (!thread) {
       if (!args.threadInfo) {
-        throw new Error('Missing thread info for first message');
+        throw new Error("Missing thread info for first message");
       }
-      await ctx.db.insert('threads', {
+      await ctx.db.insert("threads", {
         id: args.threadId,
         userId: args.userId,
         title: args.threadInfo.title,
@@ -63,7 +63,7 @@ export const addMessage = mutation({
         prompt: args.message.parts,
       });
     }
-    return await ctx.db.insert('messages', {
+    return await ctx.db.insert("messages", {
       id: args.message.id,
       role: args.message.role,
       threadId: args.threadId,
@@ -81,9 +81,9 @@ export const listMessages = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query('messages')
-      .withIndex('by_thread', (q) => q.eq('threadId', args.threadId))
-      .order('asc')
+      .query("messages")
+      .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
+      .order("asc")
       .collect();
   },
 });
@@ -100,7 +100,7 @@ export const addAssistantMessage = internalMutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    return await ctx.db.insert('messages', {
+    return await ctx.db.insert("messages", {
       role: args.message.role,
       threadId: args.threadId,
       parts: args.message.parts,
@@ -113,7 +113,7 @@ export const addAssistantMessage = internalMutation({
 
 export const updateMessage = internalMutation({
   args: {
-    messageId: v.id('messages'),
+    messageId: v.id("messages"),
     message: v.object({
       id: v.optional(v.string()),
       parts: v.optional(v.string()),
@@ -138,7 +138,7 @@ export const streamChat = httpAction(async (ctx, request) => {
   if (body.messages[0].metadata?.threadId) {
     await ctx.runMutation(internal.threads.internalUpdateThreadWithExternalId, {
       id: body.messages[0].metadata.threadId,
-      status: 'streaming',
+      status: "streaming",
     });
   }
 
@@ -147,30 +147,30 @@ export const streamChat = httpAction(async (ctx, request) => {
   const model = lastMessage?.metadata?.model;
   if (!model) {
     return new Response(
-      JSON.stringify({ error: 'Missing model in message metadata' }),
+      JSON.stringify({ error: "Missing model in message metadata" }),
       {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       },
     );
   }
 
   const modelId = model.id;
   const provider = model.metadata.provider.toLowerCase();
-  let aiModel: Parameters<typeof streamText>[0]['model'];
+  let aiModel: Parameters<typeof streamText>[0]["model"];
   let apiKey: string | undefined;
   let providerOptions: ProviderOptions | undefined;
   const headers = request.headers;
 
   switch (provider) {
-    case 'openai': {
-      apiKey = headers.get('openai-api-key') || process.env.OPENAI_API_KEY;
+    case "openai": {
+      apiKey = headers.get("openai-api-key") || process.env.OPENAI_API_KEY;
       if (!apiKey) {
         return new Response(
-          JSON.stringify({ error: 'Missing OpenAI API key' }),
+          JSON.stringify({ error: "Missing OpenAI API key" }),
           {
             status: 400,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           },
         );
       }
@@ -178,35 +178,35 @@ export const streamChat = httpAction(async (ctx, request) => {
       aiModel = openai(modelId);
       break;
     }
-    case 'openrouter': {
+    case "openrouter": {
       apiKey =
-        headers.get('openrouter-api-key') || process.env.OPENROUTER_API_KEY;
+        headers.get("openrouter-api-key") || process.env.OPENROUTER_API_KEY;
       if (!apiKey) {
         return new Response(
-          JSON.stringify({ error: 'Missing OpenRouter API key' }),
+          JSON.stringify({ error: "Missing OpenRouter API key" }),
           {
             status: 400,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           },
         );
       }
       const openrouter = createOpenAI({
         apiKey,
-        baseURL: 'https://openrouter.ai/api/v1',
+        baseURL: "https://openrouter.ai/api/v1",
       });
       aiModel = openrouter(modelId);
       break;
     }
-    case 'google': {
+    case "google": {
       apiKey =
-        headers.get('google-generative-ai-api-key') ||
+        headers.get("google-generative-ai-api-key") ||
         process.env.GOOGLE_GENERATIVE_AI_API_KEY;
       if (!apiKey) {
         return new Response(
-          JSON.stringify({ error: 'Missing Google Generative AI API key' }),
+          JSON.stringify({ error: "Missing Google Generative AI API key" }),
           {
             status: 400,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           },
         );
       }
@@ -223,10 +223,10 @@ export const streamChat = httpAction(async (ctx, request) => {
     }
     default:
       return new Response(
-        JSON.stringify({ error: 'Unsupported model provider' }),
+        JSON.stringify({ error: "Unsupported model provider" }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         },
       );
   }
@@ -241,14 +241,14 @@ export const streamChat = httpAction(async (ctx, request) => {
   const messageId = await ctx.runMutation(
     internal.messages.addAssistantMessage,
     {
-      threadId: lastMessage.metadata?.threadId ?? '',
+      threadId: lastMessage.metadata?.threadId ?? "",
       message: {
         streamId,
-        role: 'assistant',
+        role: "assistant",
         metadata: JSON.stringify({
           model,
           streamId,
-          status: 'streaming',
+          status: "streaming",
         }),
       },
     },
@@ -262,21 +262,21 @@ export const streamChat = httpAction(async (ctx, request) => {
     ...(providerOptions ? { providerOptions } : {}),
     onChunk: async (chunk) => {
       const now = Date.now();
-      function upsertPart(type: 'text' | 'reasoning', newText: string) {
+      function upsertPart(type: "text" | "reasoning", newText: string) {
         const idx = partsArray.findIndex(
           (item) =>
-            typeof item === 'object' &&
+            typeof item === "object" &&
             item !== null &&
-            'type' in item &&
+            "type" in item &&
             (item as { type: unknown }).type === type,
         );
         if (idx !== -1) {
           const existing = partsArray[idx];
           if (
-            typeof existing === 'object' &&
+            typeof existing === "object" &&
             existing !== null &&
-            'text' in existing &&
-            typeof (existing as { text: unknown }).text === 'string'
+            "text" in existing &&
+            typeof (existing as { text: unknown }).text === "string"
           ) {
             const updated = {
               type,
@@ -289,11 +289,11 @@ export const streamChat = httpAction(async (ctx, request) => {
         }
       }
       switch (chunk.chunk.type) {
-        case 'text':
-          upsertPart('text', chunk.chunk.text);
+        case "text":
+          upsertPart("text", chunk.chunk.text);
           break;
-        case 'reasoning':
-          upsertPart('reasoning', chunk.chunk.text);
+        case "reasoning":
+          upsertPart("reasoning", chunk.chunk.text);
           break;
         default:
           break;
@@ -305,7 +305,7 @@ export const streamChat = httpAction(async (ctx, request) => {
           metadata: JSON.stringify({
             model,
             streamId,
-            status: 'streaming',
+            status: "streaming",
           }),
         },
       });
@@ -318,7 +318,7 @@ export const streamChat = httpAction(async (ctx, request) => {
           metadata: JSON.stringify({
             model,
             streamId,
-            status: 'error',
+            status: "error",
           }),
         },
       });
@@ -333,7 +333,7 @@ export const streamChat = httpAction(async (ctx, request) => {
           metadata: JSON.stringify({
             model,
             streamId,
-            status: 'ready',
+            status: "ready",
           }),
         },
       });
@@ -344,7 +344,7 @@ export const streamChat = httpAction(async (ctx, request) => {
     const response = streamResult.toUIMessageStreamResponse({
       sendReasoning: true,
       onError: (error) => {
-        return 'Unable to complete request. Please try again.';
+        return "Unable to complete request. Please try again.";
       },
       onFinish: async () => {
         const now = Date.now();
@@ -354,22 +354,22 @@ export const streamChat = httpAction(async (ctx, request) => {
             metadata: JSON.stringify({
               model,
               streamId,
-              status: 'ready',
+              status: "ready",
             }),
           },
         });
       },
     });
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Vary', 'Origin');
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Vary", "Origin");
     return response;
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to create stream' }), {
+    return new Response(JSON.stringify({ error: "Failed to create stream" }), {
       status: 500,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        Vary: 'Origin',
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        Vary: "Origin",
       },
     });
   }
@@ -384,7 +384,7 @@ export const generateTitle = internalAction({
     const {
       object: { title },
     } = await generateObject({
-      model: google('gemini-2.0-flash-lite'),
+      model: google("gemini-2.0-flash-lite"),
       schema: z.object({
         title: z.string(),
       }),
@@ -408,7 +408,7 @@ export const generateTitle = internalAction({
 
     await ctx.runMutation(internal.threads.internalUpdateThreadWithExternalId, {
       id: args.threadId,
-      title: title ?? 'New Chat',
+      title: title ?? "New Chat",
     });
 
     return title;

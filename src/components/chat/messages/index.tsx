@@ -1,19 +1,19 @@
-import equal from 'fast-deep-equal';
-import { Greeting } from './greeting';
-import { motion } from 'framer-motion';
-import { memo, useEffect } from 'react';
-import type { UIMessage } from '@ai-sdk/react';
-import { useMessages } from '~/hooks/use-messages';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import type { MessageMetadata } from '~/types/message';
-import { PreviewMessage, ThinkingMessage } from './message';
+import equal from "fast-deep-equal";
+import { Greeting } from "./greeting";
+import { motion } from "framer-motion";
+import { memo, useEffect } from "react";
+import type { UIMessage } from "@ai-sdk/react";
+import { useMessages } from "~/hooks/use-messages";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { MessageMetadata } from "~/types/message";
+import { PreviewMessage, ThinkingMessage } from "./message";
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers<UIMessage<MessageMetadata>>['status'];
+  status: UseChatHelpers<UIMessage<MessageMetadata>>["status"];
   messages: Array<UIMessage<MessageMetadata>>;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>['setMessages'];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>['regenerate'];
+  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
+  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
 }
 
 function PureMessages({
@@ -38,7 +38,7 @@ function PureMessages({
 
   useEffect(() => {
     if ((isAtBottom || hasSentMessage) && messages.length > 0) {
-      scrollToBottom('instant');
+      scrollToBottom("instant");
     }
   }, [messages, isAtBottom, hasSentMessage, scrollToBottom]);
 
@@ -54,7 +54,7 @@ function PureMessages({
           key={`${message.id}-${index}`}
           chatId={chatId}
           message={message}
-          isLoading={status === 'streaming' && messages.length - 1 === index}
+          isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}
           regenerate={regenerate}
           requiresScrollPadding={
@@ -63,9 +63,9 @@ function PureMessages({
         />
       ))}
 
-      {status === 'submitted' &&
+      {status === "submitted" &&
         messages.length > 0 &&
-        messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+        messages[messages.length - 1].role === "user" && <ThinkingMessage />}
 
       <motion.div
         ref={messagesEndRef}

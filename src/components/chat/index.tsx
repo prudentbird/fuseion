@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import ChatInput from './input';
-import { Messages } from './messages';
-import { useAppChat } from './context';
-import { UIMessage } from '@ai-sdk/react';
-import { api } from '~/convex/_generated/api';
-import { MessageMetadata } from '~/types/message';
-import { Preloaded, usePreloadedQuery } from 'convex/react';
+import ChatInput from "./input";
+import { Messages } from "./messages";
+import { useAppChat } from "./context";
+import { UIMessage } from "@ai-sdk/react";
+import { api } from "~/convex/_generated/api";
+import { MessageMetadata } from "~/types/message";
+import { Preloaded, usePreloadedQuery } from "convex/react";
 
 const Chat = ({
   id,
@@ -19,8 +19,8 @@ const Chat = ({
   if (preloadedInitialMessages) {
     initialMessages = usePreloadedQuery(preloadedInitialMessages).map(
       (message) => ({
-        id: message.id ?? '',
-        role: message.role as 'system' | 'user' | 'assistant',
+        id: message.id ?? "",
+        role: message.role as "system" | "user" | "assistant",
         parts: message.parts ? JSON.parse(message.parts) : [],
         metadata: message.metadata ? JSON.parse(message.metadata) : undefined,
       }),
@@ -42,11 +42,11 @@ const Chat = ({
     <div>
       <div
         className="absolute inset-0 overflow-y-scroll w-full pb-32"
-        style={{ scrollbarGutter: 'stable both-edges' }}
+        style={{ scrollbarGutter: "stable both-edges" }}
       >
         <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10">
           <Messages
-            chatId={id ?? ''}
+            chatId={id ?? ""}
             status={status}
             messages={messages}
             setMessages={setMessages}

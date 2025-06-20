@@ -1,11 +1,11 @@
-import { z } from 'zod/v4';
-import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from "zod/v4";
+import { createEnv } from "@t3-oss/env-nextjs";
 
 export const env = createEnv({
   server: {
     NODE_ENV: z
-      .enum(['local', 'test', 'development', 'staging', 'production'])
-      .default('development'),
+      .enum(["local", "test", "development", "staging", "production"])
+      .default("development"),
     AUTH_SECRET: z.string(),
     OPENAI_API_KEY: z.string(),
     CONVEX_SITE_URL: z.string(),

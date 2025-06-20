@@ -1,15 +1,15 @@
-import { env } from '~/env';
-import { authConfig } from './auth.config';
-import { UserInterface } from '~/types/user';
-import { api } from '~/convex/_generated/api';
-import { fetchMutation } from 'convex/nextjs';
-import type { DefaultJWT } from 'next-auth/jwt';
-import Google, { GoogleProfile } from 'next-auth/providers/google';
-import NextAuth, { type DefaultSession } from 'next-auth';
+import { env } from "~/env";
+import { authConfig } from "./auth.config";
+import { UserInterface } from "~/types/user";
+import { api } from "~/convex/_generated/api";
+import { fetchMutation } from "convex/nextjs";
+import type { DefaultJWT } from "next-auth/jwt";
+import Google, { GoogleProfile } from "next-auth/providers/google";
+import NextAuth, { type DefaultSession } from "next-auth";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: UserInterface & DefaultSession['user'];
+    user: UserInterface & DefaultSession["user"];
   }
 
   interface User extends UserInterface {}
@@ -18,7 +18,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     user: UserInterface;
   }
@@ -35,11 +35,11 @@ export const {
     Google({
       profile(profile: GoogleProfile) {
         return {
-          tier: 'free',
+          tier: "free",
           name: profile.name,
           email: profile.email,
           picture: profile.picture,
-          userId: 'google:' + profile.sub,
+          userId: "google:" + profile.sub,
           preferences: { name: profile.name },
         } as UserInterface;
       },
@@ -47,7 +47,7 @@ export const {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === 'google') {
+      if (account?.provider === "google") {
         const dbUser = await fetchMutation(api.users.upSertUser, {
           tier: user.tier,
           name: user.name,
@@ -87,5 +87,5 @@ export const {
     },
   },
   trustHost: true,
-  debug: ['local', 'development'].includes(env.NODE_ENV),
+  debug: ["local", "development"].includes(env.NODE_ENV),
 });

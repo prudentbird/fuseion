@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Sidebar,
@@ -11,17 +11,17 @@ import {
   SidebarMenuButton,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from '~/components/ui/sidebar';
-import Link from 'next/link';
-import { Input } from './input';
-import { useState } from 'react';
-import { Button } from './button';
-import type { Session } from 'next-auth';
-import { api } from '~/convex/_generated/api';
-import { ThreadInterface } from '~/types/thread';
-import { Rocket, Settings2, Search, X } from 'lucide-react';
-import { Preloaded, usePreloadedQuery } from 'convex/react';
-import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+} from "~/components/ui/sidebar";
+import Link from "next/link";
+import { Input } from "./input";
+import { useState } from "react";
+import { Button } from "./button";
+import type { Session } from "next-auth";
+import { api } from "~/convex/_generated/api";
+import { ThreadInterface } from "~/types/thread";
+import { Rocket, Settings2, Search, X } from "lucide-react";
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 export function ChatSidebar({
   session,
@@ -34,7 +34,7 @@ export function ChatSidebar({
     ? (usePreloadedQuery(preloadedThreads) as ThreadInterface[])
     : [];
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const filteredThreads = search
     ? threads.filter((thread) =>
@@ -110,7 +110,7 @@ export function ChatSidebar({
                             className="hover:truncate-none h-full w-full rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none pointer-events-none cursor-pointer overflow-hidden truncate"
                             title={thread.title}
                             type="text"
-                            value={thread.title || 'Untitled'}
+                            value={thread.title || "Untitled"}
                           />
                         </div>
                       </button>
@@ -159,7 +159,7 @@ export function ChatSidebar({
                   type="button"
                   size="icon"
                   className="ml-2 rounded-md !p-1 h-auto w-auto text-muted-foreground hover:bg-muted/40"
-                  onClick={() => setSearch('')}
+                  onClick={() => setSearch("")}
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
@@ -173,19 +173,19 @@ export function ChatSidebar({
       <SidebarContent
         className="flex-1 relative overflow-auto min-h-0 flex-col gap-2 mt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         style={{
-          ['--shadow-height' as unknown as string]: '16px',
-          ['--scrollbar-width' as unknown as string]: '0px',
+          ["--shadow-height" as unknown as string]: "16px",
+          ["--scrollbar-width" as unknown as string]: "0px",
           maskImage:
-            'linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))',
+            "linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))",
           WebkitMaskImage:
-            'linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))',
+            "linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))",
         }}
       >
-        {renderGroup('Today', grouped.today)}
-        {renderGroup('Yesterday', grouped.yesterday)}
-        {renderGroup('Last 7 Days', grouped.last7)}
-        {renderGroup('Last 30 Days', grouped.last30)}
-        {renderGroup('Older', grouped.older)}
+        {renderGroup("Today", grouped.today)}
+        {renderGroup("Yesterday", grouped.yesterday)}
+        {renderGroup("Last 7 Days", grouped.last7)}
+        {renderGroup("Last 30 Days", grouped.last30)}
+        {renderGroup("Older", grouped.older)}
       </SidebarContent>
       {session?.user ? (
         <SidebarFooter className="mb-2">

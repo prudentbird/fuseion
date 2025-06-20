@@ -3,7 +3,7 @@ export interface UserInterface {
   email: string;
   name: string;
   picture: string;
-  tier: 'free' | 'pro';
+  tier: "free" | "pro";
   preferences: {
     name?: string;
     occupation?: string;

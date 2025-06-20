@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import type { UIMessage } from 'ai';
-import { Button } from '~/components/ui/button';
-import { MessageMetadata } from '~/types/message';
-import { Textarea } from '~/components/ui/textarea';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import type { UIMessage } from "ai";
+import { Button } from "~/components/ui/button";
+import { MessageMetadata } from "~/types/message";
+import { Textarea } from "~/components/ui/textarea";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 export type MessageEditorProps = {
   message: UIMessage;
-  setMode: Dispatch<SetStateAction<'view' | 'edit'>>;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>['setMessages'];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>['regenerate'];
+  setMode: Dispatch<SetStateAction<"view" | "edit">>;
+  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
+  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
 };
 
 export function MessageEditor({
@@ -24,9 +24,9 @@ export function MessageEditor({
 
   const [draftContent, setDraftContent] = useState<string>(
     message.parts
-      .filter((part) => part.type === 'text')
+      .filter((part) => part.type === "text")
       .map((part) => part.text)
-      .join(''),
+      .join(""),
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -38,7 +38,7 @@ export function MessageEditor({
 
   const adjustHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
     }
   };
@@ -63,7 +63,7 @@ export function MessageEditor({
           variant="outline"
           className="h-fit py-2 px-3"
           onClick={() => {
-            setMode('view');
+            setMode("view");
           }}
         >
           Cancel
@@ -83,7 +83,7 @@ export function MessageEditor({
                 const updatedMessage = {
                   ...message,
                   content: draftContent,
-                  parts: [{ type: 'text', text: draftContent }],
+                  parts: [{ type: "text", text: draftContent }],
                 };
 
                 return [...messages.slice(0, index), updatedMessage];
@@ -92,13 +92,13 @@ export function MessageEditor({
               return messages;
             });
 
-            setMode('view');
+            setMode("view");
             regenerate({
               messageId: message.id,
             });
           }}
         >
-          {isSubmitting ? 'Sending...' : 'Send'}
+          {isSubmitting ? "Sending..." : "Send"}
         </Button>
       </div>
     </div>

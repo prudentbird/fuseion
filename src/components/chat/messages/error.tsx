@@ -1,5 +1,5 @@
-import { TriangleAlert } from 'lucide-react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
+import { TriangleAlert } from "lucide-react";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 
 export const ErrorMessage = ({ error }: { error: string }) => {
   return (
@@ -9,7 +9,7 @@ export const ErrorMessage = ({ error }: { error: string }) => {
     >
       <TriangleAlert className="h-4 w-4" />
       <AlertDescription className="!text-red-300">
-        {error ?? 'An error occured. Something went wrong.'}
+        {error ?? "An error occured. Something went wrong."}
       </AlertDescription>
     </Alert>
   );

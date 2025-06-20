@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 
 export const Greeting = () => {
   const { data: session } = useSession();
@@ -18,8 +18,8 @@ export const Greeting = () => {
       >
         How can I help you
         {session && session.user
-          ? `, ${session.user.name.split(' ')[0]}?`
-          : ' ?'}
+          ? `, ${session.user.name.split(" ")[0]}?`
+          : " ?"}
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

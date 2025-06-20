@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '~/components/ui/tooltip';
-import cx from 'classnames';
-import equal from 'fast-deep-equal';
-import { Markdown } from './markdown';
-import { Pencil } from 'lucide-react';
-import { memo, useState } from 'react';
-import { ErrorMessage } from './error';
-import { MessageEditor } from './editor';
-import { MessageActions } from './actions';
-import { cn, sanitizeText } from '~/lib/utils';
-import { MessageReasoning } from './reasoning';
-import { Button } from '~/components/ui/button';
-import type { MessageMetadata } from '~/types/message';
-import { AnimatePresence, motion } from 'framer-motion';
+} from "~/components/ui/tooltip";
+import cx from "classnames";
+import equal from "fast-deep-equal";
+import { Markdown } from "./markdown";
+import { Pencil } from "lucide-react";
+import { memo, useState } from "react";
+import { ErrorMessage } from "./error";
+import { MessageEditor } from "./editor";
+import { MessageActions } from "./actions";
+import { cn, sanitizeText } from "~/lib/utils";
+import { MessageReasoning } from "./reasoning";
+import { Button } from "~/components/ui/button";
+import type { MessageMetadata } from "~/types/message";
+import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
-import type { UseChatHelpers, UIMessage } from '@ai-sdk/react';
+import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
@@ -33,11 +33,11 @@ const PurePreviewMessage = ({
   chatId: string;
   message: UIMessage<MessageMetadata>;
   isLoading: boolean;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>['setMessages'];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>['regenerate'];
+  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
+  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
   requiresScrollPadding: boolean;
 }) => {
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [mode, setMode] = useState<"view" | "edit">("view");
 
   return (
     <AnimatePresence>
@@ -50,16 +50,16 @@ const PurePreviewMessage = ({
       >
         <div
           className={cn(
-            'flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%]',
+            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%]",
             {
-              'w-full': mode === 'edit',
-              'group-data-[role=user]/message:w-fit': mode !== 'edit',
+              "w-full": mode === "edit",
+              "group-data-[role=user]/message:w-fit": mode !== "edit",
             },
           )}
         >
           <div
-            className={cn('flex flex-col gap-2 w-full', {
-              'min-h-96': message.role === 'assistant' && requiresScrollPadding,
+            className={cn("flex flex-col gap-2 w-full", {
+              "min-h-96": message.role === "assistant" && requiresScrollPadding,
             })}
           >
             {/* {message.parts?.filter((part): part is FileUIPart => part.type === 'file').length > 0 && (
@@ -77,7 +77,7 @@ const PurePreviewMessage = ({
               const { type } = part;
               const key = `message-${message.id}-part-${index}`;
 
-              if (type === 'reasoning') {
+              if (type === "reasoning") {
                 return (
                   <MessageReasoning
                     key={key}
@@ -87,8 +87,8 @@ const PurePreviewMessage = ({
                 );
               }
 
-              if (type === 'text') {
-                if (mode === 'view') {
+              if (type === "text") {
+                if (mode === "view") {
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
                       {/* {message.role === 'user' && (
@@ -111,14 +111,14 @@ const PurePreviewMessage = ({
 
                       {part.text &&
                       part.text.length > 0 &&
-                      part.text.trim() !== '' ? (
+                      part.text.trim() !== "" ? (
                         <div
                           data-testid="message-content"
                           className={cn(
-                            'flex flex-col gap-4',
-                            message.role === 'user'
-                              ? 'bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5'
-                              : 'bg-transparent border-none shadow-none w-full',
+                            "flex flex-col gap-4",
+                            message.role === "user"
+                              ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
+                              : "bg-transparent border-none shadow-none w-full",
                           )}
                         >
                           <Markdown>{sanitizeText(part.text)}</Markdown>
@@ -130,7 +130,7 @@ const PurePreviewMessage = ({
                   );
                 }
 
-                if (mode === 'edit') {
+                if (mode === "edit") {
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
                       <div className="size-8" />
@@ -147,7 +147,7 @@ const PurePreviewMessage = ({
               }
 
               // Handle file parts - they are already rendered above, so we skip them here
-              if (type === 'file') {
+              if (type === "file") {
                 return null;
               }
 
@@ -183,7 +183,7 @@ export const PreviewMessage = memo(
 );
 
 export const ThinkingMessage = () => {
-  const role = 'assistant';
+  const role = "assistant";
 
   return (
     <motion.div
@@ -195,9 +195,9 @@ export const ThinkingMessage = () => {
     >
       <div
         className={cx(
-          'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%] group-data-[role=user]/message:py-2 rounded-xl',
+          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%] group-data-[role=user]/message:py-2 rounded-xl",
           {
-            'group-data-[role=user]/message:bg-muted': true,
+            "group-data-[role=user]/message:bg-muted": true,
           },
         )}
       >
