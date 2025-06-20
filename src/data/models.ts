@@ -45,25 +45,6 @@ export const models: Model[] = [
     },
   },
   {
-    id: "deepseek/deepseek-r1-0528:free",
-    name: "DeepSeek R1 0528",
-    metadata: {
-      provider: "OpenRouter",
-      developer: "DeepSeek",
-      shortDescription:
-        "DeepSeek's reasoning model, routed to the fastest available provider",
-      fullDescription:
-        "The open source reasoning model that shook the whole industry. Very smart. Shows all of its thinking. Not the fastest.",
-      disabled: false,
-      experimental: false,
-      features: ["parameters", "reasoning"],
-      limits: { maxInputTokens: 128000, maxOutputTokens: 16384 },
-      modelPickerDefault: false,
-      streamChunking: "line",
-      apiKeySupport: "required",
-    },
-  },
-  {
     id: "gemini-2.5-flash-preview-04-17",
     name: "Gemini 2.5 Flash",
     metadata: {
@@ -78,6 +59,24 @@ export const models: Model[] = [
       features: ["images", "pdfs", "search", "reasoningEffort"],
       experimental: false,
       apiKeySupport: "required",
+    },
+  },
+  {
+    id: "gemini-2.0-flash-lite",
+    name: "Gemini 2.0 Flash Lite",
+    metadata: {
+      provider: "Google",
+      developer: "Google",
+      shortDescription: "Faster, less precise Gemini model",
+      fullDescription:
+        "Similar to 2.0 Flash, but even faster. Not as smart, but still good at most things.",
+      disabled: false,
+      modelPickerDefault: false,
+      limits: { maxInputTokens: 1000000, maxOutputTokens: 8192 },
+      streamChunking: "word",
+      features: ["fast", "images", "pdfs"],
+      experimental: true,
+      apiKeySupport: "optional",
     },
   },
   // {
@@ -116,24 +115,6 @@ export const models: Model[] = [
   //     apiKeySupport: "required",
   //   },
   // },
-  {
-    id: "gemini-2.0-flash-lite",
-    name: "Gemini 2.0 Flash Lite",
-    metadata: {
-      provider: "Google",
-      developer: "Google",
-      shortDescription: "Faster, less precise Gemini model",
-      fullDescription:
-        "Similar to 2.0 Flash, but even faster. Not as smart, but still good at most things.",
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 1000000, maxOutputTokens: 8192 },
-      streamChunking: "word",
-      features: ["fast", "images", "pdfs"],
-      experimental: true,
-      apiKeySupport: "optional",
-    },
-  },
   // {
   //   id: 'gemini-2.5-flash-preview-04-17',
   //   name: 'Gemini 2.5 Flash',
@@ -152,6 +133,25 @@ export const models: Model[] = [
   //     apiKeySupport: 'optional',
   //   },
   // },
+  {
+    id: "deepseek/deepseek-r1-0528:free",
+    name: "DeepSeek R1 0528",
+    metadata: {
+      provider: "OpenRouter",
+      developer: "DeepSeek",
+      shortDescription:
+        "DeepSeek's reasoning model, routed to the fastest available provider",
+      fullDescription:
+        "The open source reasoning model that shook the whole industry. Very smart. Shows all of its thinking. Not the fastest.",
+      disabled: false,
+      experimental: false,
+      features: ["parameters", "reasoning"],
+      limits: { maxInputTokens: 128000, maxOutputTokens: 16384 },
+      modelPickerDefault: false,
+      streamChunking: "line",
+      apiKeySupport: "required",
+    },
+  },
   {
     id: "deepseek/deepseek-chat-v3-0324:free",
     name: "DeepSeek v3 (0324)",
