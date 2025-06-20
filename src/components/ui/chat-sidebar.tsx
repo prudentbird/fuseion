@@ -81,67 +81,47 @@ export function ChatSidebar({
   function renderGroup(label: string, threads: ThreadInterface[]) {
     if (!threads.length) return null;
     return (
-      <div
-        style={{
-          overflowAnchor: 'none',
-          flex: '0 0 auto',
-          position: 'relative',
-          visibility: 'hidden',
-          width: '100%',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            left: 0,
-            top: 0,
-            visibility: 'visible',
-          }}
-        >
-          <SidebarGroup className="px-4 py-0 mt-2">
-            <SidebarGroupLabel>
-              <span>{label}</span>
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {threads.map((thread: ThreadInterface) => (
-                  <SidebarMenuItem key={thread.id}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={`/chat/${thread.id}`}
-                        className="w-full items-center"
-                        data-discover="true"
+      <SidebarGroup className="px-4 py-0">
+        <SidebarGroupLabel>
+          <span>{label}</span>
+        </SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {threads.map((thread: ThreadInterface) => (
+              <SidebarMenuItem key={thread.id}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href={`/chat/${thread.id}`}
+                    className="w-full items-center"
+                    data-discover="true"
+                  >
+                    <div className="relative flex w-full items-center ">
+                      <button
+                        data-state="closed"
+                        className="w-full !cursor-pointer"
                       >
-                        <div className="relative flex w-full items-center ">
-                          <button
-                            data-state="closed"
-                            className="w-full !cursor-pointer"
-                          >
-                            <div className="relative w-full">
-                              <input
-                                aria-label="Thread title"
-                                aria-describedby="thread-title-hint"
-                                aria-readonly="true"
-                                readOnly
-                                tabIndex={-1}
-                                className="hover:truncate-none h-full w-full rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none pointer-events-none cursor-pointer overflow-hidden truncate"
-                                title={thread.title}
-                                type="text"
-                                value={thread.title || 'Untitled'}
-                              />
-                            </div>
-                          </button>
+                        <div className="relative w-full">
+                          <input
+                            aria-label="Thread title"
+                            aria-describedby="thread-title-hint"
+                            aria-readonly="true"
+                            readOnly
+                            tabIndex={-1}
+                            className="hover:truncate-none h-full w-full rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none pointer-events-none cursor-pointer overflow-hidden truncate"
+                            title={thread.title}
+                            type="text"
+                            value={thread.title || 'Untitled'}
+                          />
                         </div>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </div>
-      </div>
+                      </button>
+                    </div>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
     );
   }
 
@@ -191,12 +171,10 @@ export function ChatSidebar({
         </div>
       </SidebarHeader>
       <SidebarContent
-        className="flex-1 relative overflow-auto min-h-0 flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+        className="flex-1 relative overflow-auto min-h-0 flex-col gap-2 mt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         style={{
-          // Custom properties for shadow and scrollbar width
-          // (You may want to move these to a CSS file or Tailwind config for reusability)
-          ['--shadow-height' as unknown as string]: '20px',
-          ['--scrollbar-width' as unknown as string]: '8px',
+          ['--shadow-height' as unknown as string]: '16px',
+          ['--scrollbar-width' as unknown as string]: '0px',
           maskImage:
             'linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))',
           WebkitMaskImage:
