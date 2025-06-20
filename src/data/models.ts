@@ -65,7 +65,7 @@ export const models: Model[] = [
   },
   {
     id: "gemini-2.5-flash-preview-04-17",
-    name: "Gemini 2.5 Flash (Thinking)",
+    name: "Gemini 2.5 Flash",
     metadata: {
       provider: "Google",
       developer: "Google",
@@ -80,42 +80,42 @@ export const models: Model[] = [
       apiKeySupport: "required",
     },
   },
-  {
-    id: "gpt-4.1-mini",
-    name: "GPT-4.1 Mini",
-    metadata: {
-      provider: "OpenAI",
-      developer: "OpenAI",
-      shortDescription: "Fast and accurate mid-sized model",
-      fullDescription:
-        "GPT-4.1 Mini is a mid-sized model delivering performance competitive with GPT-4o at substantially lower latency. It has a very large context window and scores 45.1% on hard instruction evals, 35.8% on MultiChallenge, and 84.1% on IFEval. Mini also shows strong coding ability (e.g., 31.6% on Aider's polyglot diff benchmark) and vision understanding.",
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 1000000, maxOutputTokens: 16384 },
-      streamChunking: "word",
-      features: ["parameters", "images"],
-      experimental: false,
-      apiKeySupport: "required",
-    },
-  },
-  {
-    id: "gemini-2.5-pro-exp-03-25",
-    name: "Gemini 2.5 Pro",
-    metadata: {
-      provider: "Google",
-      developer: "Google",
-      shortDescription: "Google's newest experimental model",
-      fullDescription:
-        "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
-      disabled: false,
-      modelPickerDefault: true,
-      limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
-      streamChunking: "word",
-      features: ["parameters", "images", "pdfs", "search", "reasoning"],
-      experimental: true,
-      apiKeySupport: "required",
-    },
-  },
+  // {
+  //   id: "gpt-4.1-mini",
+  //   name: "GPT-4.1 Mini",
+  //   metadata: {
+  //     provider: "OpenAI",
+  //     developer: "OpenAI",
+  //     shortDescription: "Fast and accurate mid-sized model",
+  //     fullDescription:
+  //       "GPT-4.1 Mini is a mid-sized model delivering performance competitive with GPT-4o at substantially lower latency. It has a very large context window and scores 45.1% on hard instruction evals, 35.8% on MultiChallenge, and 84.1% on IFEval. Mini also shows strong coding ability (e.g., 31.6% on Aider's polyglot diff benchmark) and vision understanding.",
+  //     disabled: false,
+  //     modelPickerDefault: false,
+  //     limits: { maxInputTokens: 1000000, maxOutputTokens: 16384 },
+  //     streamChunking: "word",
+  //     features: ["parameters", "images"],
+  //     experimental: false,
+  //     apiKeySupport: "required",
+  //   },
+  // },
+  // {
+  //   id: "gemini-2.5-pro-exp-03-25",
+  //   name: "Gemini 2.5 Pro",
+  //   metadata: {
+  //     provider: "Google",
+  //     developer: "Google",
+  //     shortDescription: "Google's newest experimental model",
+  //     fullDescription:
+  //       "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
+  //     disabled: false,
+  //     modelPickerDefault: true,
+  //     limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
+  //     streamChunking: "word",
+  //     features: ["parameters", "images", "pdfs", "search", "reasoning"],
+  //     experimental: true,
+  //     apiKeySupport: "required",
+  //   },
+  // },
   {
     id: "gemini-2.0-flash-lite",
     name: "Gemini 2.0 Flash Lite",
