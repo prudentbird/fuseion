@@ -31,41 +31,45 @@ function useInterval<P extends Function>(
 export const VersionManager = () => {
   useInterval(
     async () => {
-      const clientBuildId = process.env.NEXT_PUBLIC_BUILD_ID;
-      const { buildId: serverBuildId }: { buildId: string | null } =
-        await fetch("/api/build").then((res) => res.json());
+      try {
+        const clientBuildId = process.env.NEXT_PUBLIC_BUILD_ID;
+        const { buildId: serverBuildId }: { buildId: string | null } =
+          await fetch("/api/build").then((res) => res.json());
 
-      console.log("Server Build ID", serverBuildId);
-      console.log("Client Build ID", clientBuildId);
+        console.log("Server Build ID", serverBuildId);
+        console.log("Client Build ID", clientBuildId);
 
-      if (serverBuildId && clientBuildId && serverBuildId !== clientBuildId) {
-        toast("Update Available", {
-          description: "Kindly refresh to get the latest version",
-          action: {
-            label: (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 text-muted-foreground dark:bg-accent/50 dark:hover:bg-accent/100"
-              >
-                <RefreshCcw />
-                <span className="sr-only">Refresh</span>
-              </Button>
-            ),
-            onClick: () => window.location.reload(),
-          },
-          position: "top-right",
-          style: {
-            gap: "1rem",
-            width: "100%",
-            justifyContent: "space-between",
-          },
-          actionButtonStyle: {
-            backgroundColor: "transparent",
-            padding: "0",
-            margin: "0",
-          },
-        });
+        if (serverBuildId && clientBuildId && serverBuildId !== clientBuildId) {
+          toast("Update Available", {
+            description: "Kindly refresh to get the latest version",
+            action: {
+              label: (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 text-muted-foreground dark:bg-accent/50 dark:hover:bg-accent/100"
+                >
+                  <RefreshCcw />
+                  <span className="sr-only">Refresh</span>
+                </Button>
+              ),
+              onClick: () => window.location.reload(),
+            },
+            position: "top-right",
+            style: {
+              gap: "1rem",
+              width: "100%",
+              justifyContent: "space-between",
+            },
+            actionButtonStyle: {
+              backgroundColor: "transparent",
+              padding: "0",
+              margin: "0",
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error checking for updates", error);
       }
     },
     { interval: 15000 },

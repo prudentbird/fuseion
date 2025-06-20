@@ -20,7 +20,6 @@ const nextConfig: NextConfig = {
     return buildId;
   },
   env: {
-    BUILD_ID: buildId,
     NEXT_PUBLIC_BUILD_ID: buildId,
   },
 };
