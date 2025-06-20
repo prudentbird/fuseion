@@ -10,7 +10,7 @@
 - **Real-Time Device Sync:** Clients remain in sync for a seamless chat experience.
 
 # Demo
-
+https://github.com/user-attachments/assets/a74512ba-24de-4a9f-919b-4bc120fba4f2
 
 ### Prerequisites
 
