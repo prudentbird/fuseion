@@ -1,5 +1,6 @@
 import { env } from "~/env";
 import { headers } from "next/headers";
+import { checkBotId } from "botid/server";
 import { generateUUID } from "~/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
@@ -8,6 +9,11 @@ export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   let requestBody: PostRequestBody;
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  }
 
   try {
     const json = await req.json();

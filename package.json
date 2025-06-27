@@ -29,6 +29,7 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@wooorm/starry-night": "^3.8.0",
     "ai": "5.0.0-alpha.15",
+    "botid": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
