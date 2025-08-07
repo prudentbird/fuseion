@@ -91,12 +91,11 @@ export const getErrorMessage = (error: unknown) => {
   return `Unknown error: ${String(error)}`;
 };
 
-
 export function getTextFromMessage(message: ChatMessage): string {
   return message.parts
-    .filter((part) => part.type === 'text')
+    .filter((part) => part.type === "text")
     .map((part) => part.text)
-    .join('');
+    .join("");
 }
 
 type ResponseMessageWithoutId = ToolModelMessage | AssistantModelMessage;

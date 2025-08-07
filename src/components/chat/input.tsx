@@ -5,6 +5,7 @@ import { Model } from "~/data/models";
 import { ChatMessage } from "~/types";
 import type { Session } from "next-auth";
 import ModelPicker from "./model-picker";
+import { useRouter } from "next/navigation";
 import { ArrowUp, Square } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
@@ -27,12 +28,13 @@ const ChatInput = ({
   sendMessage,
   selectedModel,
 }: ChatInputProps) => {
+  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      window.history.replaceState({}, "", `/chat/${id}`);
+      router.replace(`/chat/${id}`);
       sendMessage({
         role: "user",
         parts: [

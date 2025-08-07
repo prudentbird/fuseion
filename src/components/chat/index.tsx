@@ -106,7 +106,7 @@ const Chat = ({
   useEffect(() => {
     const dbUserMessages = initialMessages.filter((msg) => msg.role === "user");
     const currentUserMessages = messages.filter((msg) => msg.role === "user");
-    
+
     const dbMessageCount = dbUserMessages.length;
     const currentMessageCount = currentUserMessages.length;
 
