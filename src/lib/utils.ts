@@ -6,6 +6,7 @@ import { clsx, type ClassValue } from "clsx";
 import { ChatMessage, MessagePart } from "~/types";
 import { ChatSDKError, ErrorCode } from "./errors";
 import { Doc } from "~/convex/_generated/dataModel";
+import { AssistantModelMessage, ToolModelMessage } from "ai";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -89,3 +90,25 @@ export const getErrorMessage = (error: unknown) => {
 
   return `Unknown error: ${String(error)}`;
 };
+
+
+export function getTextFromMessage(message: ChatMessage): string {
+  return message.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('');
+}
+
+type ResponseMessageWithoutId = ToolModelMessage | AssistantModelMessage;
+type ResponseMessage = ResponseMessageWithoutId & { id: string };
+export function getTrailingMessageId({
+  messages,
+}: {
+  messages: Array<ResponseMessage>;
+}): string | null {
+  const trailingMessage = messages.at(-1);
+
+  if (!trailingMessage) return null;
+
+  return trailingMessage.id;
+}

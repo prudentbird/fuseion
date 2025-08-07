@@ -120,7 +120,7 @@ export function ChatSidebar({
                       </button>
                     </div>
                     {thread.status === "streaming" && (
-                      <Loader2 className="size-4 animate-spin text-primary/50" />
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
                     )}
                   </Link>
                 </SidebarMenuButton>

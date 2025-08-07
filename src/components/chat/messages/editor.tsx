@@ -2,6 +2,7 @@
 
 import { ChatMessage } from "~/types";
 import { Button } from "~/components/ui/button";
+import { getTextFromMessage } from "~/lib/utils";
 import { Textarea } from "~/components/ui/textarea";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -21,12 +22,7 @@ export function MessageEditor({
 }: MessageEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [draftContent, setDraftContent] = useState<string>(
-    message.parts
-      .filter((part) => part.type === "text")
-      .map((part) => part.text)
-      .join(""),
-  );
+  const [draftContent, setDraftContent] = useState<string>(getTextFromMessage(message));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -74,14 +70,12 @@ export function MessageEditor({
           disabled={isSubmitting}
           onClick={async () => {
             setIsSubmitting(true);
-            // @ts-expect-error todo: support UIMessage in setMessages
             setMessages((messages) => {
               const index = messages.findIndex((m) => m.id === message.id);
 
               if (index !== -1) {
-                const updatedMessage = {
+                const updatedMessage: ChatMessage = {
                   ...message,
-                  content: draftContent,
                   parts: [{ type: "text", text: draftContent }],
                 };
 
@@ -94,6 +88,9 @@ export function MessageEditor({
             setMode("view");
             regenerate({
               messageId: message.id,
+              body: {
+                isRegeneration: true,
+              },
             });
           }}
         >
