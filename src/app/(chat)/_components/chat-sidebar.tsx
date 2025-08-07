@@ -13,19 +13,16 @@ import {
   SidebarGroupContent,
 } from "~/components/ui/sidebar";
 import Link from "next/link";
-import { Input } from "../../../components/ui/input";
 import { useState } from "react";
-import { Button } from "../../../components/ui/button";
 import type { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 import { api } from "~/convex/_generated/api";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
 import { ThreadInterface } from "~/types/thread";
-import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
 import { Preloaded, usePreloadedQuery } from "convex/react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../components/ui/avatar";
+import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 export function ChatSidebar({
   session,
@@ -34,6 +31,7 @@ export function ChatSidebar({
   session: Session | null;
   preloadedThreads?: Preloaded<typeof api.threads.listThreads> | null;
 }) {
+  const router = useRouter();
   const threads: ThreadInterface[] = preloadedThreads
     ? (usePreloadedQuery(preloadedThreads) as ThreadInterface[])
     : [];
@@ -140,13 +138,14 @@ export function ChatSidebar({
         </span>
         <div className="flex flex-col gap-2">
           <div className="!px-4 flex">
-            <Button asChild>
-              <Link
-                href="/chat"
-                className="w-full bg-primary/50 !hover:bg-primary/70"
-              >
-                New Chat
-              </Link>
+            <Button
+              className="w-full bg-primary/50 !hover:bg-primary/70"
+              onClick={() => {
+                router.push("/chat");
+                router.refresh();
+              }}
+            >
+              New Chat
             </Button>
           </div>
           <div className="border-b border-accent-foreground/40 mx-3 px-1">
