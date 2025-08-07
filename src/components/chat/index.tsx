@@ -106,17 +106,22 @@ const Chat = ({
     const dbMessageCount = initialMessages.length;
     const currentMessageCount = messages.length;
 
+    // Skip sync for new chats or when just starting out
+    if (currentMessageCount <= 1 && dbMessageCount === 0) {
+      return;
+    }
+
     // Only run when database has more messages than our current state
     if (dbMessageCount > currentMessageCount) {
       const newMessages = initialMessages.filter(
-        (initMsg) => !messages.find((m) => m.id === initMsg.id),
+        (initMsg) => initMsg.role === "user" && !messages.find((m) => m.id === initMsg.id),
       );
 
       if (newMessages.length > 0) {
         setMessages([...messages, ...newMessages]);
       }
     }
-  }, [initialMessages]);
+  }, [initialMessages, messages.length]);
 
   return (
     <div>
