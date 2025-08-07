@@ -55,7 +55,7 @@ const Chat = ({
     id,
     generateId: generateUUID,
     messages: initialMessages,
-    experimental_throttle: 100,
+    experimental_throttle: 20,
     transport: new DefaultChatTransport({
       api: "/api/chat",
       fetch: fetchWithErrorHandlers,
