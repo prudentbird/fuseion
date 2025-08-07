@@ -22,6 +22,10 @@ export default async function Page({
   const cookieStore = await cookies();
   const model = cookieStore.get("chat-model");
 
+  const initialMessages = await preloadQuery(api.messages.listMessages, {
+    threadId: id,
+  });
+
   if (!model) {
     return (
       <Chat
@@ -29,14 +33,12 @@ export default async function Page({
         autoResume={true}
         session={session}
         selectedModel={getDefaultModel()}
+        preloadedInitialMessages={initialMessages}
       />
     );
   }
 
   const selectedModel: Model = JSON.parse(model.value);
-  const initialMessages = await preloadQuery(api.messages.listMessages, {
-    threadId: id,
-  });
 
   return (
     <Chat
