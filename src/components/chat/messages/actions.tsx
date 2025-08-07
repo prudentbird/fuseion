@@ -6,12 +6,10 @@ import {
 } from "~/components/ui/tooltip";
 import { memo } from "react";
 import { toast } from "sonner";
-import type { UIMessage } from "ai";
-// import { useAppChat } from '../context';
+import { ChatMessage } from "~/types";
 import { Copy, RefreshCcw } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useCopyToClipboard } from "usehooks-ts";
-import { ChatMessage } from "~/types";
 import type { UseChatHelpers } from "@ai-sdk/react";
 
 export function PureMessageActions({
@@ -24,7 +22,6 @@ export function PureMessageActions({
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 }) {
   if (isLoading) return null;
-  // const { regenerate } = useAppChat();
   const [_, copyToClipboard] = useCopyToClipboard();
 
   if (message.role === "user")
@@ -114,7 +111,7 @@ export function PureMessageActions({
           </Tooltip>
         </div>
       </TooltipProvider>
-      {message.role === "assistant" && message.metadata?.model && (
+      {message.metadata?.model && (
         <span className="text-xs text-muted-foreground">
           {message.metadata.model.name}
         </span>

@@ -134,6 +134,10 @@ export async function POST(req: Request) {
       if (thread.userId !== session.user.userId) {
         return new ChatSDKError("forbidden:chat").toResponse();
       }
+      await mutations.updateThreadWithId({
+        id,
+        status: "streaming",
+      });
     }
 
     const messagesFromConvex = await queries.listMessagesByThreadId(id);

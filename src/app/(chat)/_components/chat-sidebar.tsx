@@ -19,7 +19,7 @@ import { Button } from "../../../components/ui/button";
 import type { Session } from "next-auth";
 import { api } from "~/convex/_generated/api";
 import { ThreadInterface } from "~/types/thread";
-import { Rocket, Settings2, Search, X } from "lucide-react";
+import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
 import { Preloaded, usePreloadedQuery } from "convex/react";
 import {
   Avatar,
@@ -96,7 +96,7 @@ export function ChatSidebar({
                 <SidebarMenuButton asChild>
                   <Link
                     href={`/chat/${thread.id}`}
-                    className="w-full items-center"
+                    className="w-full items-center justify-between"
                     data-discover="true"
                   >
                     <div className="relative flex w-full items-center ">
@@ -119,6 +119,9 @@ export function ChatSidebar({
                         </div>
                       </button>
                     </div>
+                    {thread.status === "streaming" && (
+                      <Loader2 className="size-4 animate-spin text-primary/50" />
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

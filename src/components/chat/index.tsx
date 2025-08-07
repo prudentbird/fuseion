@@ -99,11 +99,25 @@ const Chat = ({
   }, [query, sendMessage, hasAppendedQuery, id]);
 
   useAutoResume({
+    id,
+    session,
     autoResume,
     initialMessages,
     resumeStream,
     setMessages,
   });
+
+  useEffect(() => {
+    if (initialMessages.length > 0) {
+      const newMessages = initialMessages.filter(
+        (initMsg) => !messages.find((m) => m.id === initMsg.id),
+      );
+
+      if (newMessages.length > 0) {
+        setMessages([...messages, ...newMessages]);
+      }
+    }
+  }, [initialMessages]);
 
   return (
     <div>
