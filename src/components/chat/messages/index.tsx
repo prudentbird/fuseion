@@ -12,6 +12,7 @@ import { PreviewMessage, ThinkingMessage } from "./message";
 interface MessagesProps {
   chatId: string;
   session: Session;
+  error: Error | undefined;
   status: UseChatHelpers<ChatMessage>["status"];
   messages: Array<ChatMessage>;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
@@ -19,6 +20,7 @@ interface MessagesProps {
 }
 
 function PureMessages({
+  error,
   chatId,
   session,
   status,
@@ -55,8 +57,8 @@ function PureMessages({
 
       {messages.map((message, index) => (
         <PreviewMessage
+          error={error}
           key={`${message.id}-${index}`}
-          chatId={chatId}
           message={message}
           isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}

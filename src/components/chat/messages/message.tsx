@@ -1,39 +1,33 @@
 "use client";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
 import cx from "classnames";
 import equal from "fast-deep-equal";
 import { Markdown } from "./markdown";
-import { Pencil } from "lucide-react";
 import { memo, useState } from "react";
 import { ErrorMessage } from "./error";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
 import { cn, sanitizeText } from "~/lib/utils";
 import { MessageReasoning } from "./reasoning";
-import { Button } from "~/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
 import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 import { ChatMessage } from "~/types";
 import { useDataStream } from "../data-stream/provider";
+import { ChatSDKError } from "~/lib/errors";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
-  chatId,
+  error,
   message,
   isLoading,
   setMessages,
   regenerate,
   requiresScrollPadding,
 }: {
-  chatId: string;
-  message: ChatMessage;
   isLoading: boolean;
+  message: ChatMessage;
+  error: Error | undefined;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   requiresScrollPadding: boolean;
@@ -93,47 +87,23 @@ const PurePreviewMessage = ({
                   }
 
                   if (type === "text") {
+                    if (part.text.trim() === "") {
+                      return null;
+                    }
+
                     if (mode === "view") {
                       return (
                         <div
                           key={key}
-                          className="flex flex-row gap-2 items-start"
-                        >
-                          {/* {message.role === 'user' && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              data-testid="message-edit-button"
-                              variant="ghost"
-                              className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
-                              onClick={() => {
-                                setMode('edit');
-                              }}
-                            >
-                              <Pencil />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Edit message</TooltipContent>
-                        </Tooltip>
-                      )} */}
-
-                          {part.text &&
-                          part.text.length > 0 &&
-                          part.text.trim() !== "" ? (
-                            <div
-                              data-testid="message-content"
-                              className={cn(
-                                "flex flex-col gap-4 w-full whitespace-pre-wrap break-words",
-                                message.role === "user"
-                                  ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
-                                  : "bg-transparent border-none shadow-none w-full",
-                              )}
-                            >
-                              <Markdown>{sanitizeText(part.text)}</Markdown>
-                            </div>
-                          ) : (
-                            <ErrorMessage error="Response is empty." />
+                          data-testid="message-content"
+                          className={cn(
+                            "flex flex-col gap-4 w-full whitespace-pre-wrap break-words",
+                            message.role === "user"
+                              ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
+                              : "bg-transparent border-none shadow-none w-full",
                           )}
+                        >
+                          <Markdown>{sanitizeText(part.text)}</Markdown>
                         </div>
                       );
                     }
@@ -165,10 +135,20 @@ const PurePreviewMessage = ({
                   // Handle other part types that might be added in the future
                   return null;
                 })}
+            {error && (
+              <ErrorMessage
+                error={
+                  error instanceof ChatSDKError
+                    ? error.message
+                    : "Something went wrong"
+                }
+              />
+            )}
 
             {
               <MessageActions
                 key={`action-${message.id}`}
+                setMode={setMode}
                 message={message}
                 isLoading={isLoading}
                 regenerate={regenerate}

@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "sonner";
 import ChatInput from "./input";
 import { Model } from "~/data/models";
 import { Messages } from "./messages";
@@ -9,7 +8,6 @@ import { useChat } from "@ai-sdk/react";
 import type { Session } from "next-auth";
 import { DefaultChatTransport } from "ai";
 import { useState, useEffect } from "react";
-import { ChatSDKError } from "~/lib/errors";
 import { api } from "~/convex/_generated/api";
 import { useSearchParams } from "next/navigation";
 import { useDataStream } from "./data-stream/provider";
@@ -52,6 +50,7 @@ const Chat = ({
     stop,
     sendMessage,
     resumeStream,
+    error,
   } = useChat<ChatMessage>({
     id,
     generateId: generateUUID,
@@ -73,11 +72,6 @@ const Chat = ({
     }),
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-    },
-    onError: (error) => {
-      if (error instanceof ChatSDKError) {
-        toast.error(error.message);
-      }
     },
   });
 
@@ -107,8 +101,13 @@ const Chat = ({
     setMessages,
   });
 
+  // Only sync when database has more messages than our current state
   useEffect(() => {
-    if (initialMessages.length > 0) {
+    const dbMessageCount = initialMessages.length;
+    const currentMessageCount = messages.length;
+
+    // Only run when database has more messages than our current state
+    if (dbMessageCount > currentMessageCount) {
       const newMessages = initialMessages.filter(
         (initMsg) => !messages.find((m) => m.id === initMsg.id),
       );
@@ -128,6 +127,7 @@ const Chat = ({
         <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10">
           <Messages
             chatId={id}
+            error={error}
             status={status}
             session={session}
             messages={messages}
