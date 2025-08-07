@@ -103,8 +103,11 @@ const Chat = ({
 
   // Only sync when database has more messages than our current state
   useEffect(() => {
-    const dbMessageCount = initialMessages.length;
-    const currentMessageCount = messages.length;
+    const dbUserMessages = initialMessages.filter((msg) => msg.role === "user");
+    const currentUserMessages = messages.filter((msg) => msg.role === "user");
+    
+    const dbMessageCount = dbUserMessages.length;
+    const currentMessageCount = currentUserMessages.length;
 
     // Skip sync for new chats or when just starting out
     if (currentMessageCount <= 1 && dbMessageCount === 0) {
@@ -113,8 +116,8 @@ const Chat = ({
 
     // Only run when database has more messages than our current state
     if (dbMessageCount > currentMessageCount) {
-      const newMessages = initialMessages.filter(
-        (initMsg) => initMsg.role === "user" && !messages.find((m) => m.id === initMsg.id),
+      const newMessages = dbUserMessages.filter(
+        (initMsg) => !currentUserMessages.find((m) => m.id === initMsg.id),
       );
 
       if (newMessages.length > 0) {
