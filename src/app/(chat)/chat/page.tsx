@@ -5,6 +5,8 @@ import { auth } from "~/app/(auth)/auth";
 import { redirect } from "next/navigation";
 import { generateUUID, getDefaultModel } from "~/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export default async function ChatPage() {
   const session = await auth();
 
