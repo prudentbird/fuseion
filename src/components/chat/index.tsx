@@ -9,10 +9,10 @@ import type { Session } from "next-auth";
 import { DefaultChatTransport } from "ai";
 import { useState, useEffect } from "react";
 import { api } from "~/convex/_generated/api";
-import { useSearchParams } from "next/navigation";
 import { useDataStream } from "./data-stream/provider";
 import { useAutoResume } from "~/hooks/use-auto-resume";
 import { Preloaded, usePreloadedQuery } from "convex/react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { fetchWithErrorHandlers, generateUUID } from "~/lib/utils";
 
 const Chat = ({
@@ -75,6 +75,7 @@ const Chat = ({
     },
   });
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
@@ -88,7 +89,7 @@ const Chat = ({
       });
 
       setHasAppendedQuery(true);
-      window.history.replaceState({}, "", `/chat/${id}`);
+      router.replace(`/chat/${id}`);
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
 
