@@ -1,15 +1,12 @@
 import Link from "next/link";
-import { cache } from "react";
 import { auth } from "../auth";
 import { loginAction } from "../actions";
 import { ArrowLeft } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
 
-const getSession = cache(() => auth());
-
 export default async function LoginPage() {
-  const session = await getSession();
+  const session = await auth();
 
   if (session?.user) {
     redirect("/chat");

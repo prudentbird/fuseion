@@ -1,0 +1,34 @@
+import type { Model } from "~/data/models";
+import type { UserInterface } from "~/types/user";
+
+interface Entitlements {
+  maxMessagesPerDay: number;
+  maxMessagesPerMonth: number;
+  availableChatModelIds?: Array<Model["id"]>;
+}
+
+export const entitlementsByUserTier: Record<
+  UserInterface["tier"],
+  Entitlements
+> = {
+  /*
+   * For users with a free account
+   */
+  free: {
+    maxMessagesPerDay: 30,
+    maxMessagesPerMonth: 900,
+    availableChatModelIds: [
+      "gemini-2.0-flash",
+      "gemini-2.0-flash-lite",
+      "deepseek/deepseek-chat-v3-0324:free",
+    ],
+  },
+
+  /*
+   * For users with a pro account
+   */
+  pro: {
+    maxMessagesPerDay: 100,
+    maxMessagesPerMonth: 1500,
+  },
+};

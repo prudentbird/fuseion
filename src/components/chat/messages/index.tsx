@@ -1,23 +1,26 @@
 import equal from "fast-deep-equal";
 import { Greeting } from "./greeting";
+import { ChatMessage } from "~/types";
 import { motion } from "framer-motion";
 import { memo, useEffect } from "react";
-import type { UIMessage } from "@ai-sdk/react";
+import type { Session } from "next-auth";
 import { useMessages } from "~/hooks/use-messages";
 import type { UseChatHelpers } from "@ai-sdk/react";
-import type { MessageMetadata } from "~/types/message";
+import { useDataStream } from "../data-stream/provider";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers<UIMessage<MessageMetadata>>["status"];
-  messages: Array<UIMessage<MessageMetadata>>;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
+  session: Session;
+  status: UseChatHelpers<ChatMessage>["status"];
+  messages: Array<ChatMessage>;
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 }
 
 function PureMessages({
   chatId,
+  session,
   status,
   messages,
   setMessages,
@@ -36,6 +39,7 @@ function PureMessages({
     status,
   });
 
+  useDataStream();
   useEffect(() => {
     if ((isAtBottom || hasSentMessage) && messages.length > 0) {
       scrollToBottom("instant");
@@ -47,7 +51,7 @@ function PureMessages({
       ref={messagesContainerRef}
       className="flex flex-col min-w-0 gap-6 flex-1 pt-4"
     >
-      {messages.length === 0 && <Greeting />}
+      {messages.length === 0 && <Greeting session={session} />}
 
       {messages.map((message, index) => (
         <PreviewMessage
@@ -78,6 +82,10 @@ function PureMessages({
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
+  // During streaming, always re-render to show real-time updates
+  if (prevProps.status === "streaming" || nextProps.status === "streaming")
+    return false;
+
   if (prevProps.status !== nextProps.status) return false;
   if (prevProps.messages.length !== nextProps.messages.length) return false;
   if (!equal(prevProps.messages, nextProps.messages)) return false;

@@ -1,17 +1,16 @@
 "use client";
 
-import type { UIMessage } from "ai";
+import { ChatMessage } from "~/types";
 import { Button } from "~/components/ui/button";
-import { MessageMetadata } from "~/types/message";
 import { Textarea } from "~/components/ui/textarea";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 export type MessageEditorProps = {
-  message: UIMessage;
+  message: ChatMessage;
   setMode: Dispatch<SetStateAction<"view" | "edit">>;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 };
 
 export function MessageEditor({

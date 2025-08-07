@@ -1,11 +1,8 @@
-import { cache } from "react";
 import { auth } from "./(auth)/auth";
 import { redirect } from "next/navigation";
 
-const getSession = cache(() => auth());
-
 export default async function Page() {
-  const session = await getSession();
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/auth");

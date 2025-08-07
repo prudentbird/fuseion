@@ -16,10 +16,11 @@ import { MessageActions } from "./actions";
 import { cn, sanitizeText } from "~/lib/utils";
 import { MessageReasoning } from "./reasoning";
 import { Button } from "~/components/ui/button";
-import type { MessageMetadata } from "~/types/message";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
 import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
+import { ChatMessage } from "~/types";
+import { useDataStream } from "../data-stream/provider";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
@@ -31,12 +32,13 @@ const PurePreviewMessage = ({
   requiresScrollPadding,
 }: {
   chatId: string;
-  message: UIMessage<MessageMetadata>;
+  message: ChatMessage;
   isLoading: boolean;
-  setMessages: UseChatHelpers<UIMessage<MessageMetadata>>["setMessages"];
-  regenerate: UseChatHelpers<UIMessage<MessageMetadata>>["regenerate"];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   requiresScrollPadding: boolean;
 }) => {
+  useDataStream();
   const [mode, setMode] = useState<"view" | "edit">("view");
 
   return (
@@ -73,25 +75,31 @@ const PurePreviewMessage = ({
               </div>
             )} */}
 
-            {message.parts?.map((part, index) => {
-              const { type } = part;
-              const key = `message-${message.id}-part-${index}`;
+            {Array.isArray(message.parts) &&
+              message.parts
+                .filter((part) => part != null)
+                .map((part, index) => {
+                  const { type } = part;
+                  const key = `message-${message.id}-part-${index}`;
 
-              if (type === "reasoning") {
-                return (
-                  <MessageReasoning
-                    key={key}
-                    isLoading={isLoading}
-                    reasoning={part.text}
-                  />
-                );
-              }
+                  if (type === "reasoning" && part.text?.trim().length > 0) {
+                    return (
+                      <MessageReasoning
+                        key={key}
+                        isLoading={isLoading}
+                        reasoning={part.text}
+                      />
+                    );
+                  }
 
-              if (type === "text") {
-                if (mode === "view") {
-                  return (
-                    <div key={key} className="flex flex-row gap-2 items-start">
-                      {/* {message.role === 'user' && (
+                  if (type === "text") {
+                    if (mode === "view") {
+                      return (
+                        <div
+                          key={key}
+                          className="flex flex-row gap-2 items-start"
+                        >
+                          {/* {message.role === 'user' && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -109,57 +117,61 @@ const PurePreviewMessage = ({
                         </Tooltip>
                       )} */}
 
-                      {part.text &&
-                      part.text.length > 0 &&
-                      part.text.trim() !== "" ? (
-                        <div
-                          data-testid="message-content"
-                          className={cn(
-                            "flex flex-col gap-4 w-full whitespace-pre-wrap break-words",
-                            message.role === "user"
-                              ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
-                              : "bg-transparent border-none shadow-none w-full",
+                          {part.text &&
+                          part.text.length > 0 &&
+                          part.text.trim() !== "" ? (
+                            <div
+                              data-testid="message-content"
+                              className={cn(
+                                "flex flex-col gap-4 w-full whitespace-pre-wrap break-words",
+                                message.role === "user"
+                                  ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
+                                  : "bg-transparent border-none shadow-none w-full",
+                              )}
+                            >
+                              <Markdown>{sanitizeText(part.text)}</Markdown>
+                            </div>
+                          ) : (
+                            <ErrorMessage error="Response is empty." />
                           )}
-                        >
-                          <Markdown>{sanitizeText(part.text)}</Markdown>
                         </div>
-                      ) : (
-                        <ErrorMessage error="Response is empty." />
-                      )}
-                    </div>
-                  );
-                }
+                      );
+                    }
 
-                if (mode === "edit") {
-                  return (
-                    <div key={key} className="flex flex-row gap-2 items-start">
-                      <div className="size-8" />
-                      <MessageEditor
-                        key={message.id}
-                        message={message}
-                        setMode={setMode}
-                        setMessages={setMessages}
-                        regenerate={regenerate}
-                      />
-                    </div>
-                  );
-                }
-              }
+                    if (mode === "edit") {
+                      return (
+                        <div
+                          key={key}
+                          className="flex flex-row gap-2 items-start"
+                        >
+                          <div className="size-8" />
+                          <MessageEditor
+                            key={message.id}
+                            message={message}
+                            setMode={setMode}
+                            setMessages={setMessages}
+                            regenerate={regenerate}
+                          />
+                        </div>
+                      );
+                    }
+                  }
 
-              // Handle file parts - they are already rendered above, so we skip them here
-              if (type === "file") {
-                return null;
-              }
+                  // Handle file parts - they are already rendered above, so we skip them here
+                  if (type === "file") {
+                    return null;
+                  }
 
-              // Handle other part types that might be added in the future
-              return null;
-            })}
+                  // Handle other part types that might be added in the future
+                  return null;
+                })}
 
             {
               <MessageActions
                 key={`action-${message.id}`}
                 message={message}
                 isLoading={isLoading}
+                regenerate={regenerate}
               />
             }
           </div>
@@ -176,6 +188,10 @@ export const PreviewMessage = memo(
     if (prevProps.message.id !== nextProps.message.id) return false;
     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
       return false;
+
+    // During streaming, we want to always re-render to show real-time updates
+    if (prevProps.isLoading || nextProps.isLoading) return false;
+
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
     return true;

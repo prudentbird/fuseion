@@ -6,9 +6,9 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["local", "test", "development", "staging", "production"])
       .default("development"),
+    REDIS_URL: z.string(),
     AUTH_SECRET: z.string(),
     OPENAI_API_KEY: z.string(),
-    CONVEX_SITE_URL: z.string(),
     CONVEX_DEPLOYMENT: z.string(),
     OPENROUTER_API_KEY: z.string(),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string(),

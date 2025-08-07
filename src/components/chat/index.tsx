@@ -1,21 +1,36 @@
 "use client";
 
+import { toast } from "sonner";
 import ChatInput from "./input";
+import { Model } from "~/data/models";
 import { Messages } from "./messages";
-import { useAppChat } from "./context";
-import { UIMessage } from "@ai-sdk/react";
+import { ChatMessage } from "~/types";
+import { useChat } from "@ai-sdk/react";
+import type { Session } from "next-auth";
+import { DefaultChatTransport } from "ai";
+import { useState, useEffect } from "react";
+import { ChatSDKError } from "~/lib/errors";
 import { api } from "~/convex/_generated/api";
-import { MessageMetadata } from "~/types/message";
+import { useSearchParams } from "next/navigation";
+import { useDataStream } from "./data-stream/provider";
+import { useAutoResume } from "~/hooks/use-auto-resume";
 import { Preloaded, usePreloadedQuery } from "convex/react";
+import { fetchWithErrorHandlers, generateUUID } from "~/lib/utils";
 
 const Chat = ({
   id,
+  session,
+  autoResume,
+  selectedModel,
   preloadedInitialMessages,
 }: {
-  id?: string;
+  id: string;
+  session: Session;
+  autoResume: boolean;
+  selectedModel: Model;
   preloadedInitialMessages?: Preloaded<typeof api.messages.listMessages>;
 }) => {
-  let initialMessages: UIMessage<MessageMetadata>[] = [];
+  let initialMessages: ChatMessage[] = [];
   if (preloadedInitialMessages) {
     initialMessages = usePreloadedQuery(preloadedInitialMessages).map(
       (message) => ({
@@ -26,17 +41,69 @@ const Chat = ({
       }),
     );
   }
+
+  const { setDataStream } = useDataStream();
+
   const {
     messages,
     status,
     regenerate,
     setMessages,
     stop,
-    selectedModel,
-    setSelectedModel,
     sendMessage,
-    models,
-  } = useAppChat(initialMessages);
+    resumeStream,
+  } = useChat<ChatMessage>({
+    id,
+    generateId: generateUUID,
+    messages: initialMessages,
+    experimental_throttle: 100,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      fetch: fetchWithErrorHandlers,
+      prepareSendMessagesRequest({ messages, id, body }) {
+        return {
+          body: {
+            id,
+            ...body,
+            model: selectedModel,
+            message: messages.at(-1),
+          },
+        };
+      },
+    }),
+    onData: (dataPart) => {
+      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
+    },
+    onError: (error) => {
+      if (error instanceof ChatSDKError) {
+        toast.error(error.message);
+      }
+    },
+  });
+
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q");
+
+  const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
+
+  useEffect(() => {
+    if (query && !hasAppendedQuery) {
+      sendMessage({
+        role: "user" as const,
+        parts: [{ type: "text", text: query }],
+      });
+
+      setHasAppendedQuery(true);
+      window.history.replaceState({}, "", `/chat/${id}`);
+    }
+  }, [query, sendMessage, hasAppendedQuery, id]);
+
+  useAutoResume({
+    autoResume,
+    initialMessages,
+    resumeStream,
+    setMessages,
+  });
 
   return (
     <div>
@@ -46,8 +113,9 @@ const Chat = ({
       >
         <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10">
           <Messages
-            chatId={id ?? ""}
+            chatId={id}
             status={status}
+            session={session}
             messages={messages}
             setMessages={setMessages}
             regenerate={regenerate}
@@ -55,12 +123,12 @@ const Chat = ({
         </div>
       </div>
       <ChatInput
-        status={status}
+        id={id}
         stop={stop}
+        status={status}
+        session={session}
         sendMessage={sendMessage}
         selectedModel={selectedModel}
-        setSelectedModel={setSelectedModel}
-        models={models}
       />
     </div>
   );

@@ -1,15 +1,18 @@
 import { z } from "zod/v4";
 
-const stepStartPartSchema = z.object({
-  type: z.literal("step-start"),
-});
-
 const textPartSchema = z.object({
-  type: z.enum(["text", "reasoning"]),
-  text: z.string(),
+  type: z.enum(["text"]),
+  text: z.string().min(1).max(2000),
 });
 
-const partSchema = z.union([stepStartPartSchema, textPartSchema]);
+const filePartSchema = z.object({
+  type: z.enum(["file"]),
+  mediaType: z.enum(["image/jpeg", "image/png"]),
+  name: z.string().min(1).max(100),
+  url: z.string().url(),
+});
+
+const partSchema = z.union([textPartSchema, filePartSchema]);
 
 const modelMetadataSchema = z.object({
   shortDescription: z.string(),
@@ -35,22 +38,14 @@ const modelSchema = z.object({
   metadata: modelMetadataSchema,
 });
 
-const uiMessageSchema = z.object({
-  id: z.string(),
-  role: z.enum(["user", "assistant"]),
-  parts: z.array(partSchema),
-  metadata: z
-    .object({
-      model: modelSchema.optional(),
-      threadId: z.string().optional(),
-      streamId: z.string().optional(),
-      status: z.enum(["submitted", "streaming", "ready", "error"]).optional(),
-    })
-    .optional(),
-});
-
 export const postRequestBodySchema = z.object({
-  messages: z.array(uiMessageSchema),
+  id: z.uuid(),
+  message: z.object({
+    id: z.uuid(),
+    role: z.enum(["user"]),
+    parts: z.array(partSchema),
+  }),
+  model: modelSchema,
 });
 
 export type PostRequestBody = z.infer<typeof postRequestBodySchema>;

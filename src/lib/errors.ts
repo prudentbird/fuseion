@@ -3,11 +3,17 @@ export type ErrorType =
   | "unauthorized"
   | "forbidden"
   | "not_found"
-  | "rate_limit"
-  | "offline";
+  | "rate_limit_daily"
+  | "rate_limit_monthly"
+  | "offline"
+  | "unsupported_provider"
+  | "internal_server_error"
+  | "aborted";
 
 export type Surface =
   | "chat"
+  | "chat_free"
+  | "chat_pro"
   | "auth"
   | "api"
   | "stream"
@@ -24,6 +30,8 @@ export type ErrorVisibility = "response" | "log" | "none";
 export const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   database: "log",
   chat: "response",
+  chat_free: "response",
+  chat_pro: "response",
   auth: "response",
   stream: "response",
   api: "response",
@@ -81,14 +89,30 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
   switch (errorCode) {
     case "bad_request:api":
       return "The request couldn't be processed. Please check your input and try again.";
+    case "forbidden:api":
+      return "Access denied";
+    case "unauthorized:api":
+      return "You need to provide an API key to use this feature.";
+    case "unsupported_provider:api":
+      return "The requested provider is not supported. Please check the provider and try again.";
+    case "internal_server_error:api":
+      return "An error occurred while processing your request. Please try again later.";
 
     case "unauthorized:auth":
-      return "You need to sign in before continuing.";
+      return "You need to sign in to send messages.";
     case "forbidden:auth":
       return "Your account does not have access to this feature.";
 
-    case "rate_limit:chat":
-      return "You have exceeded your maximum number of messages for the day. Please try again later.";
+    case "rate_limit_daily:chat_free":
+      return "You have exceeded your maximum number of messages for the day. Please upgrade to a paid plan to continue using the chat.";
+    case "rate_limit_monthly:chat_free":
+      return "You have exceeded your maximum number of messages for the month. Please upgrade to a paid plan to continue using the chat.";
+
+    case "rate_limit_daily:chat_pro":
+      return "You have exceeded your maximum number of messages for the day. Kindly purchase additional credits to continue using the chat.";
+    case "rate_limit_monthly:chat_pro":
+      return "You have exceeded your maximum number of messages for the month. Kindly purchase additional credits to continue using the chat.";
+
     case "not_found:chat":
       return "The requested chat was not found. Please check the chat ID and try again.";
     case "forbidden:chat":
@@ -97,6 +121,9 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
       return "You need to sign in to view this chat. Please sign in and try again.";
     case "offline:chat":
       return "We're having trouble sending your message. Please check your internet connection and try again.";
+
+    case "aborted:chat":
+      return "The chat request was aborted by the client. Please try again.";
 
     case "not_found:document":
       return "The requested document was not found. Please check the document ID and try again.";
@@ -122,7 +149,9 @@ function getStatusCodeByType(type: ErrorType) {
       return 403;
     case "not_found":
       return 404;
-    case "rate_limit":
+    case "rate_limit_daily":
+      return 429;
+    case "rate_limit_monthly":
       return 429;
     case "offline":
       return 503;

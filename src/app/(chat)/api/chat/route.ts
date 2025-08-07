@@ -1,67 +1,291 @@
+import {
+  streamText,
+  smoothStream,
+  createUIMessageStream,
+  convertToModelMessages,
+  JsonToSseTransformStream,
+} from "ai";
+import {
+  createResumableStreamContext,
+  type ResumableStreamContext,
+} from "resumable-stream";
 import { env } from "~/env";
+import { after } from "next/server";
 import { headers } from "next/headers";
+import { auth } from "~/app/(auth)/auth";
 import { checkBotId } from "botid/server";
-import { generateUUID } from "~/lib/utils";
-import { NextRequest, NextResponse } from "next/server";
+import { ChatSDKError } from "~/lib/errors";
+import { createOpenAI } from "@ai-sdk/openai";
+import { queries, mutations } from "~/lib/db";
+import { ProviderOptions } from "@ai-sdk/provider-utils";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { generateTitleFromUserMessage } from "../../actions";
+import { entitlementsByUserTier } from "~/lib/ai/entitlements";
+import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
 
 export const maxDuration = 60;
 
-export async function POST(req: NextRequest) {
+let globalStreamContext: ResumableStreamContext | null = null;
+
+export function getStreamContext() {
+  if (!globalStreamContext) {
+    try {
+      globalStreamContext = createResumableStreamContext({
+        waitUntil: after,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (error.message.includes("REDIS_URL")) {
+          console.log(
+            "Resumable streams are disabled due to missing REDIS_URL",
+          );
+        } else {
+          console.error(error);
+        }
+      }
+    }
+  }
+
+  return globalStreamContext;
+}
+
+export async function POST(req: Request) {
+  const abortSignal = req.signal;
   let requestBody: PostRequestBody;
+
+  const session = await auth();
+
+  if (!session?.user || !session.user.userId) {
+    return new ChatSDKError("unauthorized:auth").toResponse();
+  }
+
   const verification = await checkBotId();
 
   if (verification.isBot) {
-    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    return new ChatSDKError("forbidden:api").toResponse();
   }
 
   try {
     const json = await req.json();
     requestBody = postRequestBodySchema.parse(json);
-  } catch (err) {
-    return NextResponse.json(
-      { error: "bad_request:api" },
-      { status: 400, headers: { "Content-Type": "application/json" } },
-    );
+  } catch {
+    return new ChatSDKError("bad_request:api").toResponse();
   }
 
   try {
-    const headersList = await headers();
-    const apiHeaders = {
-      "Content-Type": "application/json",
-      "openai-api-key": headersList.get("openai-api-key") || "",
-      "openrouter-api-key": headersList.get("openrouter-api-key") || "",
-      "google-generative-ai-api-key":
-        headersList.get("google-generative-ai-api-key") || "",
-    };
+    const { id, model, message }: PostRequestBody = requestBody;
+
+    const dailyMessageCount = await queries.getDailyMessageCountByUserId(
+      session.user.userId,
+    );
+
+    if (
+      dailyMessageCount >=
+      entitlementsByUserTier[session.user.tier].maxMessagesPerDay
+    ) {
+      return new ChatSDKError(
+        `rate_limit_daily:chat_${session.user.tier}`,
+      ).toResponse();
+    }
+
+    const monthlyMessageCount = await queries.getMonthlyMessageCountByUserId(
+      session.user.userId,
+    );
+
+    if (
+      monthlyMessageCount >=
+      entitlementsByUserTier[session.user.tier].maxMessagesPerMonth
+    ) {
+      if (session.user.tier === "free") {
+        return new ChatSDKError(
+          `rate_limit_monthly:chat_${session.user.tier}`,
+        ).toResponse();
+      }
+
+      const credits = await queries.getUserCredits(session.user.userId);
+      if (credits === null || credits < 1) {
+        return new ChatSDKError(
+          `rate_limit_monthly:chat_${session.user.tier}`,
+        ).toResponse();
+      }
+      await mutations.updateUserCredits(session.user.userId, credits - 1);
+    }
+
+    const thread = await queries.getThreadByUserIdAndThreadId(
+      session.user.userId,
+      id,
+    );
+
+    if (!thread) {
+      const title = await generateTitleFromUserMessage({
+        message,
+      });
+
+      await mutations.createThread({
+        id,
+        title,
+        model: model.id,
+        status: "streaming",
+        pinned: false,
+        userId: session.user.userId,
+      });
+    } else {
+      if (thread.userId !== session.user.userId) {
+        return new ChatSDKError("forbidden:chat").toResponse();
+      }
+    }
+
+    const messagesFromConvex = await queries.listMessagesByThreadId(id);
+
+    const uiMessages = [...convertToUIMessages(messagesFromConvex), message];
+
+    await mutations.createMessage({
+      threadId: id,
+      userId: session.user.userId,
+      id: message.id,
+      role: message.role,
+      parts: JSON.stringify(message.parts),
+      metadata: JSON.stringify({
+        model,
+        threadId: id,
+        createdAt: new Date(),
+      }),
+    });
 
     const streamId = generateUUID();
-
-    const convexUrl = `${env.CONVEX_SITE_URL}/api/chat/stream`;
-    const convexRes = await fetch(convexUrl, {
-      method: "POST",
-      headers: apiHeaders,
-      body: JSON.stringify({
-        streamId,
-        messages: requestBody.messages,
-      }),
-      signal: req.signal,
+    await mutations.createStream({
+      id: streamId,
+      threadId: id,
     });
 
-    return new Response(convexRes.body, {
-      status: convexRes.status,
-      headers: {
-        "Content-Type": convexRes.headers.get("Content-Type") || "text/plain",
+    abortSignal?.addEventListener("abort", async () => {
+      await mutations.updateThreadWithId({
+        id,
+        status: "done",
+      });
+    });
+
+    let modelId = model.id;
+    let apiKey: string | undefined;
+    const headersList = await headers();
+    let providerOptions: ProviderOptions | undefined;
+    let provider = model.metadata.provider.toLowerCase();
+    let aiModel: Parameters<typeof streamText>[0]["model"];
+
+    switch (provider) {
+      case "openai":
+        apiKey = headersList.get("openai-api-key") ?? env.OPENAI_API_KEY;
+        if (!apiKey) {
+          return new ChatSDKError("unauthorized:api").toResponse();
+        }
+        const openai = createOpenAI({ apiKey });
+        aiModel = openai(modelId);
+        break;
+
+      case "openrouter":
+        apiKey =
+          headersList.get("openrouter-api-key") ?? env.OPENROUTER_API_KEY;
+        if (!apiKey) {
+          return new ChatSDKError("unauthorized:api").toResponse();
+        }
+        const openrouter = createOpenAI({
+          apiKey,
+          baseURL: "https://openrouter.ai/api/v1",
+        });
+        aiModel = openrouter(modelId);
+        break;
+
+      case "google":
+        apiKey =
+          headersList.get("google-generative-ai-api-key") ??
+          env.GOOGLE_GENERATIVE_AI_API_KEY;
+        if (!apiKey) {
+          return new ChatSDKError("unauthorized:api").toResponse();
+        }
+        const google = createGoogleGenerativeAI({ apiKey });
+        aiModel = google(modelId);
+        providerOptions = {
+          google: {
+            thinkingConfig: {
+              includeThoughts: true,
+            },
+          },
+        };
+        break;
+      default:
+        return new ChatSDKError("unsupported_provider:api").toResponse();
+    }
+
+    const experimental_transform = model.metadata.streamChunking
+      ? smoothStream({ chunking: model.metadata.streamChunking })
+      : undefined;
+
+    const stream = createUIMessageStream({
+      execute: ({ writer: dataStream }) => {
+        const result = streamText({
+          model: aiModel,
+          messages: convertToModelMessages(uiMessages),
+          ...(experimental_transform ? { experimental_transform } : {}),
+          ...(providerOptions ? { providerOptions } : {}),
+          abortSignal,
+        });
+
+        result.consumeStream();
+
+        dataStream.merge(
+          result.toUIMessageStream({
+            sendReasoning: true,
+          }),
+        );
+      },
+      generateId: generateUUID,
+      onFinish: async ({ messages }) => {
+        messages.forEach(async (message) => {
+          await mutations.createMessage({
+            threadId: id,
+            userId: session.user.userId,
+            id: message.id,
+            role: message.role,
+            parts: JSON.stringify(message.parts),
+            metadata: JSON.stringify({
+              model,
+              threadId: id,
+              createdAt: new Date(),
+            }),
+          });
+        });
+        await mutations.updateThreadWithId({
+          id,
+          status: "done",
+        });
+      },
+      onError: (error) => {
+        if (error instanceof Error && error.name === "AbortError") {
+          return "The chat request was aborted by the client. Please try again.";
+        }
+
+        return "Oops, an error occurred!";
       },
     });
+
+    const streamContext = getStreamContext();
+
+    if (streamContext) {
+      return new Response(
+        await streamContext.resumableStream(streamId, () =>
+          stream.pipeThrough(new JsonToSseTransformStream()),
+        ),
+      );
+    } else {
+      return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
+    }
   } catch (error) {
     console.error("[Chat Route Error]:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    if (error instanceof ChatSDKError) {
+      return error.toResponse();
+    }
+
+    return new ChatSDKError("internal_server_error:api").toResponse();
   }
 }

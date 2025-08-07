@@ -34,6 +34,20 @@ export const listThreads = query({
   },
 });
 
+export const getThreadByUserIdAndThreadId = query({
+  args: {
+    userId: v.string(),
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("threads")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("id"), args.threadId))
+      .unique();
+  },
+});
+
 export const internalUpdateThreadWithExternalId = internalMutation({
   args: {
     id: v.string(),

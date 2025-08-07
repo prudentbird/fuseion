@@ -97,24 +97,24 @@ export const models: Model[] = [
   //     apiKeySupport: "required",
   //   },
   // },
-  // {
-  //   id: "gemini-2.5-pro-exp-03-25",
-  //   name: "Gemini 2.5 Pro",
-  //   metadata: {
-  //     provider: "Google",
-  //     developer: "Google",
-  //     shortDescription: "Google's newest experimental model",
-  //     fullDescription:
-  //       "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
-  //     disabled: false,
-  //     modelPickerDefault: true,
-  //     limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
-  //     streamChunking: "word",
-  //     features: ["parameters", "images", "pdfs", "search", "reasoning"],
-  //     experimental: true,
-  //     apiKeySupport: "required",
-  //   },
-  // },
+  {
+    id: "gemini-2.5-pro",
+    name: "Gemini 2.5 Pro",
+    metadata: {
+      provider: "Google",
+      developer: "Google",
+      shortDescription: "Google's newest experimental model",
+      fullDescription:
+        "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
+      disabled: false,
+      modelPickerDefault: true,
+      limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
+      streamChunking: "word",
+      features: ["parameters", "images", "pdfs", "search", "reasoning"],
+      experimental: true,
+      apiKeySupport: "required",
+    },
+  },
   // {
   //   id: 'gemini-2.5-flash-preview-04-17',
   //   name: 'Gemini 2.5 Flash',

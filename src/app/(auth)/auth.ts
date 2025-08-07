@@ -60,10 +60,13 @@ export const {
           return false;
         }
 
-        user = {
-          ...user,
-          ...dbUser,
-        } as UserInterface;
+        Object.assign(user, {
+          tier: dbUser.tier,
+          preferences: dbUser.preferences,
+          name: dbUser.name,
+          email: dbUser.email,
+          picture: dbUser.picture,
+        });
       }
 
       return !!user;

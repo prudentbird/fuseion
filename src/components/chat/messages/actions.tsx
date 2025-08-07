@@ -11,14 +11,17 @@ import type { UIMessage } from "ai";
 import { Copy, RefreshCcw } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useCopyToClipboard } from "usehooks-ts";
-import type { MessageMetadata } from "~/types/message";
+import { ChatMessage } from "~/types";
+import type { UseChatHelpers } from "@ai-sdk/react";
 
 export function PureMessageActions({
   message,
   isLoading,
+  regenerate,
 }: {
-  message: UIMessage<MessageMetadata>;
   isLoading: boolean;
+  message: ChatMessage;
+  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 }) {
   if (isLoading) return null;
   // const { regenerate } = useAppChat();
@@ -94,13 +97,13 @@ export function PureMessageActions({
               Copy
             </TooltipContent>
           </Tooltip>
-          {/* <Tooltip>
+          <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 className="p-2 rounded-md h-fit text-muted-foreground size-8"
                 variant="ghost"
                 size="icon"
-                // onClick={() => regenerate({ messageId: message.id })}
+                onClick={() => regenerate({ messageId: message.id })}
               >
                 <RefreshCcw />
               </Button>
@@ -108,7 +111,7 @@ export function PureMessageActions({
             <TooltipContent align="start" side="bottom">
               Regenerate
             </TooltipContent>
-          </Tooltip> */}
+          </Tooltip>
         </div>
       </TooltipProvider>
       {message.role === "assistant" && message.metadata?.model && (

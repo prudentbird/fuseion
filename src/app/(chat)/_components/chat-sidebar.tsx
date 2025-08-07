@@ -13,15 +13,19 @@ import {
   SidebarGroupContent,
 } from "~/components/ui/sidebar";
 import Link from "next/link";
-import { Input } from "./input";
+import { Input } from "../../../components/ui/input";
 import { useState } from "react";
-import { Button } from "./button";
+import { Button } from "../../../components/ui/button";
 import type { Session } from "next-auth";
 import { api } from "~/convex/_generated/api";
 import { ThreadInterface } from "~/types/thread";
 import { Rocket, Settings2, Search, X } from "lucide-react";
 import { Preloaded, usePreloadedQuery } from "convex/react";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../../components/ui/avatar";
 
 export function ChatSidebar({
   session,

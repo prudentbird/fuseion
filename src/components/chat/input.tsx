@@ -1,36 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { Model } from "~/data/models";
+import { ChatMessage } from "~/types";
+import type { Session } from "next-auth";
 import ModelPicker from "./model-picker";
+import { ArrowUp, Square } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import type { UIMessage, UseChatHelpers } from "@ai-sdk/react";
-import { ArrowUp, Paperclip, FileText, Square } from "lucide-react";
-import { Model } from "~/data/models";
-import { MessageMetadata } from "~/types/message";
+import type { UseChatHelpers } from "@ai-sdk/react";
 
 interface ChatInputProps {
-  stop: UseChatHelpers<UIMessage<MessageMetadata>>["stop"];
-  status: UseChatHelpers<UIMessage<MessageMetadata>>["status"];
-  sendMessage: UseChatHelpers<UIMessage<MessageMetadata>>["sendMessage"];
-  models: Model[];
+  id: string;
+  session: Session;
   selectedModel: Model;
-  setSelectedModel: (model: Model) => void;
+  stop: UseChatHelpers<ChatMessage>["stop"];
+  status: UseChatHelpers<ChatMessage>["status"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }
 
 const ChatInput = ({
+  id,
   stop,
   status,
-  models,
+  session,
   sendMessage,
   selectedModel,
-  setSelectedModel,
 }: ChatInputProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue.trim()) {
+      window.history.replaceState({}, "", `/chat/${id}`);
       sendMessage({
         role: "user",
         parts: [
@@ -39,7 +41,6 @@ const ChatInput = ({
             text: inputValue.trim(),
           },
         ],
-        metadata: { model: selectedModel },
       });
       setInputValue("");
     }
@@ -74,13 +75,7 @@ const ChatInput = ({
 
             <div className="flex items-end justify-between h-full -mb-px mt-2">
               <div className="flex items-center gap-1 ml-[-7px] mb-[-4px]">
-                <ModelPicker
-                  selectedModel={selectedModel}
-                  models={models}
-                  onModelChange={(model) => {
-                    setSelectedModel(model);
-                  }}
-                />
+                <ModelPicker session={session} selectedModel={selectedModel} />
 
                 {/* <Button
                   type="button"
@@ -102,7 +97,7 @@ const ChatInput = ({
                   <span className="max-sm:hidden sm:ml-0.5">Import</span>
                 </Button> */}
               </div>
-              {status !== "ready" ? (
+              {status === "streaming" ? (
                 <Button
                   type="button"
                   variant="destructive"

@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
-import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 
-export const Greeting = () => {
-  const { data: session } = useSession();
-
+export const Greeting = ({ session }: { session: Session }) => {
   return (
     <div
       key="overview"

@@ -1,6 +1,11 @@
 import Chat from "~/components/chat";
+import { Model } from "~/data/models";
+import { cookies } from "next/headers";
+import { auth } from "~/app/(auth)/auth";
+import { redirect } from "next/navigation";
 import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
+import { getDefaultModel } from "~/lib/utils";
 
 export default async function Page({
   params,
@@ -8,10 +13,38 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await auth();
 
+  if (!session) {
+    redirect("/auth");
+  }
+
+  const cookieStore = await cookies();
+  const model = cookieStore.get("chat-model");
+
+  if (!model) {
+    return (
+      <Chat
+        id={id}
+        autoResume={true}
+        session={session}
+        selectedModel={getDefaultModel()}
+      />
+    );
+  }
+
+  const selectedModel: Model = JSON.parse(model.value);
   const initialMessages = await preloadQuery(api.messages.listMessages, {
     threadId: id,
   });
 
-  return <Chat id={id} preloadedInitialMessages={initialMessages} />;
+  return (
+    <Chat
+      id={id}
+      autoResume={true}
+      session={session}
+      selectedModel={selectedModel}
+      preloadedInitialMessages={initialMessages}
+    />
+  );
 }

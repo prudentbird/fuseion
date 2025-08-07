@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const createUser = mutation({
   args: {
@@ -62,7 +62,9 @@ export const upSertUser = mutation({
 
     if (existing) {
       await ctx.db.patch(existing._id, {
-        ...args,
+        name: args.name,
+        email: args.email,
+        picture: args.picture,
         updatedAt: Date.now(),
       });
       return await ctx.db.get(existing._id);
@@ -76,5 +78,36 @@ export const upSertUser = mutation({
     });
 
     return await ctx.db.get(user);
+  },
+});
+
+export const updateUserCredits = mutation({
+  args: {
+    userId: v.string(),
+    credits: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_external_id", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, { credits: args.credits });
+    }
+  },
+});
+
+export const getUserCredits = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_external_id", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    return existing?.credits ?? 0;
   },
 });
