@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { useIsMobile } from "~/hooks/use-mobile";
@@ -13,9 +13,9 @@ import {
 } from "~/components/ui/tooltip";
 
 const Nav = () => {
+  const router = useRouter();
   const isMobile = useIsMobile();
   const [showButtons, setShowButtons] = useState(false);
-
   useEffect(() => {
     if (isMobile) {
       setShowButtons(true);
@@ -84,7 +84,10 @@ const Nav = () => {
       <Button
         variant="ghost"
         size="icon"
-        asChild
+        onClick={() => {
+          router.push("/chat");
+          router.refresh();
+        }}
         className={`size-8 text-muted-foreground transition-[transform,opacity] duration-150 ${
           showButtons
             ? "translate-x-0 opacity-100 delay-150"
@@ -92,10 +95,8 @@ const Nav = () => {
         }`}
         aria-label="New Thread"
       >
-        <Link href="/chat">
-          <Plus />
-          <span className="sr-only">New Thread</span>
-        </Link>
+        <Plus />
+        <span className="sr-only">New Thread</span>
       </Button>
     </div>
   );
