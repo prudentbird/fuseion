@@ -244,7 +244,6 @@ export async function POST(req: Request) {
             model: aiModel,
             middleware: extractReasoningMiddleware({
               tagName: "think",
-              startWithReasoning: model.metadata.features.includes("reasoning"),
             }),
           }),
           messages: convertToModelMessages(uiMessages),
