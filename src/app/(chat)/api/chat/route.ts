@@ -1,9 +1,11 @@
 import {
   streamText,
   smoothStream,
+  wrapLanguageModel,
   createUIMessageStream,
   convertToModelMessages,
   JsonToSseTransformStream,
+  extractReasoningMiddleware,
 } from "ai";
 import {
   createResumableStreamContext,
@@ -238,7 +240,13 @@ export async function POST(req: Request) {
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
         const result = streamText({
-          model: aiModel,
+          model: wrapLanguageModel({
+            model: aiModel,
+            middleware: extractReasoningMiddleware({
+              tagName: "think",
+              startWithReasoning: model.metadata.features.includes("reasoning"),
+            }),
+          }),
           messages: convertToModelMessages(uiMessages),
           ...(experimental_transform ? { experimental_transform } : {}),
           ...(providerOptions ? { providerOptions } : {}),
