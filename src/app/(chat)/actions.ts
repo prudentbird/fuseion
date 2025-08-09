@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod/v4";
-import { Model } from "~/data/models";
+import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
 import { google } from "@ai-sdk/google";
 import { generateObject, UIMessage } from "ai";

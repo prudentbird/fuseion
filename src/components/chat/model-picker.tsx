@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import type { Session } from "next-auth";
 import { ChevronDown } from "lucide-react";
-import { Model, models } from "~/data/models";
+import { Model, models } from "~/lib/ai/models";
 import { Button } from "~/components/ui/button";
 import { saveModelAsCookie } from "~/app/(chat)/actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";

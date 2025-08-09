@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Model } from "~/data/models";
+import { Model } from "~/lib/ai/models";
 import { ChatMessage } from "~/types";
 import type { Session } from "next-auth";
 import ModelPicker from "./model-picker";

@@ -1,4 +1,4 @@
-import { Model } from "~/data/models";
+import { Model } from "~/lib/ai/models";
 
 export type Role = "user" | "system" | "assistant";
 

@@ -1,5 +1,5 @@
 import Chat from "~/components/chat";
-import { Model } from "~/data/models";
+import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
 import { redirect } from "next/navigation";

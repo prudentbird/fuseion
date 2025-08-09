@@ -24,7 +24,7 @@ import { entitlementsByUserTier } from "~/lib/ai/entitlements";
 import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 let globalStreamContext: ResumableStreamContext | null = null;
 

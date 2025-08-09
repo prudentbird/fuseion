@@ -1,4 +1,4 @@
-import type { Model } from "~/data/models";
+import type { Model } from "~/lib/ai/models";
 import type { UserInterface } from "~/types/user";
 
 interface Entitlements {

@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { formatISO } from "date-fns";
-import { models } from "~/data/models";
+import { models } from "~/lib/ai/models";
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
 import { ChatMessage, MessagePart } from "~/types";

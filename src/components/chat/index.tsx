@@ -1,7 +1,7 @@
 "use client";
 
 import ChatInput from "./input";
-import { Model } from "~/data/models";
+import { Model } from "~/lib/ai/models";
 import { Messages } from "./messages";
 import { ChatMessage } from "~/types";
 import { useChat } from "@ai-sdk/react";
