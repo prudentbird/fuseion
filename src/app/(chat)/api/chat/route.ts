@@ -14,6 +14,7 @@ import { after } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
 import { checkBotId } from "botid/server";
+import { createGroq } from "@ai-sdk/groq";
 import { ChatSDKError } from "~/lib/errors";
 import { createOpenAI } from "@ai-sdk/openai";
 import { queries, mutations } from "~/lib/db";
@@ -198,6 +199,15 @@ export async function POST(req: Request) {
           baseURL: "https://openrouter.ai/api/v1",
         });
         aiModel = openrouter(modelId);
+        break;
+
+      case "groq":
+        apiKey = headersList.get("groq-api-key") ?? env.GROQ_API_KEY;
+        if (!apiKey) {
+          return new ChatSDKError("unauthorized:api").toResponse();
+        }
+        const groq = createGroq({ apiKey });
+        aiModel = groq(modelId);
         break;
 
       case "google":

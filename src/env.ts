@@ -8,6 +8,7 @@ export const env = createEnv({
       .default("development"),
     REDIS_URL: z.string(),
     AUTH_SECRET: z.string(),
+    GROQ_API_KEY: z.string(),
     OPENAI_API_KEY: z.string(),
     CONVEX_DEPLOYMENT: z.string(),
     OPENROUTER_API_KEY: z.string(),

@@ -19,7 +19,11 @@ export const entitlementsByUserTier: Record<
     maxMessagesPerMonth: 900,
     availableChatModelIds: [
       "gemini-2.0-flash",
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-120b",
       "gemini-2.0-flash-lite",
+      "moonshotai/kimi-k2-instruct",
+      "deepseek-r1-distill-llama-70b",
       "deepseek/deepseek-chat-v3-0324:free",
     ],
   },
