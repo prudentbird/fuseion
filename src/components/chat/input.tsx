@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Model } from "~/lib/ai/models";
 import { ChatMessage } from "~/types";
+import { Model } from "~/lib/ai/models";
 import type { Session } from "next-auth";
 import ModelPicker from "./model-picker";
-
 import { ArrowUp, Square } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { memo, useMemo, useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
 import type { UseChatHelpers } from "@ai-sdk/react";
 
@@ -126,4 +125,11 @@ const ChatInput = ({
   );
 };
 
-export default ChatInput;
+export default memo(
+  ChatInput,
+  (prev, next) =>
+    prev.id === next.id &&
+    prev.status === next.status &&
+    prev.session?.user?.tier === next.session?.user?.tier &&
+    prev.selectedModel.id === next.selectedModel.id,
+);

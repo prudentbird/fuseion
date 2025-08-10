@@ -1,12 +1,11 @@
+import { memo } from "react";
 import equal from "fast-deep-equal";
 import { Greeting } from "./greeting";
 import { ChatMessage } from "~/types";
 import { motion } from "framer-motion";
-import { memo, useEffect } from "react";
 import type { Session } from "next-auth";
 import { useMessages } from "~/hooks/use-messages";
 import type { UseChatHelpers } from "@ai-sdk/react";
-import { useDataStream } from "../data-stream/provider";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 interface MessagesProps {
@@ -34,20 +33,11 @@ function PureMessages({
     onViewportEnter,
     onViewportLeave,
     hasSentMessage,
-    scrollToBottom,
-    isAtBottom,
   } = useMessages({
     chatId,
     status,
   });
-
-  useDataStream();
-  useEffect(() => {
-    if ((isAtBottom || hasSentMessage) && messages.length > 0) {
-      scrollToBottom("instant");
-    }
-  }, [messages, isAtBottom, hasSentMessage, scrollToBottom]);
-
+  
   return (
     <div
       ref={messagesContainerRef}
@@ -84,11 +74,11 @@ function PureMessages({
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
-  // During streaming, always re-render to show real-time updates
   if (prevProps.status === "streaming" || nextProps.status === "streaming")
     return false;
 
   if (prevProps.status !== nextProps.status) return false;
+  if (prevProps.error !== nextProps.error) return false;
   if (prevProps.messages.length !== nextProps.messages.length) return false;
   if (!equal(prevProps.messages, nextProps.messages)) return false;
 

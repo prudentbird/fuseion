@@ -12,7 +12,7 @@ import { Model, models } from "~/lib/ai/models";
 import { Button } from "~/components/ui/button";
 import { saveModelAsCookie } from "~/app/(chat)/actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";
-import { startTransition, useMemo, useOptimistic, useState } from "react";
+import { memo, startTransition, useMemo, useOptimistic, useState } from "react";
 
 interface ModelPickerProps {
   session: Session;
@@ -82,4 +82,9 @@ const ModelPicker = ({ session, selectedModel }: ModelPickerProps) => {
   );
 };
 
-export default ModelPicker;
+export default memo(
+  ModelPicker,
+  (prev, next) =>
+    prev.selectedModel.id === next.selectedModel.id &&
+    prev.session.user.tier === next.session.user.tier,
+);
