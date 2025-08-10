@@ -38,15 +38,14 @@ const components: Partial<Components> = {
   },
   a: ({ node, children, ...props }) => {
     return (
-      // @ts-expect-error Link href is possibly undefined
-      <Link
+      <a
         className="text-blue-500 hover:underline"
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         {...props}
       >
         {children}
-      </Link>
+      </a>
     );
   },
   h1: ({ node, children, ...props }) => {

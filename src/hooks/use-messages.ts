@@ -33,6 +33,12 @@ export function useMessages({
     }
   }, [status]);
 
+  useEffect(() => {
+    if (chatId && !isAtBottom) {
+      scrollToBottom("instant");
+    }
+  }, [chatId, isAtBottom, scrollToBottom]);
+
   return {
     containerRef,
     endRef,

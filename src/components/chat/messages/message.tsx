@@ -1,20 +1,19 @@
 "use client";
 
 import cx from "classnames";
+import { cn } from "~/lib/utils";
 import equal from "fast-deep-equal";
 import { Markdown } from "./markdown";
 import { memo, useState } from "react";
 import { ErrorMessage } from "./error";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
-import { cn, sanitizeText } from "~/lib/utils";
 import { MessageReasoning } from "./reasoning";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
-import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 import { ChatMessage } from "~/types";
-import { useDataStream } from "../data-stream/provider";
 import { ChatSDKError } from "~/lib/errors";
+import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
@@ -32,7 +31,6 @@ const PurePreviewMessage = ({
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   requiresScrollPadding: boolean;
 }) => {
-  useDataStream();
   const [mode, setMode] = useState<"view" | "edit">("view");
 
   return (
@@ -97,13 +95,13 @@ const PurePreviewMessage = ({
                           key={key}
                           data-testid="message-content"
                           className={cn(
-                            "flex flex-col gap-4 w-full whitespace-pre-wrap break-words",
+                            "flex flex-col gap-4 w-full whitespace-pre-wrap break-words will-change-transform",
                             message.role === "user"
                               ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
                               : "bg-transparent border-none shadow-none w-full",
                           )}
                         >
-                          <Markdown>{sanitizeText(part.text)}</Markdown>
+                          <Markdown>{part.text}</Markdown>
                         </div>
                       );
                     }
@@ -165,6 +163,7 @@ export const PreviewMessage = memo(
   PurePreviewMessage,
   (prevProps, nextProps) => {
     if (prevProps.isLoading !== nextProps.isLoading) return false;
+    if (prevProps.error !== nextProps.error) return false;
     if (prevProps.message.id !== nextProps.message.id) return false;
     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
       return false;
