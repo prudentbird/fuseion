@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import equal from "fast-deep-equal";
 import type { Session } from "next-auth";
-import { useEffect, useRef } from "react";
 import type { ChatMessage } from "~/types";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useDataStream } from "~/components/chat/data-stream/provider";
@@ -25,7 +25,6 @@ export function useAutoResume({
   setMessages,
 }: UseAutoResumeParams) {
   const { dataStream } = useDataStream();
-  const isClientInitiatedRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!autoResume) return;
@@ -34,7 +33,6 @@ export function useAutoResume({
 
     if (mostRecentMessage?.role === "user") {
       resumeStream();
-      isClientInitiatedRef.current = true;
     }
 
     // we intentionally run this once
@@ -48,33 +46,25 @@ export function useAutoResume({
     if (!initialMessages || initialMessages.length === 0) return;
 
     // Merge: add any server messages that don't exist locally.
+    let shouldResume = false;
     setMessages((prev) => {
       if (!prev || prev.length === 0) return initialMessages;
 
       const existingIds = new Set(prev.map((m) => m.id));
       const newItems = initialMessages.filter((m) => !existingIds.has(m.id));
       if (newItems.length === 0) return prev;
+
+      const latest = initialMessages.at(-1);
+      if (autoResume && latest?.role === "user" && !existingIds.has(latest.id)) {
+        shouldResume = true;
+      }
       return [...prev, ...newItems];
     });
 
-    // If the latest server message is a user message, we should resume the
-    // stream to receive the assistant response, but avoid doing so when this
-    // same client initiated the request (stream already active).
-    const latest = initialMessages.at(-1);
-    if (
-      autoResume &&
-      latest?.role === "user" &&
-      !isClientInitiatedRef.current
-    ) {
+    if (shouldResume) {
       resumeStream();
-      isClientInitiatedRef.current = true;
     }
 
-    // If the latest message is from the assistant, consider the previous
-    // streaming cycle complete and allow future auto-resumes.
-    if (latest?.role === "assistant") {
-      isClientInitiatedRef.current = false;
-    }
   // Only run when the array identity changes and not for every render – callers
   // pass preloaded data that changes on Convex updates, so this is safe.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,13 +86,6 @@ export function useAutoResume({
         next[index] = message;
         return next;
       });
-
-      if (message.role === "user") {
-        isClientInitiatedRef.current = true;
-      } else if (message.role === "assistant") {
-        // Mark cycle complete when assistant is observed via restored stream.
-        isClientInitiatedRef.current = false;
-      }
     }
   }, [dataStream, setMessages]);
 }
