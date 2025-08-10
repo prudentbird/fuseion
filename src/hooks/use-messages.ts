@@ -34,10 +34,10 @@ export function useMessages({
   }, [status]);
 
   useEffect(() => {
-    if (chatId && !isAtBottom) {
+    if (chatId && !isAtBottom && onViewportEnter) {
       scrollToBottom("instant");
     }
-  }, [chatId, isAtBottom, scrollToBottom]);
+  }, [chatId, isAtBottom, scrollToBottom, onViewportEnter]);
 
   return {
     containerRef,
