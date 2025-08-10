@@ -26,6 +26,7 @@ import { generateTitleFromUserMessage } from "../../actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";
 import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
+import { markdownJoinerTransform } from "~/lib/ai/markdown-transform";
 
 export const maxDuration = 120;
 
@@ -233,10 +234,6 @@ export async function POST(req: Request) {
         return new ChatSDKError("unsupported_provider:api").toResponse();
     }
 
-    const experimental_transform = model.metadata.streamChunking
-      ? smoothStream({ chunking: model.metadata.streamChunking })
-      : undefined;
-
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
         const result = streamText({
@@ -247,7 +244,10 @@ export async function POST(req: Request) {
             }),
           }),
           messages: convertToModelMessages(uiMessages),
-          ...(experimental_transform ? { experimental_transform } : {}),
+          experimental_transform: [
+            markdownJoinerTransform(),
+            smoothStream({ chunking: "word" }),
+          ],
           ...(providerOptions ? { providerOptions } : {}),
           abortSignal,
         });
