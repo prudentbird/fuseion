@@ -93,6 +93,7 @@ export function ChatSidebar({
               <SidebarMenuItem key={thread.id}>
                 <SidebarMenuButton asChild>
                   <Link
+                    scroll={false}
                     href={`/chat/${thread.id}`}
                     className="w-full items-center justify-between"
                     data-discover="true"

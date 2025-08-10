@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "~/lib/utils";
 import { Markdown } from "./markdown";
+import { memo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Loader2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +12,7 @@ interface MessageReasoningProps {
   reasoning: string;
 }
 
-export function MessageReasoning({
+function MessageReasoningComponent({
   isLoading,
   reasoning,
 }: MessageReasoningProps) {
@@ -74,3 +74,10 @@ export function MessageReasoning({
     </div>
   );
 }
+
+export const MessageReasoning = memo(
+  MessageReasoningComponent,
+  (prevProps, nextProps) =>
+    prevProps.isLoading === nextProps.isLoading &&
+    prevProps.reasoning === nextProps.reasoning,
+);

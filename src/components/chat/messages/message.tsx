@@ -2,8 +2,8 @@
 
 import cx from "classnames";
 import { cn } from "~/lib/utils";
+import { TextPart } from "./text";
 import equal from "fast-deep-equal";
-import { Markdown } from "./markdown";
 import { memo, useState } from "react";
 import { ErrorMessage } from "./error";
 import { MessageEditor } from "./editor";
@@ -91,18 +91,11 @@ const PurePreviewMessage = ({
 
                     if (mode === "view") {
                       return (
-                        <div
+                        <TextPart
                           key={key}
-                          data-testid="message-content"
-                          className={cn(
-                            "flex flex-col gap-4 w-full whitespace-pre-wrap break-words will-change-transform",
-                            message.role === "user"
-                              ? "bg-primary text-primary-foreground rounded-tl-4xl rounded-b-4xl border-primary px-4 py-1.5"
-                              : "bg-transparent border-none shadow-none w-full",
-                          )}
-                        >
-                          <Markdown>{part.text}</Markdown>
-                        </div>
+                          role={message.role}
+                          text={part.text}
+                        />
                       );
                     }
 

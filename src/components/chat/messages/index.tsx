@@ -37,7 +37,7 @@ function PureMessages({
     chatId,
     status,
   });
-  
+
   return (
     <div
       ref={messagesContainerRef}
@@ -66,6 +66,7 @@ function PureMessages({
       <motion.div
         ref={messagesEndRef}
         className="shrink-0 min-w-[24px] min-h-[24px]"
+        style={{ scrollMarginBottom: 128 }}
         onViewportLeave={onViewportLeave}
         onViewportEnter={onViewportEnter}
       />
