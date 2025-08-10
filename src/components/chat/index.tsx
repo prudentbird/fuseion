@@ -95,10 +95,10 @@ const Chat = ({
   useAutoResume({
     id,
     session,
-    autoResume,
-    initialMessages,
-    resumeStream,
     setMessages,
+    resumeStream,
+    initialMessages,
+    autoResume: autoResume || initialMessages.length > 0,
   });
 
   return (
