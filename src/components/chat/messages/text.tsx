@@ -1,53 +1,65 @@
 "use client";
 
-import { memo } from "react";
 import { cn } from "~/lib/utils";
+import { unified } from "unified";
 import { Markdown } from "./markdown";
+import { memo, useMemo } from "react";
+import { remarkPlugins } from "~/lib/markdown-plugins";
 
 interface TextPartProps {
   role: "user" | "assistant" | string;
   text: string;
 }
 
-function splitMarkdownIntoBlocks(source: string): Array<string> {
-  const lines = source.split("\n");
-  const blocks: Array<string> = [];
-  let buffer: Array<string> = [];
-  let inFence = false;
+function splitMarkdownIntoBlocks(markdown: string): string[] {
+  try {
+    const processor = unified().use(remarkParse).use(remarkPlugins as any);
 
-  const flush = () => {
-    if (buffer.length > 0) {
-      blocks.push(buffer.join("\n"));
-      buffer = [];
+    const tree: any = processor.parse(markdown);
+    const children: Array<any> = Array.isArray(tree.children)
+      ? tree.children
+      : [];
+
+    const blocks: string[] = [];
+
+    // Precompute line start offsets for fallback when `offset` is missing.
+    const lineStartOffsets: number[] = [0];
+    for (let i = 0; i < markdown.length; i++) {
+      if (markdown[i] === "\n") lineStartOffsets.push(i + 1);
     }
-  };
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      if (!inFence) {
-        flush();
-        inFence = true;
-        buffer.push(line);
-      } else {
-        buffer.push(line);
-        flush();
-        inFence = false;
+    const toOffset = (line?: number, column?: number): number | undefined => {
+      if (
+        typeof line === "number" &&
+        line >= 1 &&
+        typeof column === "number" &&
+        column >= 1 &&
+        line - 1 < lineStartOffsets.length
+      ) {
+        return lineStartOffsets[line - 1] + (column - 1);
       }
-      continue;
+      return undefined;
+    };
+
+    for (const node of children) {
+      let start: number | undefined = node?.position?.start?.offset;
+      let end: number | undefined = node?.position?.end?.offset;
+
+      if (start === undefined || end === undefined) {
+        start = toOffset(node?.position?.start?.line, node?.position?.start?.column);
+        end = toOffset(node?.position?.end?.line, node?.position?.end?.column);
+      }
+
+      if (typeof start === "number" && typeof end === "number") {
+        const slice = markdown.slice(start, end);
+        if (slice.trim() !== "") blocks.push(slice);
+      }
     }
 
-    if (!inFence && trimmed === "") {
-      flush();
-      continue;
-    }
-
-    buffer.push(line);
+    return blocks.length > 0 ? blocks : [markdown];
+  } catch {
+    return [markdown];
   }
-
-  flush();
-  return blocks.length === 0 ? [source] : blocks;
 }
 
 const MarkdownBlock = memo(
@@ -61,7 +73,7 @@ const MarkdownBlock = memo(
 function PureTextPart({ role, text }: TextPartProps) {
   if (text.trim() === "") return null;
 
-  const blocks = splitMarkdownIntoBlocks(text);
+  const blocks = useMemo(() => splitMarkdownIntoBlocks(text), [text]);
 
   return (
     <div

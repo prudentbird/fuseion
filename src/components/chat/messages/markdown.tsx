@@ -1,9 +1,8 @@
-import Link from "next/link";
-import remarkGfm from "remark-gfm";
+import "katex/dist/katex.min.css";
 import { CodeBlock } from "./code";
 import React, { memo } from "react";
-import { rehypeInlineCodeProperty } from "react-shiki";
 import ReactMarkdown, { type Components } from "react-markdown";
+import { rehypePlugins, remarkPlugins } from "~/lib/markdown-plugins";
 
 const components: Partial<Components> = {
   code: CodeBlock,
@@ -91,9 +90,6 @@ const components: Partial<Components> = {
     );
   },
 };
-
-const remarkPlugins = [remarkGfm];
-const rehypePlugins = [rehypeInlineCodeProperty];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
