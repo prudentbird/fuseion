@@ -113,9 +113,9 @@ const Chat = ({
             error={error}
             status={status}
             session={session}
+            messages={messages}
             regenerate={regenerate}
             setMessages={setMessages}
-            messages={[...messages, ...initialMessages]}
           />
         </div>
       </div>

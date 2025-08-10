@@ -26,7 +26,7 @@ import { generateTitleFromUserMessage } from "../../actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";
 import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
-import { markdownJoinerTransform } from "~/lib/ai/markdown-transform";
+// import { markdownJoinerTransform } from "~/lib/ai/markdown-transform";
 
 export const maxDuration = 120;
 
@@ -245,7 +245,7 @@ export async function POST(req: Request) {
           }),
           messages: convertToModelMessages(uiMessages),
           experimental_transform: [
-            markdownJoinerTransform(),
+            // markdownJoinerTransform(),
             smoothStream({ chunking: "word" }),
           ],
           ...(providerOptions ? { providerOptions } : {}),
