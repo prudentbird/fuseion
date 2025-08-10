@@ -20,16 +20,16 @@ const PurePreviewMessage = ({
   error,
   message,
   isLoading,
-  setMessages,
   regenerate,
+  setMessages,
   requiresScrollPadding,
 }: {
   isLoading: boolean;
   message: ChatMessage;
   error: Error | undefined;
+  requiresScrollPadding: boolean;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
-  requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
 
@@ -37,7 +37,7 @@ const PurePreviewMessage = ({
     <AnimatePresence>
       <motion.div
         data-testid={`message-${message.role}`}
-        className="w-full mx-auto max-w-3xl px-4 group/message"
+        className="flex flex-col w-full mx-auto max-w-3xl px-4 group/message gap-6"
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         data-role={message.role}
@@ -93,8 +93,9 @@ const PurePreviewMessage = ({
                       return (
                         <TextPart
                           key={key}
-                          role={message.role}
                           text={part.text}
+                          role={message.role}
+                          isLoading={isLoading}
                         />
                       );
                     }
@@ -126,15 +127,6 @@ const PurePreviewMessage = ({
                   // Handle other part types that might be added in the future
                   return null;
                 })}
-            {error && (
-              <ErrorMessage
-                error={
-                  error instanceof ChatSDKError
-                    ? error.message
-                    : "Something went wrong"
-                }
-              />
-            )}
 
             {
               <MessageActions
@@ -147,6 +139,19 @@ const PurePreviewMessage = ({
             }
           </div>
         </div>
+        {error && (
+          <div className="flex gap-4 w-full">
+            <div className="flex flex-col gap-2 w-full">
+              <ErrorMessage
+                error={
+                  error instanceof ChatSDKError
+                    ? error.message
+                    : "Something went wrong"
+                }
+              />
+            </div>
+          </div>
+        )}
       </motion.div>
     </AnimatePresence>
   );
@@ -189,11 +194,17 @@ export const ThinkingMessage = () => {
           },
         )}
       >
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            Thinking...
+          <div className="flex gap-1 items-center">
+            <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"></div>
+            <div
+              className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"
+              style={{ animationDelay: "0.1s" }}
+            ></div>
+            <div
+              className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"
+              style={{ animationDelay: "0.2s" }}
+            ></div>
           </div>
-        </div>
       </div>
     </motion.div>
   );

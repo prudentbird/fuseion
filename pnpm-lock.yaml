@@ -80,6 +80,9 @@ importers:
       framer-motion:
         specifier: ^12.23.12
         version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      katex:
+        specifier: ^0.16.22
+        version: 0.16.22
       lucide-react:
         specifier: ^0.536.0
         version: 0.536.0(react@19.1.1)

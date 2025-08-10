@@ -13,7 +13,7 @@ export const remarkPlugins: PluggableList = [
 ];
 
 export const rehypePlugins: PluggableList = [
+  rehypeSanitize,
   rehypeInlineCodeProperty,
   [rehypeKatex, { output: "html" }],
-  rehypeSanitize,
 ];

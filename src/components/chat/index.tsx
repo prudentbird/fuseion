@@ -1,9 +1,9 @@
 "use client";
 
 import ChatInput from "./input";
-import { Model } from "~/lib/ai/models";
 import { Messages } from "./messages";
 import { ChatMessage } from "~/types";
+import { Model } from "~/lib/ai/models";
 import { useChat } from "@ai-sdk/react";
 import type { Session } from "next-auth";
 import { DefaultChatTransport } from "ai";
@@ -101,31 +101,6 @@ const Chat = ({
     setMessages,
   });
 
-  // Only sync when database has more messages than our current state
-  useEffect(() => {
-    const dbUserMessages = initialMessages.filter((msg) => msg.role === "user");
-    const currentUserMessages = messages.filter((msg) => msg.role === "user");
-
-    const dbMessageCount = dbUserMessages.length;
-    const currentMessageCount = currentUserMessages.length;
-
-    // Skip sync for new chats or when just starting out
-    if (currentMessageCount <= 1 && dbMessageCount === 0) {
-      return;
-    }
-
-    // Only run when database has more messages than our current state
-    if (dbMessageCount > currentMessageCount) {
-      const newMessages = dbUserMessages.filter(
-        (initMsg) => !currentUserMessages.find((m) => m.id === initMsg.id),
-      );
-
-      if (newMessages.length > 0) {
-        setMessages([...messages, ...newMessages]);
-      }
-    }
-  }, [initialMessages, messages.length]);
-
   return (
     <div>
       <div
@@ -138,9 +113,9 @@ const Chat = ({
             error={error}
             status={status}
             session={session}
-            messages={messages}
-            setMessages={setMessages}
             regenerate={regenerate}
+            setMessages={setMessages}
+            messages={[...messages, ...initialMessages]}
           />
         </div>
       </div>

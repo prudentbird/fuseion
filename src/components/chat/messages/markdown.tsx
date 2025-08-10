@@ -1,4 +1,3 @@
-import "katex/dist/katex.min.css";
 import { CodeBlock } from "./code";
 import React, { memo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
