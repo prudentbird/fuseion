@@ -56,7 +56,7 @@ export function CodeBlock({
     URL.revokeObjectURL(url);
   };
 
-  if (inline === false) {
+  if (!inline) {
     return (
       <div className="relative mt-2 w-full" {...props}>
         <div className="flex items-center justify-between gap-5 rounded-t-lg bg-secondary px-4 py-2 text-sm text-secondary-foreground border border-b-0">
