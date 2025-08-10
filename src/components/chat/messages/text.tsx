@@ -4,6 +4,7 @@ import { cn } from "~/lib/utils";
 import { unified } from "unified";
 import { Markdown } from "./markdown";
 import { memo, useMemo } from "react";
+import remarkParse from "remark-parse";
 import { remarkPlugins } from "~/lib/markdown-plugins";
 
 interface TextPartProps {
@@ -13,7 +14,7 @@ interface TextPartProps {
 
 function splitMarkdownIntoBlocks(markdown: string): string[] {
   try {
-    const processor = unified().use(remarkParse).use(remarkPlugins as any);
+    const processor = unified().use(remarkParse).use(remarkPlugins);
 
     const tree: any = processor.parse(markdown);
     const children: Array<any> = Array.isArray(tree.children)
@@ -46,7 +47,10 @@ function splitMarkdownIntoBlocks(markdown: string): string[] {
       let end: number | undefined = node?.position?.end?.offset;
 
       if (start === undefined || end === undefined) {
-        start = toOffset(node?.position?.start?.line, node?.position?.start?.column);
+        start = toOffset(
+          node?.position?.start?.line,
+          node?.position?.start?.column,
+        );
         end = toOffset(node?.position?.end?.line, node?.position?.end?.column);
       }
 

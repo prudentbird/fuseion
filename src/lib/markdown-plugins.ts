@@ -12,7 +12,6 @@ export const remarkPlugins: PluggableList = [
   [remarkMath, { singleDollarTextMath: false }],
 ];
 
-
 export const rehypePlugins: PluggableList = [
   rehypeInlineCodeProperty,
   [rehypeKatex, { output: "html" }],
