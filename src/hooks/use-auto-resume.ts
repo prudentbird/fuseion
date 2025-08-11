@@ -50,9 +50,7 @@ export function useAutoResume({
     setMessages((prev) => {
       if (!prev || prev.length === 0) return initialMessages;
 
-      const idToIndex = new Map<string, number>(
-        prev.map((m, i) => [m.id, i]),
-      );
+      const idToIndex = new Map<string, number>(prev.map((m, i) => [m.id, i]));
       let changed = false;
       const next = prev.slice();
 
@@ -84,16 +82,16 @@ export function useAutoResume({
       resumeStream();
     }
 
-  // Only run when the array identity changes and not for every render – callers
-  // pass preloaded data that changes on Convex updates, so this is safe.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only run when the array identity changes and not for every render – callers
+    // pass preloaded data that changes on Convex updates, so this is safe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessages]);
 
   useEffect(() => {
     if (!dataStream) return;
     if (dataStream.length === 0) return;
 
-    const dataPart = dataStream[0];
+    const dataPart = dataStream[dataStream.length - 1];
 
     if (dataPart.type === "data-appendMessage") {
       const message = JSON.parse(dataPart.data);

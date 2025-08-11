@@ -46,7 +46,7 @@ export const mutations = {
     >,
   ) => {
     try {
-      return await fetchMutation(api.messages.addMessage, message);
+      return await fetchMutation(api.messages.upsertMessage, message);
     } catch (error) {
       logger.error("Error creating message:", getErrorMessage(error));
       throw new ChatSDKError(
