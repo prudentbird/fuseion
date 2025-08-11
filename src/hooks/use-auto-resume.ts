@@ -50,15 +50,34 @@ export function useAutoResume({
     setMessages((prev) => {
       if (!prev || prev.length === 0) return initialMessages;
 
-      const existingIds = new Set(prev.map((m) => m.id));
-      const newItems = initialMessages.filter((m) => !existingIds.has(m.id));
-      if (newItems.length === 0) return prev;
+      const idToIndex = new Map<string, number>(
+        prev.map((m, i) => [m.id, i]),
+      );
+      let changed = false;
+      const next = prev.slice();
+
+      for (const serverMsg of initialMessages) {
+        const idx = idToIndex.get(serverMsg.id);
+        if (idx === undefined) {
+          next.push(serverMsg);
+          changed = true;
+        } else if (!equal(next[idx], serverMsg)) {
+          next[idx] = serverMsg;
+          changed = true;
+        }
+      }
 
       const latest = initialMessages.at(-1);
-      if (autoResume && latest?.role === "user" && !existingIds.has(latest.id)) {
+      if (
+        autoResume &&
+        latest?.role === "user" &&
+        latest?.id &&
+        !idToIndex.has(latest.id)
+      ) {
         shouldResume = true;
       }
-      return [...prev, ...newItems];
+
+      return changed ? next : prev;
     });
 
     if (shouldResume) {
