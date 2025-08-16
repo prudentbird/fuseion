@@ -3,6 +3,7 @@ export type ErrorType =
   | "unauthorized"
   | "forbidden"
   | "not_found"
+  | "rate_limit"
   | "rate_limit_daily"
   | "rate_limit_monthly"
   | "offline"
@@ -90,13 +91,15 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
     case "bad_request:api":
       return "The request couldn't be processed. Please check your input and try again.";
     case "forbidden:api":
-      return "Access denied";
+      return "Access denied due to captcha protection.";
     case "unauthorized:api":
       return "You need to provide an API key to use this feature.";
     case "unsupported_provider:api":
       return "The requested provider is not supported. Please check the provider and try again.";
     case "internal_server_error:api":
       return "An error occurred while processing your request. Please try again later.";
+    case "rate_limit:api":
+      return "You have exceeded your maximum number of requests. Please try again in a few seconds.";
 
     case "unauthorized:auth":
       return "You need to sign in to send messages.";
@@ -149,6 +152,8 @@ function getStatusCodeByType(type: ErrorType) {
       return 403;
     case "not_found":
       return 404;
+    case "rate_limit":
+      return 429;
     case "rate_limit_daily":
       return 429;
     case "rate_limit_monthly":

@@ -7,6 +7,7 @@ export const env = createEnv({
       .enum(["local", "test", "development", "staging", "production"])
       .default("development"),
     REDIS_URL: z.string(),
+    ARCJET_KEY: z.string(),
     AUTH_SECRET: z.string(),
     GROQ_API_KEY: z.string(),
     OPENAI_API_KEY: z.string(),

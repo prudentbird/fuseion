@@ -15,7 +15,6 @@ import { env } from "~/env";
 import { after } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
-import { checkBotId } from "botid/server";
 import { createGroq } from "@ai-sdk/groq";
 import { ChatSDKError } from "~/lib/errors";
 import { createOpenAI } from "@ai-sdk/openai";
@@ -26,6 +25,7 @@ import { generateTitleFromUserMessage } from "../../actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";
 import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
+import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/next";
 // import { markdownJoinerTransform } from "~/lib/ai/markdown-transform";
 
 export const maxDuration = 120;
@@ -54,6 +54,24 @@ export function getStreamContext() {
   return globalStreamContext;
 }
 
+const aj = arcjet({
+  key: env.ARCJET_KEY,
+  rules: [
+    shield({ mode: "LIVE" }),
+    detectBot({
+      allow: [],
+      mode: "LIVE",
+    }),
+    tokenBucket({
+      mode: "LIVE",
+      characteristics: ["userId"],
+      refillRate: 5,
+      interval: 10,
+      capacity: 10,
+    }),
+  ],
+});
+
 export async function POST(req: Request) {
   const abortSignal = req.signal;
   let requestBody: PostRequestBody;
@@ -64,9 +82,20 @@ export async function POST(req: Request) {
     return new ChatSDKError("unauthorized:auth").toResponse();
   }
 
-  const verification = await checkBotId();
+  const decision = await aj.protect(req, {
+    requested: 5,
+    userId: session.user.userId,
+  });
 
-  if (verification.isBot) {
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return new ChatSDKError("rate_limit:api").toResponse();
+    }
+
+    if (decision.ip.isHosting()) {
+      return new ChatSDKError("forbidden:api").toResponse();
+    }
+
     return new ChatSDKError("forbidden:api").toResponse();
   }
 
