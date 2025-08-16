@@ -55,27 +55,32 @@ function PureMessages({
           setMessages={setMessages}
           regenerate={regenerate}
           requiresScrollPadding={
-            hasSentMessage && index === messages.length - 1
+            hasSentMessage && index === messages.length - 1 && !error
           }
         />
       ))}
 
       {status === "submitted" &&
+        !error &&
         messages.length > 0 &&
         messages[messages.length - 1].role === "user" && <ThinkingMessage />}
 
       {error && (
-        <div className="flex gap-4 w-full mx-auto max-w-3xl px-4">
-          <div className="flex flex-col gap-2 w-full">
-            <ErrorMessage
-              error={
-                error instanceof ChatSDKError
-                  ? error.message
-                  : "Something went wrong"
-              }
-            />
-          </div>
-        </div>
+        <motion.div
+          data-testid="message-assistant-error"
+          className={"w-full mx-auto max-w-3xl px-4 group/message min-h-96"}
+          initial={{ y: 5, opacity: 0 }}
+          animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
+          data-role="assistant"
+        >
+          <ErrorMessage
+            error={
+              error instanceof ChatSDKError
+                ? error.message
+                : "Something went wrong"
+            }
+          />
+        </motion.div>
       )}
 
       <motion.div

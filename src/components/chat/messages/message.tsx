@@ -4,13 +4,13 @@ import cx from "classnames";
 import { cn } from "~/lib/utils";
 import { TextPart } from "./text";
 import equal from "fast-deep-equal";
+import { ChatMessage } from "~/types";
 import { memo, useState } from "react";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
 import { MessageReasoning } from "./reasoning";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
-import { ChatMessage } from "~/types";
 import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 

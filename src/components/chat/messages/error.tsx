@@ -9,13 +9,13 @@ export const ErrorMessage = ({ error }: { error: string }) => {
       className="bg-red-900/10 border-red-500/20 text-red-300"
     >
       <TriangleAlert className="h-4 w-4" />
-      <AlertDescription className="!text-red-300 gap-3">
+      <AlertDescription className="!text-red-300 gap-2">
         {error ?? "An error occured. Something went wrong."}
         <span>
           Kindly{" "}
           <Button
             variant="link"
-            className="p-0 !text-red-300 underline font-semibold"
+            className="p-0 !text-red-300 underline font-semibold h-auto"
             onClick={() => window.location.reload()}
           >
             refresh the page
