@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     ppr: true,
+    browserDebugInfoInTerminal: true,
   },
   generateBuildId: () => {
     return buildId;

@@ -83,16 +83,33 @@ function PureMessages({
         </motion.div>
       )}
 
-      <motion.div
-        ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
-        style={{ scrollMarginBottom: 128 }}
+      <EndSentinel
+        endRef={messagesEndRef}
         onViewportLeave={onViewportLeave}
         onViewportEnter={onViewportEnter}
       />
     </div>
   );
 }
+
+const EndSentinel = memo(function EndSentinel({
+  endRef,
+  onViewportEnter,
+  onViewportLeave,
+}: {
+  endRef: React.Ref<HTMLDivElement>;
+  onViewportEnter: () => void;
+  onViewportLeave: () => void;
+}) {
+  return (
+    <motion.div
+      ref={endRef}
+      className="shrink-0 min-w-[24px] min-h-[24px] scroll-mb-32"
+      onViewportLeave={onViewportLeave}
+      onViewportEnter={onViewportEnter}
+    />
+  );
+});
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
   if (prevProps.status === "streaming" || nextProps.status === "streaming")

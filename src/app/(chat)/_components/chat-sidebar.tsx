@@ -89,8 +89,8 @@ export function ChatSidebar({
         </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            {threads.map((thread: ThreadInterface) => (
-              <SidebarMenuItem key={thread.id}>
+            {threads.map((thread: ThreadInterface, index: number) => (
+              <SidebarMenuItem key={`${thread.id}-${index}`}>
                 <SidebarMenuButton asChild>
                   <Link
                     scroll={false}

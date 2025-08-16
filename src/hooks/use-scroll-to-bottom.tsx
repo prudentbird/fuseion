@@ -33,13 +33,13 @@ export function useScrollToBottom() {
     [setScrollBehavior],
   );
 
-  function onViewportEnter() {
+  const onViewportEnter = useCallback(() => {
     setIsAtBottom(true);
-  }
+  }, [setIsAtBottom]);
 
-  function onViewportLeave() {
+  const onViewportLeave = useCallback(() => {
     setIsAtBottom(false);
-  }
+  }, [setIsAtBottom]);
 
   return {
     containerRef,
