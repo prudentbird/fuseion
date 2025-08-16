@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "./theme";
 import { Toaster } from "~/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 // import { VersionManager } from "~/components/ui/version-manager";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
@@ -23,6 +24,7 @@ const Providers = ({ children }: { children: ReactNode }) => {
         <ConvexProvider client={convex}>
           {children}
           <Toaster />
+          <Analytics />
           <SpeedInsights />
           {/* <VersionManager /> */}
         </ConvexProvider>
