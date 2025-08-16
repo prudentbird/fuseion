@@ -5,19 +5,16 @@ import { cn } from "~/lib/utils";
 import { TextPart } from "./text";
 import equal from "fast-deep-equal";
 import { memo, useState } from "react";
-import { ErrorMessage } from "./error";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
 import { MessageReasoning } from "./reasoning";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
 import { ChatMessage } from "~/types";
-import { ChatSDKError } from "~/lib/errors";
 import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
-  error,
   message,
   isLoading,
   regenerate,
@@ -26,7 +23,6 @@ const PurePreviewMessage = ({
 }: {
   isLoading: boolean;
   message: ChatMessage;
-  error: Error | undefined;
   requiresScrollPadding: boolean;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
@@ -139,19 +135,6 @@ const PurePreviewMessage = ({
             }
           </div>
         </div>
-        {error && (
-          <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-2 w-full">
-              <ErrorMessage
-                error={
-                  error instanceof ChatSDKError
-                    ? error.message
-                    : "Something went wrong"
-                }
-              />
-            </div>
-          </div>
-        )}
       </motion.div>
     </AnimatePresence>
   );
@@ -161,7 +144,6 @@ export const PreviewMessage = memo(
   PurePreviewMessage,
   (prevProps, nextProps) => {
     if (prevProps.isLoading !== nextProps.isLoading) return false;
-    if (prevProps.error !== nextProps.error) return false;
     if (prevProps.message.id !== nextProps.message.id) return false;
     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
       return false;

@@ -3,7 +3,9 @@ import equal from "fast-deep-equal";
 import { Greeting } from "./greeting";
 import { ChatMessage } from "~/types";
 import { motion } from "framer-motion";
+import { ErrorMessage } from "./error";
 import type { Session } from "next-auth";
+import { ChatSDKError } from "~/lib/errors";
 import { useMessages } from "~/hooks/use-messages";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { PreviewMessage, ThinkingMessage } from "./message";
@@ -47,7 +49,6 @@ function PureMessages({
 
       {messages.map((message, index) => (
         <PreviewMessage
-          error={error}
           key={`${message.id}-${index}`}
           message={message}
           isLoading={status === "streaming" && messages.length - 1 === index}
@@ -62,6 +63,20 @@ function PureMessages({
       {status === "submitted" &&
         messages.length > 0 &&
         messages[messages.length - 1].role === "user" && <ThinkingMessage />}
+
+      {error && (
+        <div className="flex gap-4 w-full mx-auto max-w-3xl px-4">
+          <div className="flex flex-col gap-2 w-full">
+            <ErrorMessage
+              error={
+                error instanceof ChatSDKError
+                  ? error.message
+                  : "Something went wrong"
+              }
+            />
+          </div>
+        </div>
+      )}
 
       <motion.div
         ref={messagesEndRef}
