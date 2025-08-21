@@ -50,6 +50,7 @@ export function ChatSidebar({ session }: { session: Session | null }) {
   const [search, setSearch] = useState("");
   const userId = session?.user?.userId ?? "";
   const [isPending, startTransition] = useTransition();
+  const [isRegenerating, startRegeneration] = useTransition();
 
   const {
     results: pagedThreads,
@@ -178,7 +179,6 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                   </ContextMenuTrigger>
                   <ContextMenuContent>
                     <ContextMenuItem
-                      disabled={isPending}
                       onSelect={() => {
                         startTransition(async () => {
                           await mutateThread({
@@ -187,6 +187,7 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                           });
                         });
                       }}
+                      disabled={isPending || isRegenerating}
                     >
                       {thread.pinned ? (
                         <>
@@ -201,7 +202,6 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                       )}
                     </ContextMenuItem>
                     <ContextMenuItem
-                      disabled={isPending}
                       onSelect={() => {
                         startTransition(async () => {
                           await mutateThread({
@@ -210,13 +210,14 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                           });
                         });
                       }}
+                      disabled={isPending || isRegenerating}
                     >
                       <Trash className="size-4" />
                       Delete
                     </ContextMenuItem>
                     <ContextMenuItem
                       onSelect={() => {
-                        startTransition(async () => {
+                        startRegeneration(async () => {
                           const title = await regenerateThreadTitle({
                             userId,
                             threadId: thread.id,
@@ -227,9 +228,9 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                           });
                         });
                       }}
-                      disabled={isPending}
+                      disabled={isPending || isRegenerating}
                     >
-                      {isPending ? (
+                      {isRegenerating ? (
                         <Loader2 className="size-4 animate-spin text-muted-foreground" />
                       ) : (
                         <Sparkles className="size-4" />
