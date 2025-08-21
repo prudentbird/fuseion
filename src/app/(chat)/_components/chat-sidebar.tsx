@@ -13,22 +13,43 @@ import {
   SidebarGroupContent,
 } from "~/components/ui/sidebar";
 import Link from "next/link";
-import { useMemo, useState } from "react";
 import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { api } from "~/convex/_generated/api";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { ThreadInterface } from "~/types/thread";
-import { usePaginatedQuery } from "convex/react";
-import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
+import { useMemo, useState, useTransition } from "react";
+import {
+  optimisticallyUpdateValueInPaginatedQuery,
+  usePaginatedQuery,
+} from "convex/react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import {
+  X,
+  Pin,
+  Trash,
+  Search,
+  Rocket,
+  PinOff,
+  Loader2,
+  Settings2,
+  Sparkles,
+} from "lucide-react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+  ContextMenuItem,
+} from "~/components/ui/context-menu";
+import { useMutation } from "convex/react";
+import { regenerateThreadTitle } from "../actions";
 
 export function ChatSidebar({ session }: { session: Session | null }) {
   const router = useRouter();
-  const userId = session?.user?.userId ?? "";
-
   const [search, setSearch] = useState("");
+  const userId = session?.user?.userId ?? "";
+  const [isPending, startTransition] = useTransition();
 
   const {
     results: pagedThreads,
@@ -39,6 +60,31 @@ export function ChatSidebar({ session }: { session: Session | null }) {
     { userId, term: search || undefined },
     { initialNumItems: 20 },
   );
+
+  const mutateThread = useMutation(
+    api.threads.updateThreadWithExternalId,
+  ).withOptimisticUpdate((localStore, args) => {
+    optimisticallyUpdateValueInPaginatedQuery(
+      localStore,
+      api.threads.listThreadsPaginated,
+      {
+        userId,
+        term: search || undefined,
+      },
+      (currentValue) => {
+        const { id, pinned, status, title } = args;
+        if (id === currentValue?.id) {
+          return {
+            ...currentValue,
+            ...(title !== undefined && { title }),
+            ...(pinned !== undefined && { pinned }),
+            ...(status !== undefined && { status }),
+          };
+        }
+        return currentValue;
+      },
+    );
+  });
 
   const threads: ThreadInterface[] =
     (pagedThreads as unknown as ThreadInterface[]) || [];
@@ -112,38 +158,86 @@ export function ChatSidebar({ session }: { session: Session | null }) {
           <SidebarMenu>
             {threads.map((thread: ThreadInterface, index: number) => (
               <SidebarMenuItem key={`${thread.id}-${index}`}>
-                <SidebarMenuButton asChild>
-                  <Link
-                    scroll={false}
-                    href={`/chat/${thread.id}`}
-                    className="w-full items-center justify-between"
-                    data-discover="true"
-                  >
-                    <div className="relative flex w-full items-center ">
-                      <button
-                        data-state="closed"
-                        className="w-full !cursor-pointer"
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        scroll={false}
+                        href={`/chat/${thread.id}`}
+                        className="w-full items-center justify-between"
+                        data-discover="true"
                       >
-                        <div className="relative w-full">
-                          <input
-                            aria-label="Thread title"
-                            aria-describedby="thread-title-hint"
-                            aria-readonly="true"
-                            readOnly
-                            tabIndex={-1}
-                            className="hover:truncate-none h-full w-full rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none pointer-events-none cursor-pointer overflow-hidden truncate"
-                            title={thread.title}
-                            type="text"
-                            value={thread.title || "Untitled"}
-                          />
-                        </div>
-                      </button>
-                    </div>
-                    {thread.status === "streaming" && (
-                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                    )}
-                  </Link>
-                </SidebarMenuButton>
+                        <p className="flex items-center hover:truncate-none h-full w-full rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none pointer-events-none cursor-pointer overflow-hidden truncate">
+                          {thread.title}
+                        </p>
+                        {thread.status === "streaming" && (
+                          <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      disabled={isPending}
+                      onSelect={() => {
+                        startTransition(async () => {
+                          await mutateThread({
+                            id: thread.id,
+                            pinned: !thread.pinned,
+                          });
+                        });
+                      }}
+                    >
+                      {thread.pinned ? (
+                        <>
+                          <PinOff className="size-4" />
+                          Unpin
+                        </>
+                      ) : (
+                        <>
+                          <Pin className="size-4" />
+                          Pin
+                        </>
+                      )}
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      disabled={isPending}
+                      onSelect={() => {
+                        startTransition(async () => {
+                          await mutateThread({
+                            id: thread.id,
+                            status: "deleted",
+                          });
+                        });
+                      }}
+                    >
+                      <Trash className="size-4" />
+                      Delete
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      onSelect={() => {
+                        startTransition(async () => {
+                          const title = await regenerateThreadTitle({
+                            userId,
+                            threadId: thread.id,
+                          });
+                          void mutateThread({
+                            title,
+                            id: thread.id,
+                          });
+                        });
+                      }}
+                      disabled={isPending}
+                    >
+                      {isPending ? (
+                        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Sparkles className="size-4" />
+                      )}
+                      Regenerate Title
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -214,7 +308,7 @@ export function ChatSidebar({ session }: { session: Session | null }) {
           <div className="flex items-center justify-center py-6">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
           </div>
-        ) : filteredThreads.length === 0 ? (
+        ) : filteredThreads.length === 0 && search ? (
           <div className="py-6 text-center text-sm text-muted-foreground">
             No results found
           </div>
