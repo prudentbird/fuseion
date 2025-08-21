@@ -22,20 +22,6 @@ export const createThread = mutation({
   },
 });
 
-export const listThreads = query({
-  args: {
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("threads")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.neq(q.field("status"), "deleted"))
-      .order("desc")
-      .collect();
-  },
-});
-
 export const listThreadsPaginated = query({
   args: {
     userId: v.string(),
