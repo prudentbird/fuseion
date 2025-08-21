@@ -13,36 +13,44 @@ import {
   SidebarGroupContent,
 } from "~/components/ui/sidebar";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { api } from "~/convex/_generated/api";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { ThreadInterface } from "~/types/thread";
-import { Preloaded, usePreloadedQuery } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 export function ChatSidebar({
   session,
-  preloadedThreads,
 }: {
   session: Session | null;
-  preloadedThreads?: Preloaded<typeof api.threads.listThreads> | null;
 }) {
   const router = useRouter();
-  const threads: ThreadInterface[] = preloadedThreads
-    ? (usePreloadedQuery(preloadedThreads) as ThreadInterface[])
-    : [];
+  const userId = session?.user?.userId ?? "";
 
   const [search, setSearch] = useState("");
 
-  const filteredThreads = search
-    ? threads.filter((thread) =>
-        thread.title?.toLowerCase().includes(search.toLowerCase()),
-      )
-    : threads;
+  const { results: pagedThreads, status, loadMore } = usePaginatedQuery(
+    api.threads.listThreadsPaginated,
+    { userId, term: search || undefined },
+    { initialNumItems: 20 },
+  );
+
+  const threads: ThreadInterface[] = (pagedThreads as unknown as ThreadInterface[]) || [];
+
+
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (status === "CanLoadMore" && el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
+      loadMore(20);
+    }
+  };
+
+  const filteredThreads = threads;
 
   function groupThreadsByDate(threads: ThreadInterface[]) {
     const now = new Date();
@@ -56,6 +64,7 @@ export function ChatSidebar({
     const startOf30DaysAgo = startOfToday - 30 * 24 * 60 * 60 * 1000;
 
     const groups: Record<string, ThreadInterface[]> = {
+      pinned: [],
       today: [],
       yesterday: [],
       last7: [],
@@ -63,6 +72,10 @@ export function ChatSidebar({
       older: [],
     };
     for (const thread of threads) {
+      if (thread.pinned) {
+        groups.pinned.push(thread);
+        continue;
+      }
       if (thread.createdAt >= startOfToday) {
         groups.today.push(thread);
       } else if (thread.createdAt >= startOfYesterday) {
@@ -75,10 +88,12 @@ export function ChatSidebar({
         groups.older.push(thread);
       }
     }
+    
+    groups.pinned.sort((a, b) => b.createdAt - a.createdAt);
     return groups;
   }
 
-  const grouped = groupThreadsByDate(filteredThreads);
+  const grouped = useMemo(() => groupThreadsByDate(filteredThreads), [filteredThreads]);
 
   function renderGroup(label: string, threads: ThreadInterface[]) {
     if (!threads.length) return null;
@@ -187,12 +202,31 @@ export function ChatSidebar({
           WebkitMaskImage:
             "linear-gradient(to bottom,transparent,#000 var(--shadow-height),#000 calc(100% - var(--shadow-height)),transparent 100%),linear-gradient(to left,#fff var(--scrollbar-width),transparent var(--scrollbar-width))",
         }}
+        onScroll={onScroll}
       >
-        {renderGroup("Today", grouped.today)}
-        {renderGroup("Yesterday", grouped.yesterday)}
-        {renderGroup("Last 7 Days", grouped.last7)}
-        {renderGroup("Last 30 Days", grouped.last30)}
-        {renderGroup("Older", grouped.older)}
+        {status === "LoadingFirstPage" && search ? (
+          <div className="flex items-center justify-center py-6">
+            <Loader2 className="size-4 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredThreads.length === 0 ? (
+          <div className="py-6 text-center text-sm text-muted-foreground">
+            No results found
+          </div>
+        ) : (
+          <>
+            {renderGroup("Pinned", grouped.pinned)}
+            {renderGroup("Today", grouped.today)}
+            {renderGroup("Yesterday", grouped.yesterday)}
+            {renderGroup("Last 7 Days", grouped.last7)}
+            {renderGroup("Last 30 Days", grouped.last30)}
+            {renderGroup("Older", grouped.older)}
+          </>
+        )}
+        {status === "LoadingMore" && (
+          <div className="flex items-center justify-center py-3">
+            <Loader2 className="size-4 animate-spin text-muted-foreground" />
+          </div>
+        )}
       </SidebarContent>
       {session?.user ? (
         <SidebarFooter className="mb-2">

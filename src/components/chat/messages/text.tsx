@@ -1,10 +1,8 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "~/lib/utils";
 import { Markdown } from "./markdown";
-import { memo, useMemo } from "react";
-import { MarkdownBlock } from "./markdown-block";
-import { splitMarkdownIntoBlocks } from "~/lib/markdown-lexer";
 
 interface TextPartProps {
   role: "user" | "assistant" | string;
@@ -14,8 +12,6 @@ interface TextPartProps {
 
 function PureTextPart({ role, text, isLoading }: TextPartProps) {
   if (text.trim() === "") return null;
-
-  const blocks = useMemo(() => splitMarkdownIntoBlocks(text), [text]);
 
   return (
     <div
@@ -27,15 +23,7 @@ function PureTextPart({ role, text, isLoading }: TextPartProps) {
           : "bg-transparent border-none shadow-none self-start",
       )}
     >
-      {isLoading ? (
-        <div>
-          {blocks.map((block, index) => (
-            <MarkdownBlock key={`${index}:${block.length}`} content={block} />
-          ))}
-        </div>
-      ) : (
-        <Markdown>{text}</Markdown>
-      )}
+      <Markdown>{text}</Markdown>
     </div>
   );
 }

@@ -22,7 +22,10 @@ export default defineSchema(
       userId: v.string(),
     })
       .index("by_user", ["userId"])
-      .index("by_external_id", ["id"]),
+      .index("by_external_id", ["id"]).searchIndex("search_title", {
+        searchField: "title",
+        filterFields: ["userId"],
+      }),
     messages: defineTable({
       id: v.string(),
       role: v.string(),

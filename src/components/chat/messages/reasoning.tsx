@@ -2,12 +2,10 @@
 
 import { cn } from "~/lib/utils";
 import { Markdown } from "./markdown";
+import { memo, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { memo, useMemo, useState } from "react";
-import { MarkdownBlock } from "./markdown-block";
 import { Loader2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { splitMarkdownIntoBlocks } from "~/lib/markdown-lexer";
 
 interface MessageReasoningProps {
   isLoading: boolean;
@@ -19,7 +17,6 @@ function MessageReasoningComponent({
   reasoning,
 }: MessageReasoningProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const blocks = useMemo(() => splitMarkdownIntoBlocks(reasoning), [reasoning]);
 
   const variants = {
     collapsed: {
@@ -70,18 +67,7 @@ function MessageReasoningComponent({
             style={{ overflow: "hidden" }}
             className="text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg"
           >
-            {isLoading ? (
-              <div>
-                {blocks.map((block, index) => (
-                  <MarkdownBlock
-                    key={`${index}:${block.length}`}
-                    content={block}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Markdown>{reasoning}</Markdown>
-            )}
+            <Markdown>{reasoning}</Markdown>
           </motion.div>
         )}
       </AnimatePresence>

@@ -2,6 +2,7 @@ import { cache } from "react";
 import { formatISO } from "date-fns";
 import { models } from "~/lib/ai/models";
 import { twMerge } from "tailwind-merge";
+import { type BundledLanguage } from "shiki";
 import { clsx, type ClassValue } from "clsx";
 import { ChatMessage, MessagePart } from "~/types";
 import { ChatSDKError, ErrorCode } from "./errors";
@@ -106,4 +107,26 @@ export function getTrailingMessageId({
   if (!trailingMessage) return null;
 
   return trailingMessage.id;
+}
+
+export function getLanguageFromClassName(
+  className: unknown,
+): BundledLanguage | null {
+  if (typeof className === "string") {
+    for (const token of className.split(/\s+/)) {
+      if (token.startsWith("language-")) {
+        return token.slice("language-".length) as BundledLanguage;
+      }
+      if (token.startsWith("lang-")) {
+        return token.slice("lang-".length) as BundledLanguage;
+      }
+    }
+  } else if (Array.isArray(className)) {
+    for (const c of className) {
+      if (typeof c !== "string") continue;
+      if (c.startsWith("language-")) return c.slice(9) as BundledLanguage;
+      if (c.startsWith("lang-")) return c.slice(5) as BundledLanguage;
+    }
+  }
+  return null;
 }

@@ -1,105 +1,74 @@
+import Link from "next/link";
 import { CodeBlock } from "./code";
-import React, { memo } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
-import { rehypePlugins, remarkPlugins } from "~/lib/markdown-plugins";
+import type { BundledLanguage } from "shiki";
+import React, { memo, isValidElement } from "react";
+import { cn, getLanguageFromClassName } from "~/lib/utils";
+import { Streamdown, type StreamdownProps } from "streamdown";
 
-const components: Partial<Components> = {
-  code: CodeBlock,
-  pre: ({ children }) => <>{children}</>,
-  ol: ({ node, children, ...props }) => {
+const components: Partial<StreamdownProps["components"]> = {
+  code: ({ node, className, ...props }) => {
+    const inline = node?.position?.start.line === node?.position?.end.line;
+
+    if (!inline) {
+      return <code className={className} {...props} />;
+    }
+
     return (
-      <ol className="list-decimal list-outside ml-4" {...props}>
-        {children}
-      </ol>
+      <code
+        className={cn(
+          "mx-0.5 text-sm py-0.5 px-[6px] rounded-md bg-muted text-muted-foreground",
+          className,
+        )}
+        {...props}
+      />
     );
   },
-  li: ({ node, children, ...props }) => {
-    return (
-      <li className="py-1" {...props}>
-        {children}
-      </li>
+  pre: ({ node, children }) => {
+    let language: BundledLanguage | null = getLanguageFromClassName(
+      node?.properties?.className,
     );
-  },
-  ul: ({ node, children, ...props }) => {
-    return (
-      <ul className="list-decimal list-outside ml-4" {...props}>
-        {children}
-      </ul>
-    );
-  },
-  strong: ({ node, children, ...props }) => {
-    return (
-      <span className="font-semibold" {...props}>
-        {children}
-      </span>
-    );
+
+    if (!language && isValidElement(children)) {
+      language = getLanguageFromClassName(
+        (children as unknown as { props: { className: string } })?.props
+          ?.className,
+      );
+    }
+
+    const lang = (language ?? "txt") as BundledLanguage;
+
+    let code = "";
+    if (
+      isValidElement(children) &&
+      children.props &&
+      typeof children.props === "object" &&
+      "children" in children.props &&
+      typeof children.props.children === "string"
+    ) {
+      code = children.props.children;
+    } else if (typeof children === "string") {
+      code = children;
+    }
+
+    return <CodeBlock language={lang}>{code}</CodeBlock>;
   },
   a: ({ node, children, ...props }) => {
     return (
-      <a
+      // @ts-expect-error
+      <Link
         className="text-blue-500 hover:underline"
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noreferrer"
         {...props}
       >
         {children}
-      </a>
-    );
-  },
-  h1: ({ node, children, ...props }) => {
-    return (
-      <h1 className="text-3xl font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h1>
-    );
-  },
-  h2: ({ node, children, ...props }) => {
-    return (
-      <h2 className="text-2xl font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h2>
-    );
-  },
-  h3: ({ node, children, ...props }) => {
-    return (
-      <h3 className="text-xl font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h3>
-    );
-  },
-  h4: ({ node, children, ...props }) => {
-    return (
-      <h4 className="text-lg font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h4>
-    );
-  },
-  h5: ({ node, children, ...props }) => {
-    return (
-      <h5 className="text-base font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h5>
-    );
-  },
-  h6: ({ node, children, ...props }) => {
-    return (
-      <h6 className="text-sm font-semibold mt-6 mb-2" {...props}>
-        {children}
-      </h6>
+      </Link>
     );
   },
 };
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
-  return (
-    <ReactMarkdown
-      remarkPlugins={remarkPlugins}
-      rehypePlugins={rehypePlugins}
-      components={components}
-    >
-      {children}
-    </ReactMarkdown>
-  );
+  return <Streamdown components={components}>{children}</Streamdown>;
 };
 
 export const Markdown = memo(

@@ -26,7 +26,6 @@ import { entitlementsByUserTier } from "~/lib/ai/entitlements";
 import { convertToUIMessages, generateUUID } from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
 import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/next";
-// import { markdownJoinerTransform } from "~/lib/ai/markdown-transform";
 
 export const maxDuration = 120;
 
@@ -273,10 +272,7 @@ export async function POST(req: Request) {
             }),
           }),
           messages: convertToModelMessages(uiMessages),
-          experimental_transform: [
-            // markdownJoinerTransform(),
-            smoothStream({ chunking: "word" }),
-          ],
+          experimental_transform: [smoothStream({ chunking: "word" })],
           ...(providerOptions ? { providerOptions } : {}),
           abortSignal,
         });
