@@ -24,28 +24,31 @@ import { usePaginatedQuery } from "convex/react";
 import { Rocket, Settings2, Search, X, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
-export function ChatSidebar({
-  session,
-}: {
-  session: Session | null;
-}) {
+export function ChatSidebar({ session }: { session: Session | null }) {
   const router = useRouter();
   const userId = session?.user?.userId ?? "";
 
   const [search, setSearch] = useState("");
 
-  const { results: pagedThreads, status, loadMore } = usePaginatedQuery(
+  const {
+    results: pagedThreads,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
     api.threads.listThreadsPaginated,
     { userId, term: search || undefined },
     { initialNumItems: 20 },
   );
 
-  const threads: ThreadInterface[] = (pagedThreads as unknown as ThreadInterface[]) || [];
-
+  const threads: ThreadInterface[] =
+    (pagedThreads as unknown as ThreadInterface[]) || [];
 
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
-    if (status === "CanLoadMore" && el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
+    if (
+      status === "CanLoadMore" &&
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 200
+    ) {
       loadMore(20);
     }
   };
@@ -88,12 +91,15 @@ export function ChatSidebar({
         groups.older.push(thread);
       }
     }
-    
+
     groups.pinned.sort((a, b) => b.createdAt - a.createdAt);
     return groups;
   }
 
-  const grouped = useMemo(() => groupThreadsByDate(filteredThreads), [filteredThreads]);
+  const grouped = useMemo(
+    () => groupThreadsByDate(filteredThreads),
+    [filteredThreads],
+  );
 
   function renderGroup(label: string, threads: ThreadInterface[]) {
     if (!threads.length) return null;
