@@ -19,7 +19,7 @@ import { api } from "~/convex/_generated/api";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { ThreadInterface } from "~/types/thread";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import {
   optimisticallyUpdateValueInPaginatedQuery,
   usePaginatedQuery,
@@ -44,6 +44,16 @@ import {
 } from "~/components/ui/context-menu";
 import { useMutation } from "convex/react";
 import { regenerateThreadTitle } from "../actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 
 export function ChatSidebar({ session }: { session: Session | null }) {
   const router = useRouter();
@@ -51,6 +61,11 @@ export function ChatSidebar({ session }: { session: Session | null }) {
   const userId = session?.user?.userId ?? "";
   const [isPending, startTransition] = useTransition();
   const [isRegenerating, startRegeneration] = useTransition();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<ThreadInterface | null>(
+    null,
+  );
+  const deleteShiftRef = useRef(false);
 
   const {
     results: pagedThreads,
@@ -202,13 +217,23 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                       )}
                     </ContextMenuItem>
                     <ContextMenuItem
+                      onPointerDown={(e) => {
+                        deleteShiftRef.current = e.shiftKey;
+                      }}
                       onSelect={() => {
-                        startTransition(async () => {
-                          await mutateThread({
-                            id: thread.id,
-                            status: "deleted",
+                        const shift = deleteShiftRef.current;
+                        deleteShiftRef.current = false;
+                        if (shift) {
+                          startTransition(async () => {
+                            await mutateThread({
+                              id: thread.id,
+                              status: "deleted",
+                            });
                           });
-                        });
+                          return;
+                        }
+                        setPendingDelete(thread);
+                        setConfirmOpen(true);
                       }}
                       disabled={isPending || isRegenerating}
                     >
@@ -387,6 +412,36 @@ export function ChatSidebar({ session }: { session: Session | null }) {
           </SidebarMenu>
         </SidebarFooter>
       )}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Thread</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{pendingDelete?.title}"? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!pendingDelete) return;
+                startTransition(async () => {
+                  await mutateThread({
+                    id: pendingDelete.id,
+                    status: "deleted",
+                  });
+                  setConfirmOpen(false);
+                  setPendingDelete(null);
+                });
+              }}
+              disabled={isPending}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="absolute right-0 top-0 h-full w-4 cursor-col-resize"></div>
     </Sidebar>
   );

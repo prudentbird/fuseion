@@ -23,6 +23,7 @@
     "@arcjet/next": "1.0.0-beta.10",
     "@convex-dev/eslint-plugin": "0.0.1-alpha.4",
     "@convex-dev/persistent-text-streaming": "^0.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-context-menu": "^2.2.16",
     "@radix-ui/react-dialog": "^1.1.14",
