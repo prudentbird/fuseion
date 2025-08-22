@@ -3,9 +3,9 @@ import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
 import { redirect } from "next/navigation";
-import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
 import { getDefaultModel } from "~/lib/utils";
+import { fetchQuery, preloadQuery } from "convex/nextjs";
 
 export default async function Page({
   params,
@@ -25,6 +25,15 @@ export default async function Page({
   const initialMessages = await preloadQuery(api.messages.listMessages, {
     threadId: id,
   });
+
+  const thread = await fetchQuery(api.threads.getThreadByUserIdAndThreadId, {
+    userId: session.user.userId ?? "",
+    threadId: id,
+  });
+
+  if (!thread || thread.status === "deleted") {
+    redirect("/chat");
+  }
 
   if (!model) {
     return (

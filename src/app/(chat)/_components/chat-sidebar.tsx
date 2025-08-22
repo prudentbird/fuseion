@@ -14,11 +14,11 @@ import {
 } from "~/components/ui/sidebar";
 import Link from "next/link";
 import type { Session } from "next-auth";
-import { useRouter } from "next/navigation";
 import { api } from "~/convex/_generated/api";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { ThreadInterface } from "~/types/thread";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import {
   optimisticallyUpdateValueInPaginatedQuery,
@@ -57,6 +57,7 @@ import {
 
 export function ChatSidebar({ session }: { session: Session | null }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [search, setSearch] = useState("");
   const userId = session?.user?.userId ?? "";
   const [isPending, startTransition] = useTransition();
@@ -195,8 +196,8 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                   <ContextMenuContent>
                     <ContextMenuItem
                       onSelect={() => {
-                        startTransition(async () => {
-                          await mutateThread({
+                        startTransition(() => {
+                          void mutateThread({
                             id: thread.id,
                             pinned: !thread.pinned,
                           });
@@ -224,8 +225,11 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                         const shift = deleteShiftRef.current;
                         deleteShiftRef.current = false;
                         if (shift) {
-                          startTransition(async () => {
-                            await mutateThread({
+                          startTransition(() => {
+                            if (pathname === `/chat/${thread.id}`) {
+                              router.push("/chat");
+                            }
+                            void mutateThread({
                               id: thread.id,
                               status: "deleted",
                             });
@@ -426,8 +430,11 @@ export function ChatSidebar({ session }: { session: Session | null }) {
             <AlertDialogAction
               onClick={() => {
                 if (!pendingDelete) return;
-                startTransition(async () => {
-                  await mutateThread({
+                startTransition(() => {
+                  if (pathname === `/chat/${pendingDelete.id}`) {
+                    router.push("/chat");
+                  }
+                  void mutateThread({
                     id: pendingDelete.id,
                     status: "deleted",
                   });
