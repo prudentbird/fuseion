@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 export const createStream = mutation({
   args: {
@@ -26,5 +26,18 @@ export const listStreamsByThreadId = query({
       .query("streams")
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
       .collect();
+  },
+});
+
+export const clearOldStreams = internalMutation({
+  handler: async (ctx) => {
+    const streams = await ctx.db.query("streams").collect();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const cutoff = Date.now() - oneDayMs;
+    for (const stream of streams) {
+      if (stream.createdAt < cutoff) {
+        await ctx.db.delete(stream._id);
+      }
+    }
   },
 });

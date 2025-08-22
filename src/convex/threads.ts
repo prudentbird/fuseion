@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { paginationOptsValidator } from "convex/server";
 
 export const createThread = mutation({
@@ -57,32 +57,6 @@ export const getThreadByUserIdAndThreadId = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter((q) => q.eq(q.field("id"), args.threadId))
       .unique();
-  },
-});
-
-export const internalUpdateThreadWithExternalId = internalMutation({
-  args: {
-    id: v.string(),
-    title: v.optional(v.string()),
-    model: v.optional(v.string()),
-    status: v.optional(v.string()),
-    pinned: v.optional(v.boolean()),
-  },
-  handler: async (ctx, args) => {
-    const thread = await ctx.db
-      .query("threads")
-      .withIndex("by_external_id", (q) => q.eq("id", args.id))
-      .unique();
-    if (!thread) {
-      return null;
-    }
-    return await ctx.db.patch(thread._id, {
-      ...(typeof args.title !== "undefined" ? { title: args.title } : {}),
-      ...(typeof args.model !== "undefined" ? { model: args.model } : {}),
-      ...(typeof args.status !== "undefined" ? { status: args.status } : {}),
-      ...(typeof args.pinned !== "undefined" ? { pinned: args.pinned } : {}),
-      updatedAt: Date.now(),
-    });
   },
 });
 
