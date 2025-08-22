@@ -52,9 +52,9 @@ const components: Partial<StreamdownProps["components"]> = {
 
     return <CodeBlock language={lang}>{code}</CodeBlock>;
   },
-  a: ({ node, children, ...props }) => {
+  a: ({ children, ...props }) => {
     return (
-      // @ts-expect-error
+      // @ts-expect-error: Streamdown provides props with a broader type than Next.js Link expects
       <Link
         className="text-blue-500 hover:underline"
         target="_blank"

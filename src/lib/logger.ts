@@ -31,51 +31,45 @@ export class Logger {
     });
   }
 
-  log(message: any, context?: string) {
-    const obj = { context: context || this.context };
-    if (typeof message === "object") {
-      this.pino.info(obj, message.message, ...message.optionalParams);
-    } else {
-      this.pino.info(obj, message);
+  private stringifyMessage(message: unknown): string {
+    if (message == null) return "";
+    if (typeof message === "string") return message;
+    if (message instanceof Error) return message.message;
+    try {
+      return JSON.stringify(message);
+    } catch {
+      return String(message);
     }
   }
 
-  error(message: any, trace?: string, context?: string) {
+  log(message: unknown, context?: string) {
     const obj = { context: context || this.context };
-    if (typeof message === "object") {
-      this.pino.error(obj, message.message, ...message.optionalParams);
-    } else {
-      this.pino.error(obj, message);
-    }
-    if (trace) {
-      this.pino.error(trace);
-    }
+    const msg = this.stringifyMessage(message);
+    this.pino.info(obj, msg);
   }
 
-  warn(message: any, context?: string) {
+  error(message: unknown, trace?: string, context?: string) {
     const obj = { context: context || this.context };
-    if (typeof message === "object") {
-      this.pino.warn(obj, message.message, ...message.optionalParams);
-    } else {
-      this.pino.warn(obj, message);
-    }
+    const msg = this.stringifyMessage(message);
+    if (trace) this.pino.error({ ...obj, trace }, msg);
+    else this.pino.error(obj, msg);
   }
 
-  debug(message: any, context?: string) {
+  warn(message: unknown, context?: string) {
     const obj = { context: context || this.context };
-    if (typeof message === "object") {
-      this.pino.debug(obj, message.message, ...message.optionalParams);
-    } else {
-      this.pino.debug(obj, message);
-    }
+    const msg = this.stringifyMessage(message);
+    this.pino.warn(obj, msg);
   }
 
-  verbose(message: any, context?: string) {
+  debug(message: unknown, context?: string) {
     const obj = { context: context || this.context };
-    if (typeof message === "object") {
-      this.pino.trace(obj, message.message, ...message.optionalParams);
-    } else {
-      this.pino.trace(obj, message);
-    }
+    const msg = this.stringifyMessage(message);
+    this.pino.debug(obj, msg);
+  }
+
+  verbose(message: unknown, context?: string) {
+    const obj = { context: context || this.context };
+    const msg = this.stringifyMessage(message);
+    this.pino.trace(obj, msg);
   }
 }

@@ -9,9 +9,9 @@ import { memo, useState } from "react";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
 import { MessageReasoning } from "./reasoning";
+import type { UseChatHelpers } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
 // import { PreviewAttachment } from './attachment-preview';
-import type { UseChatHelpers, UIMessage } from "@ai-sdk/react";
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
 const PurePreviewMessage = ({
@@ -91,7 +91,6 @@ const PurePreviewMessage = ({
                           key={key}
                           text={part.text}
                           role={message.role}
-                          isLoading={isLoading}
                         />
                       );
                     }

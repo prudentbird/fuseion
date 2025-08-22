@@ -7,10 +7,9 @@ import { Markdown } from "./markdown";
 interface TextPartProps {
   role: "user" | "assistant" | string;
   text: string;
-  isLoading: boolean;
 }
 
-function PureTextPart({ role, text, isLoading }: TextPartProps) {
+function PureTextPart({ role, text }: TextPartProps) {
   if (text.trim() === "") return null;
 
   return (

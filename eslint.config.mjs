@@ -13,6 +13,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...convexPlugin.configs.recommended,
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: ["node_modules", "dist", ".next", "src/convex"],
+  },
 ];
 
 export default eslintConfig;

@@ -11,8 +11,6 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: UserInterface & DefaultSession["user"];
   }
-
-  interface User extends UserInterface {}
   interface AdapterUser extends UserInterface {
     emailVerified: Date | null;
   }
@@ -48,13 +46,14 @@ export const {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        const typedUser = user as unknown as UserInterface;
         const dbUser = await fetchMutation(api.users.upSertUser, {
-          tier: user.tier,
-          name: user.name,
-          email: user.email,
-          userId: user.userId,
-          picture: user.picture,
-          preferences: user.preferences,
+          tier: typedUser.tier,
+          name: typedUser.name,
+          email: typedUser.email,
+          userId: typedUser.userId,
+          picture: typedUser.picture,
+          preferences: typedUser.preferences,
         } as UserInterface);
         if (!dbUser) {
           return false;

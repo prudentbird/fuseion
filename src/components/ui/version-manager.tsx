@@ -5,27 +5,33 @@ import { Button } from "./button";
 import { useEffect, useRef } from "react";
 import { RefreshCcw } from "lucide-react";
 
-function useInterval<P extends Function>(
+type AnyFn = (...args: unknown[]) => unknown;
+
+function useInterval<P extends AnyFn>(
   callback: P,
   { interval, lead }: { interval: number; lead?: boolean },
 ): void {
-  const savedCallback = useRef<P>(null);
+  const savedCallback = useRef<P | null>(null);
 
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
   useEffect(() => {
-    const tick = (): void => savedCallback.current?.();
+    const tick = (): void => {
+      if (savedCallback.current) savedCallback.current();
+    };
 
-    lead && tick();
+    if (lead) {
+      tick();
+    }
 
     if (interval !== null) {
       const id = setInterval(tick, interval);
 
       return () => clearInterval(id);
     }
-  }, [interval]);
+  }, [interval, lead]);
 }
 
 export const VersionManager = () => {

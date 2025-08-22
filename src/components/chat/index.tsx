@@ -26,19 +26,15 @@ const Chat = ({
   session: Session;
   autoResume: boolean;
   selectedModel: Model;
-  preloadedInitialMessages?: Preloaded<typeof api.messages.listMessages>;
+  preloadedInitialMessages: Preloaded<typeof api.messages.listMessages>;
 }) => {
-  let initialMessages: ChatMessage[] = [];
-  if (preloadedInitialMessages) {
-    initialMessages = usePreloadedQuery(preloadedInitialMessages).map(
-      (message) => ({
-        id: message.id ?? "",
-        role: message.role as "system" | "user" | "assistant",
-        parts: message.parts ? JSON.parse(message.parts) : [],
-        metadata: message.metadata ? JSON.parse(message.metadata) : undefined,
-      }),
-    );
-  }
+  const preloaded = usePreloadedQuery(preloadedInitialMessages);
+  const initialMessages: ChatMessage[] = preloaded.map((message) => ({
+    id: message.id ?? "",
+    role: message.role as "system" | "user" | "assistant",
+    parts: message.parts ? JSON.parse(message.parts) : [],
+    metadata: message.metadata ? JSON.parse(message.metadata) : undefined,
+  }));
 
   const { setDataStream } = useDataStream();
 
@@ -93,8 +89,6 @@ const Chat = ({
   }, [query, sendMessage, hasAppendedQuery, id]);
 
   useAutoResume({
-    id,
-    session,
     setMessages,
     resumeStream,
     initialMessages,

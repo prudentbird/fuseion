@@ -202,11 +202,11 @@ export async function POST(req: Request) {
       });
     });
 
-    let modelId = model.id;
+    const modelId = model.id;
     let apiKey: string | undefined;
     const headersList = await headers();
     let providerOptions: ProviderOptions | undefined;
-    let provider = model.metadata.provider.toLowerCase();
+    const provider = model.metadata.provider.toLowerCase();
     let aiModel: Parameters<typeof streamText>[0]["model"];
 
     switch (provider) {

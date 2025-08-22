@@ -421,8 +421,9 @@ export function ChatSidebar({ session }: { session: Session | null }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Thread</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{pendingDelete?.title}"? This
-              action cannot be undone.
+              Are you sure you want to delete &ldquo;
+              {pendingDelete?.title || "this thread"}&rdquo;? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

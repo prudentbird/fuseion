@@ -8,7 +8,7 @@ import { ArrowLeft, Loader2, UserLock } from "lucide-react";
 
 export const SettingsHeader = () => {
   const router = useRouter();
-  const [_, action, isPending] = useActionState(logoutAction, null);
+  const [, action, isPending] = useActionState(logoutAction, null);
 
   return (
     <div className="flex items-center justify-between pb-8">

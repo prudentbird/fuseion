@@ -23,8 +23,9 @@ export function PureMessageActions({
   setMode: Dispatch<SetStateAction<"view" | "edit">>;
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 }) {
+  const [, copyToClipboard] = useCopyToClipboard();
+
   if (isLoading) return null;
-  const [_, copyToClipboard] = useCopyToClipboard();
 
   if (message.role === "user")
     return (

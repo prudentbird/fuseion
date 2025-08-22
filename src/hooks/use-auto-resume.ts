@@ -2,14 +2,11 @@
 
 import { useEffect } from "react";
 import equal from "fast-deep-equal";
-import type { Session } from "next-auth";
 import type { ChatMessage } from "~/types";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useDataStream } from "~/components/chat/data-stream/provider";
 
 export interface UseAutoResumeParams {
-  id: string;
-  session: Session;
   autoResume: boolean;
   initialMessages: ChatMessage[];
   resumeStream: UseChatHelpers<ChatMessage>["resumeStream"];
@@ -17,8 +14,6 @@ export interface UseAutoResumeParams {
 }
 
 export function useAutoResume({
-  id,
-  session,
   autoResume,
   initialMessages,
   resumeStream,
