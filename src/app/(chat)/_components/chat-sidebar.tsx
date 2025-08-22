@@ -247,6 +247,10 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                     <ContextMenuItem
                       onSelect={() => {
                         startRegeneration(async () => {
+                          void mutateThread({
+                            id: thread.id,
+                            status: "streaming",
+                          });
                           const title = await regenerateThreadTitle({
                             userId,
                             threadId: thread.id,
@@ -254,6 +258,7 @@ export function ChatSidebar({ session }: { session: Session | null }) {
                           void mutateThread({
                             title,
                             id: thread.id,
+                            status: "done",
                           });
                         });
                       }}
