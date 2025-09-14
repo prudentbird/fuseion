@@ -19,6 +19,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { ChatSDKError } from "~/lib/errors";
 import { createOpenAI } from "@ai-sdk/openai";
 import { queries, mutations } from "~/lib/db";
+import { getSystemPrompt } from "~/lib/ai/system";
 import { ProviderOptions } from "@ai-sdk/provider-utils";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateTitleFromUserMessage } from "../../actions";
@@ -270,6 +271,10 @@ export async function POST(req: Request) {
             middleware: extractReasoningMiddleware({
               tagName: "think",
             }),
+          }),
+          system: getSystemPrompt({
+            modelName: model.name,
+            userName: session.user.name,
           }),
           messages: convertToModelMessages(uiMessages),
           experimental_transform: [smoothStream({ chunking: "word" })],

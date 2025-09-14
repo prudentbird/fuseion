@@ -63,6 +63,7 @@ const ChatInput = ({
           <form onSubmit={handleSend}>
             <div className="mb-4">
               <Textarea
+                autoFocus
                 id="chat-input"
                 name="chat-input"
                 value={inputValue}
