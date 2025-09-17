@@ -9,8 +9,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "preview": "next build --turbopack && next start",
-    "lint": "next lint && echo Lint Checks successfully completed!",
-    "lint:fix": "next lint --fix && echo Lint Checks successfully completed!",
+    "lint": "eslint . && echo Lint Checks successfully completed!",
+    "lint:fix": "eslint --fix . && echo Lint Checks successfully completed!",
     "typecheck": "tsc --pretty --noEmit && echo Type Checks successfuly completed!",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache && echo Prettier Format successfully completed!",
     "code-quality": "npm run lint && npm run typecheck && npm run build && echo Code Quality successfully completed!"

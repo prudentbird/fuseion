@@ -11,11 +11,19 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [
+      "out/**",
+      "dist/**",
+      ".next/**",
+      "build/**",
+      "next-env.d.ts",
+      "src/convex/**",
+      "node_modules/**",
+    ],
+  },
   ...convexPlugin.configs.recommended,
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  {
-    ignores: ["node_modules", "dist", ".next", "src/convex"],
-  },
 ];
 
 export default eslintConfig;
