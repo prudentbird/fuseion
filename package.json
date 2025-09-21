@@ -36,7 +36,7 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "@wooorm/starry-night": "^3.8.0",
-    "ai": "^5.0.44",
+    "ai": "^5.0.48",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
