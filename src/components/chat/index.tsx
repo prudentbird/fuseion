@@ -2,11 +2,11 @@
 
 import ChatInput from "./input";
 import { Messages } from "./messages";
-import { ChatMessage } from "~/types";
+import { ChatMessage, type CustomUIDataTypes } from "~/types";
 import { Model } from "~/lib/ai/models";
 import { useChat } from "@ai-sdk/react";
 import type { Session } from "next-auth";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type DataUIPart } from "ai";
 import { useState, useEffect } from "react";
 import { api } from "~/convex/_generated/api";
 import { useSearchParams } from "next/navigation";
@@ -67,7 +67,7 @@ const Chat = ({
       },
     }),
     onData: (dataPart) => {
-      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
+      setDataStream((ds) => (ds ? [...ds, dataPart as DataUIPart<CustomUIDataTypes>] : []));
     },
   });
 
