@@ -16,7 +16,7 @@
     "code-quality": "npm run lint && npm run typecheck && npm run build && echo Code Quality successfully completed!"
   },
   "dependencies": {
-    "@ai-sdk/google": "^2.0.14",
+    "@ai-sdk/google": "^2.0.15",
     "@ai-sdk/groq": "^2.0.20",
     "@ai-sdk/openai": "^2.0.32",
     "@ai-sdk/provider-utils": "^3.0.9",
