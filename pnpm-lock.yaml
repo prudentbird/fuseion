@@ -31,7 +31,7 @@ importers:
         version: 0.0.1-alpha.4(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2)
       '@convex-dev/persistent-text-streaming':
         specifier: ^0.2.3
-        version: 0.2.3(convex@1.27.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 0.2.3(convex@1.27.3(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -81,8 +81,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.27.1
-        version: 1.27.1(react@19.1.1)
+        specifier: ^1.27.3
+        version: 1.27.3(react@19.1.1)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -2581,8 +2581,8 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex@1.27.1:
-    resolution: {integrity: sha512-kep7JFn5Bil9/OUZUsL1bgoo0G9DmEf7stkBW67+NqP2FrzBt2TX8yz4V6oKLygzepGy90Ura2FtqXawYKXYIg==}
+  convex@1.27.3:
+    resolution: {integrity: sha512-Ebr9lPgXkL7JO5IFr3bG+gYvHskyJjc96Fx0BBNkJUDXrR/bd9/uI4q8QszbglK75XfDu068vR0d/HK2T7tB9Q==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -5036,9 +5036,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@convex-dev/persistent-text-streaming@0.2.3(convex@1.27.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@convex-dev/persistent-text-streaming@0.2.3(convex@1.27.3(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      convex: 1.27.1(react@19.1.1)
+      convex: 1.27.3(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
@@ -7013,7 +7013,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex@1.27.1(react@19.1.1):
+  convex@1.27.3(react@19.1.1):
     dependencies:
       esbuild: 0.25.4
       jwt-decode: 4.0.0
