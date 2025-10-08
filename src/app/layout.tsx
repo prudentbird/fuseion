@@ -17,8 +17,38 @@ const inconsolata = Inconsolata({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(env.APP_URL),
   title: "FuseIon",
-  description: "AI chat for nerds by nerds",
+  description:
+    "Chat instantly with the latest AI models from Google, OpenAI, Anthropic, DeepSeek, and more in one app.",
+  applicationName: "FuseIon",
+  creator: "prudentbird",
+  authors: [{ name: "prudentbird", url: "https://prudentbird.com" }],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "FuseIon",
+    title: "FuseIon",
+    description: "AI chat for nerds by nerds",
+    images: [
+      {
+        url: "/favicon.ico",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FuseIon",
+    description: "AI chat for nerds by nerds",
+    creator: "prudentbird",
+    images: ["/favicon.ico"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

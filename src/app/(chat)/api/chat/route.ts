@@ -75,7 +75,7 @@ const aj = arcjet({
 export async function POST(req: Request) {
   const abortSignal = req.signal;
   let requestBody: PostRequestBody;
-  
+
   const session = await auth();
 
   if (!session?.user || !session.user.userId) {
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
 
     return new ChatSDKError("forbidden:api").toResponse();
   }
-  
+
   try {
     const json = await req.json();
     requestBody = postRequestBodySchema.parse(json);
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
     console.error("[Chat Route Error]:", "Bad request");
     return new ChatSDKError("bad_request:api").toResponse();
   }
-  
+
   try {
     const { id, model, message }: PostRequestBody = requestBody;
 
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
         `rate_limit_daily:chat_${session.user.tier}`,
       ).toResponse();
     }
-    
+
     const monthlyMessageCount = await queries.getMonthlyMessageCountByUserId(
       session.user.userId,
     );
@@ -137,7 +137,7 @@ export async function POST(req: Request) {
           `rate_limit_monthly:chat_${session.user.tier}`,
         ).toResponse();
       }
-      
+
       const credits = await queries.getUserCredits(session.user.userId);
       if (credits === null || credits < 1) {
         return new ChatSDKError(
@@ -146,17 +146,17 @@ export async function POST(req: Request) {
       }
       await mutations.updateUserCredits(session.user.userId, credits - 1);
     }
-    
+
     const thread = await queries.getThreadByUserIdAndThreadId(
       session.user.userId,
       id,
     );
-    
+
     if (!thread) {
       const title = await generateTitleFromUserMessage({
         message,
       });
-      
+
       await mutations.createThread({
         id,
         title,
@@ -178,7 +178,7 @@ export async function POST(req: Request) {
     const messagesFromConvex = await queries.listMessagesByThreadId(id);
 
     const uiMessages = [...convertToUIMessages(messagesFromConvex), message];
-    
+
     await mutations.createMessage({
       threadId: id,
       userId: session.user.userId,
@@ -197,7 +197,7 @@ export async function POST(req: Request) {
       id: streamId,
       threadId: id,
     });
-    
+
     abortSignal?.addEventListener("abort", async () => {
       await mutations.updateThreadWithId({
         id,
@@ -235,7 +235,7 @@ export async function POST(req: Request) {
         aiModel = openrouter(modelId);
         break;
 
-        case "groq":
+      case "groq":
         apiKey = headersList.get("groq-api-key") ?? env.GROQ_API_KEY;
         if (!apiKey) {
           return new ChatSDKError("unauthorized:api").toResponse();
@@ -264,7 +264,7 @@ export async function POST(req: Request) {
       default:
         return new ChatSDKError("unsupported_provider:api").toResponse();
     }
-    
+
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
         const result = streamText({
@@ -323,22 +323,24 @@ export async function POST(req: Request) {
       },
     });
 
-    
     const streamContext = getStreamContext();
-    
+
     if (streamContext) {
       return new Response(
         await streamContext.resumableStream(streamId, () =>
           stream.pipeThrough(new JsonToSseTransformStream()),
-      ),
-    );
-  } else {
-    return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
-  }
-  console.error("[Chat Route]:", "trace");
+        ),
+      );
+    } else {
+      return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
+    }
+    console.error("[Chat Route]:", "trace");
   } catch (error) {
     console.error("[Chat Route Error]:", error);
-    console.error("[Chat Route Error]:", error instanceof Error ? error.message : "Unknown error");
+    console.error(
+      "[Chat Route Error]:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
