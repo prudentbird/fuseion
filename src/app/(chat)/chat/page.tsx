@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import Chat from "~/components/chat";
-import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
+import { Model } from "~/lib/ai/models";
 import { auth } from "~/app/(auth)/auth";
+import type { Session } from "next-auth";
 import { redirect } from "next/navigation";
 import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
@@ -24,7 +25,7 @@ async function ChatPageContent({
   session,
   modelCookie,
 }: {
-  session: any;
+  session: Session;
   modelCookie: string | undefined;
 }) {
   "use cache";
