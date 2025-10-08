@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Chat from "~/components/chat";
 import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
@@ -7,21 +8,33 @@ import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
 import { generateUUID, getDefaultModel } from "~/lib/utils";
 
-export default async function ChatPage() {
+async function ChatWithModel() {
+  const cookieStore = await cookies();
+  const model = cookieStore.get("chat-model");
   const session = await auth();
 
   if (!session) {
     redirect("/auth");
   }
 
+  return <ChatPageContent session={session} modelCookie={model?.value} />;
+}
+
+async function ChatPageContent({
+  session,
+  modelCookie,
+}: {
+  session: any;
+  modelCookie: string | undefined;
+}) {
+  "use cache";
+
   const id = generateUUID();
-  const cookieStore = await cookies();
-  const model = cookieStore.get("chat-model");
   const initialMessages = await preloadQuery(api.messages.listMessages, {
     threadId: id,
   });
 
-  if (!model) {
+  if (!modelCookie) {
     return (
       <Chat
         id={id}
@@ -33,7 +46,7 @@ export default async function ChatPage() {
     );
   }
 
-  const selectedModel: Model = JSON.parse(model.value);
+  const selectedModel: Model = JSON.parse(modelCookie);
 
   return (
     <Chat
@@ -43,5 +56,13 @@ export default async function ChatPage() {
       selectedModel={selectedModel}
       preloadedInitialMessages={initialMessages}
     />
+  );
+}
+
+export default async function ChatPage() {
+  return (
+    <Suspense fallback={null}>
+      <ChatWithModel />
+    </Suspense>
   );
 }
