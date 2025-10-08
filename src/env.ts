@@ -6,6 +6,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["local", "test", "development", "staging", "production"])
       .default("development"),
+    APP_URL: z.string(),
     REDIS_URL: z.string(),
     ARCJET_KEY: z.string(),
     AUTH_SECRET: z.string(),
