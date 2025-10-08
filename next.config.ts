@@ -7,15 +7,15 @@ const buildId = crypto.randomUUID();
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  typedRoutes: true,
+  reactCompiler: true,
   experimental: {
     ppr: true,
+    typedEnv: true,
+    cacheComponents: true,
     browserDebugInfoInTerminal: true,
+    turbopackPersistentCachingForDev: true,
+    turbopackPersistentCachingForBuild: true,
   },
   generateBuildId: () => {
     return buildId;
