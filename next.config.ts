@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
   experimental: {
     ppr: true,
     typedEnv: true,
-    cacheComponents: true,
     browserDebugInfoInTerminal: true,
     turbopackPersistentCachingForDev: true,
     turbopackPersistentCachingForBuild: true,
