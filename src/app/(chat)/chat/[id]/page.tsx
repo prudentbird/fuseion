@@ -7,6 +7,8 @@ import { api } from "~/convex/_generated/api";
 import { getDefaultModel } from "~/lib/utils";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page({
   params,
 }: {

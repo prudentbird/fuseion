@@ -9,6 +9,8 @@ import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
 import { generateUUID, getDefaultModel } from "~/lib/utils";
 
+export const dynamic = 'force-dynamic';
+
 async function ChatWithModel() {
   const cookieStore = await cookies();
   const model = cookieStore.get("chat-model");
