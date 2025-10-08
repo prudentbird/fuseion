@@ -72,7 +72,7 @@ export default async function LoginPage() {
               asChild
               className="p-0 h-auto text-sm text-gray-300 hover:text-white underline"
             >
-              <Link href="/terms">Terms of Service</Link>
+              <Link href="/">Terms of Service</Link>
             </Button>{" "}
             and{" "}
             <Button
@@ -80,7 +80,7 @@ export default async function LoginPage() {
               asChild
               className="p-0 h-auto text-sm text-gray-300 hover:text-white underline"
             >
-              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/">Privacy Policy</Link>
             </Button>
           </div>
         </div>
