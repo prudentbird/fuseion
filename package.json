@@ -37,6 +37,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "@wooorm/starry-night": "^3.8.0",
     "ai": "^5.0.60",
+    "babel-plugin-react-compiler": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
