@@ -74,7 +74,7 @@
     "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "^24.7.0",
     "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.1",
+    "@types/react-dom": "^19.2.2",
     "eslint": "^9.37.0",
     "eslint-config-next": "15.6.0-canary.52",
     "prettier": "^3.6.2",
