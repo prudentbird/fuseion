@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import type { UIMessage } from "@ai-sdk/react";
 
 type FileUIPart = Extract<UIMessage["parts"][number], { type: "file" }>;
@@ -19,11 +20,12 @@ export const PreviewAttachment = ({
           mediaType.startsWith("image") ? (
             // NOTE: it is recommended to use next/image for images
             // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               key={url}
               src={url}
               alt={filename ?? "An image attachment"}
               className="rounded-md size-full object-cover"
+              fill
             />
           ) : (
             <div className="" />

@@ -24,11 +24,7 @@ export function DataStreamProvider({
 
   const value = useMemo(() => ({ dataStream, setDataStream }), [dataStream]);
 
-  return (
-    <DataStreamContext.Provider value={value}>
-      {children}
-    </DataStreamContext.Provider>
-  );
+  return <DataStreamContext value={value}>{children}</DataStreamContext>;
 }
 
 export function useDataStream() {

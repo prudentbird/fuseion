@@ -76,7 +76,7 @@ export const listMessages = query({
       .query("messages")
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
       .order("asc")
-      .collect();
+      .take(100);
   },
 });
 
@@ -91,11 +91,9 @@ export const getMessageCountByUserId = query({
     const messages = await ctx.db
       .query("messages")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.gte(q.field("createdAt"), threshold))
       .collect();
 
-    const recentMessages = messages.filter(
-      (message) => message.createdAt >= threshold,
-    );
-    return recentMessages.length;
+    return messages.length;
   },
 });

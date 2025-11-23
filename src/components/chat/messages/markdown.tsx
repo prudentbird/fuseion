@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { CodeBlock } from "./code";
+import dynamic from "next/dynamic";
+
+const CodeBlock = dynamic(() => import("./code").then((mod) => mod.CodeBlock), {
+  loading: () => (
+    <div className="w-full h-24 my-2 rounded-lg bg-muted animate-pulse" />
+  ),
+  ssr: false,
+});
 import type { BundledLanguage } from "shiki";
 import React, { memo, isValidElement } from "react";
 import { cn, getLanguageFromClassName } from "~/lib/utils";
