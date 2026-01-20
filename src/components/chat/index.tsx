@@ -7,7 +7,7 @@ import { Model } from "~/lib/ai/models";
 import { useChat } from "@ai-sdk/react";
 import type { Session } from "next-auth";
 import { DefaultChatTransport, type DataUIPart } from "ai";
-import { useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { api } from "~/convex/_generated/api";
 import { useSearchParams } from "next/navigation";
 import { useDataStream } from "./data-stream/provider";
@@ -76,19 +76,18 @@ const Chat = ({
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
-  const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
+  const hasAppendedQueryRef = useRef(false);
 
   useEffect(() => {
-    if (query && !hasAppendedQuery) {
+    if (query && !hasAppendedQueryRef.current) {
+      hasAppendedQueryRef.current = true;
       sendMessage({
         role: "user" as const,
         parts: [{ type: "text", text: query }],
       });
-
-      setHasAppendedQuery(true);
       window.history.replaceState({}, "", `/chat/${id}`);
     }
-  }, [query, sendMessage, hasAppendedQuery, id]);
+  }, [query, sendMessage, id]);
 
   useAutoResume({
     setMessages,

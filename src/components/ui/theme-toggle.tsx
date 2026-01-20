@@ -9,17 +9,19 @@
 import { toast } from "sonner";
 // import { useTheme } from 'next-themes';
 import { SunMoon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { Button } from "~/components/ui/button";
 // import { Moon, Sun, Monitor, SunMoon } from 'lucide-react';
 
+const emptySubscribe = () => () => {};
+
 export function ThemeToggle() {
   // const { setTheme, theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   if (!mounted) {
     return null;

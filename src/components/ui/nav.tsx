@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { useIsMobile } from "~/hooks/use-mobile";
 import { PanelLeft, Command, Plus } from "lucide-react";
@@ -15,20 +15,15 @@ import {
 const Nav = () => {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [showButtons, setShowButtons] = useState(false);
-  useEffect(() => {
-    if (isMobile) {
-      setShowButtons(true);
-    }
+  const [showButtonsOverride, setShowButtonsOverride] = useState<
+    boolean | null
+  >(null);
 
-    return () => {
-      setShowButtons(false);
-    };
-  }, [isMobile]);
+  const showButtons = showButtonsOverride ?? isMobile;
 
   const handleSidebarToggle = () => {
     if (!isMobile) {
-      setShowButtons(!showButtons);
+      setShowButtonsOverride((prev) => !(prev ?? false));
     }
   };
 
