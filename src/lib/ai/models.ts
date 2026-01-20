@@ -68,7 +68,7 @@ export const models: Model[] = [
       fullDescription:
         "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
       disabled: false,
-      modelPickerDefault: true,
+      modelPickerDefault: false,
       limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
       streamChunking: "word",
       features: ["parameters", "images", "pdfs", "search", "reasoning"],
