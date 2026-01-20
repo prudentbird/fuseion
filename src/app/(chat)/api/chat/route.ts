@@ -266,7 +266,7 @@ export async function POST(req: Request) {
     }
 
     const stream = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
+      execute: async ({ writer: dataStream }) => {
         const result = streamText({
           model: wrapLanguageModel({
             model: aiModel,
@@ -278,7 +278,7 @@ export async function POST(req: Request) {
             modelName: model.name,
             userName: session.user.name,
           }),
-          messages: convertToModelMessages(uiMessages),
+          messages: await convertToModelMessages(uiMessages),
           experimental_transform: [smoothStream({ chunking: "word" })],
           ...(providerOptions ? { providerOptions } : {}),
           abortSignal,

@@ -9,8 +9,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
+  cacheComponents: true,
   experimental: {
-    ppr: true,
     typedEnv: true,
     browserDebugInfoInTerminal: true,
     turbopackFileSystemCacheForDev: true,
