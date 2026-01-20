@@ -24,28 +24,7 @@ export interface Model {
 
 export const models: Model[] = [
   {
-    id: "gemini-2.0-flash",
-    name: "Gemini 2.0 Flash",
-    metadata: {
-      shortDescription: "Google's latest stable model",
-      fullDescription:
-        "Google's flagship model, known for speed and accuracy (and also web search!). Not quite as smart as Claude 3.5 Sonnet, but WAY faster and cheaper. Also has an insanely large context window (it can handle a lot of data).",
-      provider: "Google",
-      developer: "Google",
-      disabled: false,
-      experimental: false,
-      features: ["search"],
-      limits: {
-        maxInputTokens: 1000000,
-        maxOutputTokens: 8192,
-      },
-      modelPickerDefault: true,
-      streamChunking: "word",
-      apiKeySupport: "optional",
-    },
-  },
-  {
-    id: "gemini-2.5-flash-preview-04-17",
+    id: "gemini-2.5-flash",
     name: "Gemini 2.5 Flash",
     metadata: {
       provider: "Google",
@@ -59,24 +38,6 @@ export const models: Model[] = [
       features: ["images", "pdfs", "search", "reasoningEffort"],
       experimental: false,
       apiKeySupport: "required",
-    },
-  },
-  {
-    id: "gemini-2.0-flash-lite",
-    name: "Gemini 2.0 Flash Lite",
-    metadata: {
-      provider: "Google",
-      developer: "Google",
-      shortDescription: "Faster, less precise Gemini model",
-      fullDescription:
-        "Similar to 2.0 Flash, but even faster. Not as smart, but still good at most things.",
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 1000000, maxOutputTokens: 8192 },
-      streamChunking: "word",
-      features: ["fast", "images", "pdfs"],
-      experimental: true,
-      apiKeySupport: "optional",
     },
   },
   // {
@@ -107,7 +68,7 @@ export const models: Model[] = [
       fullDescription:
         "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
       disabled: false,
-      modelPickerDefault: true,
+      modelPickerDefault: false,
       limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
       streamChunking: "word",
       features: ["parameters", "images", "pdfs", "search", "reasoning"],
@@ -179,7 +140,7 @@ export const models: Model[] = [
       fullDescription:
         "A medium-sized open-weight model from OpenAI suitable for general-purpose tasks. gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI's Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities.",
       disabled: false,
-      modelPickerDefault: false,
+      modelPickerDefault: true,
       limits: { maxInputTokens: 128000, maxOutputTokens: 8192 },
       streamChunking: "line",
       features: ["parameters", "reasoning"],
