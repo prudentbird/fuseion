@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useScrollToBottom } from "./use-scroll-to-bottom";
 import type { UIMessage, UseChatHelpers } from "@ai-sdk/react";
 
@@ -18,12 +18,7 @@ export function useMessages({
     onViewportLeave,
   } = useScrollToBottom();
 
-  const prevStatusRef = useRef(status);
-  const hasSentMessage = useMemo(() => {
-    const wasSubmitted = prevStatusRef.current === "submitted";
-    prevStatusRef.current = status;
-    return status === "submitted" || wasSubmitted;
-  }, [status]);
+  const hasSentMessage = status === "submitted";
 
   useEffect(() => {
     if (chatId && status === "submitted") {
