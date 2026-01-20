@@ -31,7 +31,7 @@ importers:
         version: 0.0.1-alpha.4(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       '@convex-dev/persistent-text-streaming':
         specifier: ^0.2.3
-        version: 0.2.3(convex@1.27.4(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 0.2.3(convex@1.28.0(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.1(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -84,8 +84,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.27.4
-        version: 1.27.4(react@19.2.0)
+        specifier: ^1.28.0
+        version: 1.28.0(react@19.2.0)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -2591,8 +2591,8 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex@1.27.4:
-    resolution: {integrity: sha512-aPP3uxOF5v+K4uftXxRh8GAYepsjsFgU+S9IpAyLVNaFU3Z72WB1rIhaSzPAo4Q0TJWsOKANFGU903IU92QDTA==}
+  convex@1.28.0:
+    resolution: {integrity: sha512-40FgeJ/LxP9TxnkDDztU/A5gcGTdq1klcTT5mM0Ak+kSlQiDktMpjNX1TfkWLxXaE3lI4qvawKH95v2RiYgFxA==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -5044,9 +5044,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@convex-dev/persistent-text-streaming@0.2.3(convex@1.27.4(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@convex-dev/persistent-text-streaming@0.2.3(convex@1.28.0(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      convex: 1.27.4(react@19.2.0)
+      convex: 1.28.0(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -7029,7 +7029,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex@1.27.4(react@19.2.0):
+  convex@1.28.0(react@19.2.0):
     dependencies:
       esbuild: 0.25.4
       prettier: 3.6.2
