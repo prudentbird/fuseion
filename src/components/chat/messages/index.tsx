@@ -6,15 +6,12 @@ import { motion } from "framer-motion";
 import { ErrorMessage } from "./error";
 import type { Session } from "next-auth";
 import { ChatSDKError } from "~/lib/errors";
+import { useMessages } from "~/hooks/use-messages";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { PreviewMessage, ThinkingMessage } from "./message";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "~/components/ai-elements/conversation";
 
 interface MessagesProps {
+  chatId: string;
   session: Session;
   error: Error | undefined;
   status: UseChatHelpers<ChatMessage>["status"];
@@ -25,59 +22,94 @@ interface MessagesProps {
 
 function PureMessages({
   error,
+  chatId,
   session,
   status,
   messages,
   setMessages,
   regenerate,
 }: MessagesProps) {
-  const hasSentMessage = status === "submitted";
+  const {
+    containerRef: messagesContainerRef,
+    endRef: messagesEndRef,
+    onViewportEnter,
+    onViewportLeave,
+    hasSentMessage,
+  } = useMessages({
+    chatId,
+    status,
+  });
 
   return (
-    <Conversation className="h-full">
-      <ConversationContent className="mx-auto w-full max-w-3xl px-4 pb-40 pt-safe-offset-10">
-        {messages.length === 0 ? <Greeting session={session} /> : null}
+    <div
+      ref={messagesContainerRef}
+      className="flex flex-col min-w-0 gap-6 flex-1 pt-4"
+    >
+      {messages.length === 0 && <Greeting session={session} />}
 
-        {messages.map((message, index) => (
-          <PreviewMessage
-            key={`${message.id}-${index}`}
-            isLoading={status === "streaming" && messages.length - 1 === index}
-            message={message}
-            regenerate={regenerate}
-            requiresScrollPadding={
-              hasSentMessage && index === messages.length - 1 && !error
+      {messages.map((message, index) => (
+        <PreviewMessage
+          key={`${message.id}-${index}`}
+          message={message}
+          isLoading={status === "streaming" && messages.length - 1 === index}
+          setMessages={setMessages}
+          regenerate={regenerate}
+          requiresScrollPadding={
+            hasSentMessage && index === messages.length - 1 && !error
+          }
+        />
+      ))}
+
+      {status === "submitted" &&
+        !error &&
+        messages.length > 0 &&
+        messages[messages.length - 1].role === "user" && <ThinkingMessage />}
+
+      {error && (
+        <motion.div
+          data-testid="message-assistant-error"
+          className={"w-full mx-auto max-w-3xl px-4 group/message min-h-96"}
+          initial={{ y: 5, opacity: 0 }}
+          animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
+          data-role="assistant"
+        >
+          <ErrorMessage
+            error={
+              error instanceof ChatSDKError
+                ? error.message
+                : "Something went wrong"
             }
-            setMessages={setMessages}
           />
-        ))}
+        </motion.div>
+      )}
 
-        {status === "submitted" &&
-          !error &&
-          messages.length > 0 &&
-          messages[messages.length - 1].role === "user" && <ThinkingMessage />}
-
-        {error ? (
-          <motion.div
-            animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
-            className="w-full min-h-96"
-            data-role="assistant"
-            data-testid="message-assistant-error"
-            initial={{ y: 5, opacity: 0 }}
-          >
-            <ErrorMessage
-              error={
-                error instanceof ChatSDKError
-                  ? error.message
-                  : "Something went wrong"
-              }
-            />
-          </motion.div>
-        ) : null}
-      </ConversationContent>
-      <ConversationScrollButton />
-    </Conversation>
+      <EndSentinel
+        endRef={messagesEndRef}
+        onViewportLeave={onViewportLeave}
+        onViewportEnter={onViewportEnter}
+      />
+    </div>
   );
 }
+
+const EndSentinel = memo(function EndSentinel({
+  endRef,
+  onViewportEnter,
+  onViewportLeave,
+}: {
+  endRef: React.Ref<HTMLDivElement>;
+  onViewportEnter: () => void;
+  onViewportLeave: () => void;
+}) {
+  return (
+    <motion.div
+      ref={endRef}
+      className="shrink-0 min-w-[24px] min-h-[24px] scroll-mb-32"
+      onViewportLeave={onViewportLeave}
+      onViewportEnter={onViewportEnter}
+    />
+  );
+});
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
   if (prevProps.status === "streaming" || nextProps.status === "streaming")

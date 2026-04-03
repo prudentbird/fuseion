@@ -2,24 +2,15 @@
 
 import cx from "classnames";
 import { cn } from "~/lib/utils";
+import { TextPart } from "./text";
 import equal from "fast-deep-equal";
 import { ChatMessage } from "~/types";
 import { memo, useState } from "react";
 import { MessageEditor } from "./editor";
 import { MessageActions } from "./actions";
+import { MessageReasoning } from "./reasoning";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-  MessageToolbar,
-} from "~/components/ai-elements/message";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "~/components/ai-elements/reasoning";
 // import { PreviewAttachment } from './attachment-preview';
 // type FileUIPart = Extract<UIMessage['parts'][number], { type: 'file' }>;
 
@@ -37,88 +28,112 @@ const PurePreviewMessage = ({
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
-  const reasoningParts = message.parts.filter(
-    (part): part is Extract<(typeof message.parts)[number], { type: "reasoning" }> =>
-      part.type === "reasoning" && part.text.trim().length > 0,
-  );
-  const reasoningText = reasoningParts.map((part) => part.text).join("\n\n");
-  const lastPart = message.parts.at(-1);
-  const isReasoningStreaming =
-    isLoading && lastPart?.type === "reasoning" && reasoningText.length > 0;
-  const textParts = message.parts.filter(
-    (
-      part,
-    ): part is Extract<(typeof message.parts)[number], { type: "text" }> =>
-      part.type === "text" && part.text.trim() !== "",
-  );
 
   return (
     <AnimatePresence>
       <motion.div
         data-testid={`message-${message.role}`}
-        className="group/message w-full"
+        className="flex flex-col w-full mx-auto max-w-3xl px-4 group/message gap-6"
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         data-role={message.role}
       >
-        <Message from={message.role}>
-          <MessageContent
+        <div
+          className={cn(
+            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%]",
+            {
+              "w-full": mode === "edit",
+              "group-data-[role=user]/message:w-fit": mode !== "edit",
+            },
+          )}
+        >
+          <div
             className={cn("flex flex-col gap-2 w-full", {
-              "min-h-96":
-                mode !== "edit" &&
-                message.role === "assistant" &&
-                requiresScrollPadding,
-              "max-w-none": mode === "edit",
+              "min-h-96": message.role === "assistant" && requiresScrollPadding,
             })}
           >
-            {mode === "edit" ? (
-              <MessageEditor
-                key={message.id}
-                message={message}
-                regenerate={regenerate}
-                setMessages={setMessages}
-                setMode={setMode}
-              />
-            ) : (
-              <>
-                {reasoningText ? (
-                  <Reasoning className="w-full" isStreaming={isReasoningStreaming}>
-                    <ReasoningTrigger />
-                    <ReasoningContent>{reasoningText}</ReasoningContent>
-                  </Reasoning>
-                ) : null}
-
-                {textParts.map((part, index) => (
-                  <MessageResponse
-                    key={`message-${message.id}-part-${index}`}
-                    className={cn(
-                      message.role === "user"
-                        ? "text-primary-foreground"
-                        : "text-foreground",
-                    )}
-                  >
-                    {part.text}
-                  </MessageResponse>
+            {/* {message.parts?.filter((part): part is FileUIPart => part.type === 'file').length > 0 && (
+              <div
+                data-testid={`message-attachments`}
+                className="flex flex-row justify-end gap-2"
+              >
+                {message.parts?.filter((part): part is FileUIPart => part.type === 'file').map((filePart) => (
+                  <PreviewAttachment key={filePart.url} attachment={filePart} />
                 ))}
-              </>
-            )}
-          </MessageContent>
+              </div>
+            )} */}
 
-          <MessageToolbar
-            className={cn(
-              "mt-1",
-              message.role === "user" ? "justify-end" : "justify-start",
-            )}
-          >
-            <MessageActions
-              key={`action-${message.id}`}
-              isLoading={isLoading}
-              message={message}
-              regenerate={regenerate}
-              setMode={setMode}
-            />
-          </MessageToolbar>
-        </Message>
+            {Array.isArray(message.parts) &&
+              message.parts
+                .filter((part) => part != null)
+                .map((part, index) => {
+                  const { type } = part;
+                  const key = `message-${message.id}-part-${index}`;
+
+                  if (type === "reasoning" && part.text?.trim().length > 0) {
+                    return (
+                      <MessageReasoning
+                        key={key}
+                        isLoading={isLoading}
+                        reasoning={part.text}
+                      />
+                    );
+                  }
+
+                  if (type === "text") {
+                    if (part.text.trim() === "") {
+                      return null;
+                    }
+
+                    if (mode === "view") {
+                      return (
+                        <TextPart
+                          key={key}
+                          text={part.text}
+                          role={message.role}
+                        />
+                      );
+                    }
+
+                    if (mode === "edit") {
+                      return (
+                        <div
+                          key={key}
+                          className="flex flex-row gap-2 items-start"
+                        >
+                          <div className="size-8" />
+                          <MessageEditor
+                            key={message.id}
+                            message={message}
+                            setMode={setMode}
+                            setMessages={setMessages}
+                            regenerate={regenerate}
+                          />
+                        </div>
+                      );
+                    }
+                  }
+
+                  // Handle file parts - they are already rendered above, so we skip them here
+                  if (type === "file") {
+                    return null;
+                  }
+
+                  // Handle other part types that might be added in the future
+                  return null;
+                })}
+
+            {
+              <MessageActions
+                key={`action-${message.id}`}
+                setMode={setMode}
+                message={message}
+                isLoading={isLoading}
+                regenerate={regenerate}
+              />
+            }
+          </div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );
@@ -142,29 +157,36 @@ export const PreviewMessage = memo(
 );
 
 export const ThinkingMessage = () => {
+  const role = "assistant";
+
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full min-h-96"
+      className="w-full mx-auto max-w-3xl px-4 group/message min-h-96"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
-      data-role="assistant"
+      data-role={role}
     >
-      <Message from="assistant">
-        <MessageContent className={cx("w-fit rounded-full border bg-muted px-4 py-3")}>
-          <div className="flex items-center gap-1">
-            <div className="size-2 rounded-full bg-zinc-500 animate-bounce" />
-            <div
-              className="size-2 rounded-full bg-zinc-500 animate-bounce"
-              style={{ animationDelay: "0.1s" }}
-            />
-            <div
-              className="size-2 rounded-full bg-zinc-500 animate-bounce"
-              style={{ animationDelay: "0.2s" }}
-            />
-          </div>
-        </MessageContent>
-      </Message>
+      <div
+        className={cx(
+          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-[75%] group-data-[role=user]/message:py-2 rounded-xl",
+          {
+            "group-data-[role=user]/message:bg-muted": true,
+          },
+        )}
+      >
+        <div className="flex gap-1 items-center">
+          <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"></div>
+          <div
+            className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"
+            style={{ animationDelay: "0.1s" }}
+          ></div>
+          <div
+            className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"
+            style={{ animationDelay: "0.2s" }}
+          ></div>
+        </div>
+      </div>
     </motion.div>
   );
 };
