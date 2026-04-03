@@ -26,11 +26,11 @@ export default function ChatLoadingShell() {
   return (
     <div className="absolute inset-0 overflow-hidden">
       <div
-        className="absolute inset-0 overflow-y-scroll pb-40"
+        className="absolute inset-0 w-full overflow-y-scroll pb-32"
         style={{ scrollbarGutter: "stable both-edges" }}
       >
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pt-safe-offset-10 pb-10">
-          <div className="flex flex-col gap-6">
+        <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10">
+          <div className="flex min-w-0 flex-1 flex-col gap-6 pt-4">
             <MessageSkeleton
               lines={[
                 "h-4 w-40 rounded-full",
@@ -55,25 +55,6 @@ export default function ChatLoadingShell() {
                 "h-5 w-[72%] rounded-full",
               ]}
             />
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-0 z-10 w-full px-2">
-        <div className="relative mx-auto w-full max-w-3xl">
-          <div className="rounded-t-[22px] border border-[#404040] bg-[#2a2a2a]/95 p-3 pb-safe-offset-3 shadow-[0_-28px_60px_-36px_rgba(0,0,0,0.9)] backdrop-blur-xl">
-            <div className="space-y-3">
-              <Skeleton className="h-5 w-52 rounded-full border-white/10 bg-white/[0.06] before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.12)_48%,transparent_72%)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent_70%)]" />
-              <Skeleton className="h-5 w-2/3 rounded-full border-white/10 bg-white/[0.04] before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.1)_48%,transparent_72%)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_70%)]" />
-            </div>
-
-            <div className="mt-5 flex items-end justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-8 w-28 rounded-full border-white/10 bg-white/[0.05] before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.12)_48%,transparent_72%)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_70%)]" />
-                <Skeleton className="h-8 w-20 rounded-full border-white/10 bg-white/[0.04] before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.1)_48%,transparent_72%)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_70%)]" />
-              </div>
-              <Skeleton className="size-8 rounded-xl border-white/10 bg-white/[0.08] before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.14)_48%,transparent_72%)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_70%)]" />
-            </div>
           </div>
         </div>
       </div>
