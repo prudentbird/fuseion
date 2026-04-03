@@ -10,9 +10,11 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   cacheComponents: true,
+  logging: {
+    browserToTerminal: true,
+  },
   experimental: {
     typedEnv: true,
-    browserDebugInfoInTerminal: true,
     turbopackFileSystemCacheForDev: true,
     turbopackFileSystemCacheForBuild: true,
   },

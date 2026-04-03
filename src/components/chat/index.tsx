@@ -97,22 +97,16 @@ const Chat = ({
   });
 
   return (
-    <div>
-      <div
-        className="absolute inset-0 overflow-y-scroll w-full pb-32"
-        style={{ scrollbarGutter: "stable both-edges" }}
-      >
-        <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10">
-          <Messages
-            chatId={id}
-            error={error}
-            status={status}
-            session={session}
-            messages={messages}
-            regenerate={regenerate}
-            setMessages={setMessages}
-          />
-        </div>
+    <div className="absolute inset-0 flex min-h-0 flex-col">
+      <div className="min-h-0 flex-1">
+        <Messages
+          error={error}
+          status={status}
+          session={session}
+          messages={messages}
+          regenerate={regenerate}
+          setMessages={setMessages}
+        />
       </div>
       <ChatInput
         id={id}
