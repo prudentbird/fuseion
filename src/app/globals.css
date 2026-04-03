@@ -224,19 +224,3 @@
   padding: 1rem !important;
   border-radius: 0 !important;
 }
-
-@keyframes skeleton-shimmer {
-  0% {
-    transform: translateX(-120%);
-  }
-
-  100% {
-    transform: translateX(120%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-slot='skeleton']::before {
-    animation: none !important;
-  }
-}

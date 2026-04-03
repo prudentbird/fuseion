@@ -30,17 +30,6 @@ export default function ChatLoadingShell() {
         style={{ scrollbarGutter: "stable both-edges" }}
       >
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pt-safe-offset-10 pb-10">
-          <div className="rounded-[24px] border border-border/60 bg-card/75 p-4 shadow-[0_24px_50px_-38px_rgba(0,0,0,0.65)] backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <Skeleton className="size-10 rounded-2xl" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-3 w-40" />
-              </div>
-              <Skeleton className="h-9 w-24 rounded-full" />
-            </div>
-          </div>
-
           <div className="flex flex-col gap-6">
             <MessageSkeleton
               lines={[
