@@ -1,5 +1,5 @@
-import ChatLoadingShell from "../_components/chat-loading-shell";
+import AppLoader from "~/components/app-loader";
 
 export default function Loading() {
-  return <ChatLoadingShell />;
+  return <AppLoader />;
 }
