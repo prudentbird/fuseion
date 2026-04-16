@@ -1,10 +1,9 @@
 import Chat from "~/components/chat";
-import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
 import { redirect } from "next/navigation";
 import { api } from "~/convex/_generated/api";
-import { getDefaultModel } from "~/lib/utils";
+import { getDefaultModel, resolveStoredModel } from "~/lib/utils";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 
 export default async function Page({
@@ -47,7 +46,7 @@ export default async function Page({
     );
   }
 
-  const selectedModel: Model = JSON.parse(model.value);
+  const selectedModel = resolveStoredModel(model.value);
 
   return (
     <Chat

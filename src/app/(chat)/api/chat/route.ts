@@ -24,7 +24,12 @@ import { ProviderOptions } from "@ai-sdk/provider-utils";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateTitleFromUserMessage } from "../../actions";
 import { entitlementsByUserTier } from "~/lib/ai/entitlements";
-import { convertToUIMessages, generateUUID } from "~/lib/utils";
+import {
+  convertToUIMessages,
+  generateUUID,
+  getDefaultModel,
+  getModelById,
+} from "~/lib/utils";
 import { postRequestBodySchema, PostRequestBody } from "./schema";
 import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/next";
 
@@ -110,6 +115,7 @@ export async function POST(req: Request) {
 
   try {
     const { id, model, message }: PostRequestBody = requestBody;
+    const selectedModel = getModelById(model.id) ?? getDefaultModel();
 
     const dailyMessageCount = await queries.getDailyMessageCountByUserId(
       session.user.userId,
@@ -160,7 +166,7 @@ export async function POST(req: Request) {
       await mutations.createThread({
         id,
         title,
-        model: model.id,
+        model: selectedModel.id,
         status: "streaming",
         pinned: false,
         userId: session.user.userId,
@@ -186,7 +192,7 @@ export async function POST(req: Request) {
       role: message.role,
       parts: JSON.stringify(message.parts),
       metadata: JSON.stringify({
-        model,
+        model: selectedModel,
         threadId: id,
         createdAt: new Date(),
       }),
@@ -205,11 +211,11 @@ export async function POST(req: Request) {
       });
     });
 
-    const modelId = model.id;
+    const modelId = selectedModel.id;
     let apiKey: string | undefined;
     const headersList = await headers();
     let providerOptions: ProviderOptions | undefined;
-    const provider = model.metadata.provider.toLowerCase();
+    const provider = selectedModel.metadata.provider.toLowerCase();
     let aiModel: Parameters<typeof streamText>[0]["model"];
 
     switch (provider) {
@@ -275,7 +281,7 @@ export async function POST(req: Request) {
             }),
           }),
           system: getSystemPrompt({
-            modelName: model.name,
+            modelName: selectedModel.name,
             userName: session.user.name,
           }),
           messages: await convertToModelMessages(uiMessages),
@@ -302,7 +308,7 @@ export async function POST(req: Request) {
             role: message.role,
             parts: JSON.stringify(message.parts),
             metadata: JSON.stringify({
-              model,
+              model: selectedModel,
               threadId: id,
               createdAt: new Date(),
             }),

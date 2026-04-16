@@ -1,11 +1,10 @@
 import Chat from "~/components/chat";
-import { Model } from "~/lib/ai/models";
 import { cookies } from "next/headers";
 import { auth } from "~/app/(auth)/auth";
 import { redirect } from "next/navigation";
 import { preloadQuery } from "convex/nextjs";
 import { api } from "~/convex/_generated/api";
-import { generateUUID, getDefaultModel } from "~/lib/utils";
+import { generateUUID, getDefaultModel, resolveStoredModel } from "~/lib/utils";
 
 export default async function ChatPage() {
   const session = await auth();
@@ -33,7 +32,7 @@ export default async function ChatPage() {
     );
   }
 
-  const selectedModel: Model = JSON.parse(model.value);
+  const selectedModel = resolveStoredModel(model.value);
 
   return (
     <Chat

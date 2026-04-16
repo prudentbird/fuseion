@@ -24,19 +24,38 @@ export interface Model {
 
 export const models: Model[] = [
   {
-    id: "gemini-2.5-flash",
-    name: "Gemini 2.5 Flash",
+    id: "gemini-3-flash-preview",
+    name: "Gemini 3 Flash Preview",
     metadata: {
       provider: "Google",
       developer: "Google",
-      shortDescription: "Google's latest fast model",
-      fullDescription: "Google's latest fast model, but now it can think!",
+      shortDescription: "Google's newest balanced multimodal model",
+      fullDescription:
+        "Google's current balanced Gemini model for speed, scale, reasoning, and agentic workflows. It is the recommended replacement for Gemini 2.5 Flash.",
       disabled: false,
       modelPickerDefault: false,
-      limits: { maxInputTokens: 1000000, maxOutputTokens: 65535 },
+      limits: { maxInputTokens: 1048576, maxOutputTokens: 65536 },
       streamChunking: "word",
       features: ["images", "pdfs", "search", "reasoningEffort"],
-      experimental: false,
+      experimental: true,
+      apiKeySupport: "required",
+    },
+  },
+  {
+    id: "gemini-3.1-flash-lite-preview",
+    name: "Gemini 3.1 Flash-Lite Preview",
+    metadata: {
+      provider: "Google",
+      developer: "Google",
+      shortDescription: "Google's fastest low-cost Gemini model",
+      fullDescription:
+        "Google's most cost-efficient multimodal Gemini model for lightweight, high-frequency workloads. It is a good fit for fast classifications, structured extraction, title generation, and other extremely low-latency tasks.",
+      disabled: false,
+      modelPickerDefault: false,
+      limits: { maxInputTokens: 1048576, maxOutputTokens: 65536 },
+      streamChunking: "word",
+      features: ["images", "pdfs", "search", "reasoningEffort"],
+      experimental: true,
       apiKeySupport: "required",
     },
   },
@@ -59,17 +78,17 @@ export const models: Model[] = [
   //   },
   // },
   {
-    id: "gemini-2.5-pro",
-    name: "Gemini 2.5 Pro",
+    id: "gemini-3.1-pro-preview",
+    name: "Gemini 3.1 Pro Preview",
     metadata: {
       provider: "Google",
       developer: "Google",
-      shortDescription: "Google's newest experimental model",
+      shortDescription: "Google's newest advanced reasoning model",
       fullDescription:
-        "Google's most advanced model, excelling at complex reasoning and problem-solving. Particularly strong at tackling difficult code challenges, mathematical proofs, and STEM problems. With its massive context window, it can deeply analyze large codebases, datasets and technical documents to provide comprehensive solutions.",
+        "Google's latest high-end Gemini model for complex reasoning, coding, and multi-step agentic work. It is the recommended replacement for Gemini 2.5 Pro.",
       disabled: false,
       modelPickerDefault: false,
-      limits: { maxInputTokens: 200000, maxOutputTokens: 64000 },
+      limits: { maxInputTokens: 1048576, maxOutputTokens: 65536 },
       streamChunking: "word",
       features: ["parameters", "images", "pdfs", "search", "reasoning"],
       experimental: true,
@@ -94,42 +113,42 @@ export const models: Model[] = [
   //     apiKeySupport: 'optional',
   //   },
   // },
-  {
-    id: "deepseek/deepseek-r1-0528:free",
-    name: "DeepSeek R1 0528",
-    metadata: {
-      provider: "OpenRouter",
-      developer: "DeepSeek",
-      shortDescription:
-        "DeepSeek's reasoning model, routed to the fastest available provider",
-      fullDescription:
-        "The open source reasoning model that shook the whole industry. Very smart. Shows all of its thinking. Not the fastest.",
-      disabled: false,
-      experimental: false,
-      features: ["parameters", "reasoning"],
-      limits: { maxInputTokens: 128000, maxOutputTokens: 16384 },
-      modelPickerDefault: false,
-      streamChunking: "line",
-      apiKeySupport: "required",
-    },
-  },
-  {
-    id: "deepseek/deepseek-chat-v3-0324:free",
-    name: "DeepSeek v3 (0324)",
-    metadata: {
-      provider: "OpenRouter",
-      developer: "DeepSeek",
-      shortDescription: "Latest update to DeepSeek's chat model",
-      fullDescription:
-        "DeepSeek V3, a 685B-parameter, mixture-of-experts model, is the latest iteration of the flagship chat model family from the DeepSeek team. It succeeds the DeepSeek V3 model and performs really well on a variety of tasks.",
+  // {
+  //   id: "deepseek/deepseek-r1-0528:free",
+  //   name: "DeepSeek R1 0528",
+  //   metadata: {
+  //     provider: "OpenRouter",
+  //     developer: "DeepSeek",
+  //     shortDescription:
+  //       "DeepSeek's reasoning model, routed to the fastest available provider",
+  //     fullDescription:
+  //       "The open source reasoning model that shook the whole industry. Very smart. Shows all of its thinking. Not the fastest.",
+  //     disabled: false,
+  //     experimental: false,
+  //     features: ["parameters", "reasoning"],
+  //     limits: { maxInputTokens: 128000, maxOutputTokens: 16384 },
+  //     modelPickerDefault: false,
+  //     streamChunking: "line",
+  //     apiKeySupport: "required",
+  //   },
+  // },
+  // {
+  //   id: "deepseek/deepseek-chat-v3-0324:free",
+  //   name: "DeepSeek v3 (0324)",
+  //   metadata: {
+  //     provider: "OpenRouter",
+  //     developer: "DeepSeek",
+  //     shortDescription: "Latest update to DeepSeek's chat model",
+  //     fullDescription:
+  //       "DeepSeek V3, a 685B-parameter, mixture-of-experts model, is the latest iteration of the flagship chat model family from the DeepSeek team. It succeeds the DeepSeek V3 model and performs really well on a variety of tasks.",
 
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 64000, maxOutputTokens: 16384 },
-      features: ["parameters"],
-      experimental: true,
-    },
-  },
+  //     disabled: false,
+  //     modelPickerDefault: false,
+  //     limits: { maxInputTokens: 64000, maxOutputTokens: 16384 },
+  //     features: ["parameters"],
+  //     experimental: true,
+  //   },
+  // },
   {
     id: "openai/gpt-oss-20b",
     name: "GPT OSS 20b",
@@ -166,42 +185,24 @@ export const models: Model[] = [
       apiKeySupport: "optional",
     },
   },
-  {
-    id: "moonshotai/kimi-k2-instruct",
-    name: "Kimi K2",
-    metadata: {
-      provider: "Groq",
-      developer: "MoonshotAI",
-      shortDescription: "MoonshotAI's latest model",
-      fullDescription:
-        "Kimi K2 is a tool calling model that is a successor to the original Kimi model. It is a general-purpose model that is designed to be able to handle a wide range of tasks.",
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 256000, maxOutputTokens: 16384 },
-      streamChunking: "word",
-      features: ["parameters", "reasoning", "toolCalling"],
-      experimental: true,
-      apiKeySupport: "optional",
-    },
-  },
-  {
-    id: "deepseek-r1-distill-llama-70b",
-    name: "DeepSeek R1 Distill Llama 70b",
-    metadata: {
-      provider: "Groq",
-      developer: "DeepSeek",
-      shortDescription: "DeepSeek's distilled model",
-      fullDescription:
-        "DeepSeek R1 Distill Llama 70b is a 70B parameter model that is a distilled version of the DeepSeek R1 model. It is a general-purpose model that is designed to be able to handle a wide range of tasks.",
-      disabled: false,
-      modelPickerDefault: false,
-      limits: { maxInputTokens: 256000, maxOutputTokens: 16384 },
-      streamChunking: "word",
-      features: ["parameters", "reasoning"],
-      experimental: true,
-      apiKeySupport: "optional",
-    },
-  },
+  // {
+  //   id: "moonshotai/kimi-k2-instruct",
+  //   name: "Kimi K2",
+  //   metadata: {
+  //     provider: "Groq",
+  //     developer: "MoonshotAI",
+  //     shortDescription: "MoonshotAI's latest model",
+  //     fullDescription:
+  //       "Kimi K2 is a tool calling model that is a successor to the original Kimi model. It is a general-purpose model that is designed to be able to handle a wide range of tasks.",
+  //     disabled: false,
+  //     modelPickerDefault: true,
+  //     limits: { maxInputTokens: 256000, maxOutputTokens: 16384 },
+  //     streamChunking: "word",
+  //     features: ["parameters", "reasoning", "toolCalling"],
+  //     experimental: true,
+  //     apiKeySupport: "optional",
+  //   },
+  // },
   // {
   //   id: "gpt-5-mini",
   //   name: "GPT-5 mini",

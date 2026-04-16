@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { Logger } from "~/lib/logger";
 import { google } from "@ai-sdk/google";
 import { Model } from "~/lib/ai/models";
-import { generateObject, UIMessage } from "ai";
+import { generateText, Output, UIMessage } from "ai";
 import { convertToUIMessages, getErrorMessage } from "~/lib/utils";
 
 const logger = new Logger("chat/actions");
@@ -17,12 +17,12 @@ export async function generateTitleFromUserMessage({
   message: UIMessage | UIMessage[];
 }) {
   try {
-    const {
-      object: { title },
-    } = await generateObject({
-      model: google("gemini-2.0-flash-lite"),
-      schema: z.object({
-        title: z.string(),
+    const { output } = await generateText({
+      model: google("gemini-3.1-flash-lite-preview"),
+      output: Output.object({
+        schema: z.object({
+          title: z.string(),
+        }),
       }),
       system: `\n
     - You will generate a short title based on the first message a user begins a conversation with
@@ -42,7 +42,7 @@ export async function generateTitleFromUserMessage({
       prompt: JSON.stringify(message),
     });
 
-    return title;
+    return output.title;
   } catch (error) {
     logger.error(
       "Error generating title from user message:",

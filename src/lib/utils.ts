@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { formatISO } from "date-fns";
-import { models } from "~/lib/ai/models";
+import { Model, models } from "~/lib/ai/models";
 import { twMerge } from "tailwind-merge";
 import { type BundledLanguage } from "shiki";
 import { clsx, type ClassValue } from "clsx";
@@ -79,6 +79,27 @@ export const getDefaultModel = cache(() => {
 
   return defaultModel;
 });
+
+export function getModelById(id: string): Model | undefined {
+  return models.find((model) => model.id === id);
+}
+
+export function resolveStoredModel(cookieValue: string | undefined): Model {
+  if (!cookieValue) {
+    return getDefaultModel();
+  }
+
+  try {
+    const parsed = JSON.parse(cookieValue) as Partial<Model>;
+    if (typeof parsed.id === "string") {
+      return getModelById(parsed.id) ?? getDefaultModel();
+    }
+  } catch (error) {
+    console.error("Failed to parse stored model:", getErrorMessage(error));
+  }
+
+  return getDefaultModel();
+}
 
 export const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) {
