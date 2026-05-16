@@ -54,7 +54,7 @@
     "radix-ui": "latest",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-shiki": "^0.9.1",
+    "react-shiki": "^0.9.2",
     "redis": "^5.10.0",
     "rehype-sanitize": "^6.0.0",
     "rehype-starry-night": "^2.2.0",
